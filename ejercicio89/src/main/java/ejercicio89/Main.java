@@ -29,9 +29,9 @@ public class Main {
                 switch (opcion) {
                     case 1:
                         System.out.println("Ingrese el nombre del perro: ");
-                        String nombrePerro = LectorDatos.pedirStringMinimo(scanner, 3, "Nombre");
+                        String nombrePerro = LectorDatos.pedirString(scanner, 3, "Nombre");
                         System.out.println("Ingrese la raza del perro: ");
-                        String razaPerro = LectorDatos.pedirStringMinimo(scanner, 3, "Raza");
+                        String razaPerro = LectorDatos.pedirString(scanner, 3, "Raza");
                         System.out.println("Ingrese la fecha de nacimiento del perro (dd/MM/yyyy): ");
                         Date datePerro = LectorDatos.pedirFecha(scanner);
 
@@ -39,7 +39,7 @@ public class Main {
                         Float pesoPerro = LectorDatos.pedirFloat(scanner, "Peso");
                         
                         System.out.println("Ingrese el lugar de entrenamiento del perro: ");
-                        String lugarEntrenamientoPerro = LectorDatos.pedirStringMinimo(scanner, 3, "Lugar de entrenamiento");
+                        String lugarEntrenamientoPerro = LectorDatos.pedirString(scanner, 3, "Lugar de entrenamiento");
 
                         Perro perro = new Perro(nombrePerro, razaPerro, datePerro, pesoPerro, lugarEntrenamientoPerro);
                         String[] EncabezadosPerro = {"Nombre", "Raza", "Fecha de nacimiento", "Peso(kg)", "Lugar de entrenamiento"};
@@ -53,9 +53,9 @@ public class Main {
                         break;
                     case 2:
                         System.out.println("Ingrese el nombre del gato: ");
-                        String nombreGato = LectorDatos.pedirStringMinimo(scanner, 3, "Nombre");
+                        String nombreGato = LectorDatos.pedirString(scanner, 3, "Nombre");
                         System.out.println("Ingrese la raza del gato: ");
-                        String razaGato = LectorDatos.pedirStringMinimo(scanner, 3, "Raza");
+                        String razaGato = LectorDatos.pedirString(scanner, 3, "Raza");
                         System.out.println("Ingrese la fecha de nacimiento del gato (dd/MM/yyyy): ");
                         Date dateGato = LectorDatos.pedirFecha(scanner);
 

@@ -46,7 +46,7 @@ public class LectorDatos {
         }
     }
 
-    public static String pedirStringMinimo(Scanner scanner, int minLength, String campo) {
+    public static String pedirString(Scanner scanner, int minLength, String campo) {
         while (true) {
             String input = scanner.nextLine();
             if (input.length() >= minLength) {
