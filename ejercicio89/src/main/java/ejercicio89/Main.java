@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 
+import com.jakewharton.fliptables.FlipTable;
+
 import ejercicio89.Classes.Gato;
 import ejercicio89.Classes.Perro;
 
@@ -40,13 +42,12 @@ public class Main {
                         String lugarEntrenamientoPerro = scanner.nextLine();
 
                         Perro perro = new Perro(nombrePerro, razaPerro, datePerro, pesoPerro, lugarEntrenamientoPerro);
+                        String[] EncabezadosPerro = {"Nombre", "Raza", "Fecha de nacimiento", "Peso(kg)", "Lugar de entrenamiento"};
                         System.out.println("\nPerro creado exitosamente.");
-                        System.out.println("Datos del perro:");
-                        System.out.println("Nombre: " + perro.getNombre());
-                        System.out.println("Raza: " + perro.getRaza());
-                        System.out.println("Fecha de nacimiento: " + new SimpleDateFormat("dd/MM/yyyy").format(perro.getFechaNacimiento()));
-                        System.out.println("Peso: " + perro.getPeso());
-                        System.out.println("Lugar de entrenamiento: " + perro.getLugarEntrenamiento());
+                        System.out.println("-----------Datos del perro-----------");
+                        System.out.println(FlipTable.of(EncabezadosPerro, new String[][]{
+                            {perro.getNombre(), perro.getRaza(), new SimpleDateFormat("dd/MM/yyyy").format(perro.getFechaNacimiento()), perro.getPeso().toString(), perro.getLugarEntrenamiento()}
+                        }));
                         perro.Comer();
                         perro.Comunicarse();
                         break;
@@ -66,12 +67,11 @@ public class Main {
 
                         Gato gato = new Gato(nombreGato, razaGato, dateGato, pesoGato, alturaSaltoGato);
                         System.out.println("\nGato creado exitosamente.");
-                        System.out.println("Datos del gato:");
-                        System.out.println("Nombre: " + gato.getNombre());
-                        System.out.println("Raza: " + gato.getRaza());
-                        System.out.println("Fecha de nacimiento: " + new SimpleDateFormat("dd/MM/yyyy").format(gato.getFechaNacimiento()));
-                        System.out.println("Peso: " + gato.getPeso());
-                        System.out.println("Altura de salto: " + gato.getAlturaSalto());
+                        System.out.println("-----------Datos del gato-----------");
+                        String[] EncabezadosGato = {"Nombre", "Raza", "Fecha de nacimiento", "Peso(kg)", "Altura de salto(m)"};
+                        System.out.println(FlipTable.of(EncabezadosGato, new String[][]{
+                            {gato.getNombre(), gato.getRaza(), new SimpleDateFormat("dd/MM/yyyy").format(gato.getFechaNacimiento()), gato.getPeso().toString(), gato.getAlturaSalto().toString()}
+                        }));
                         gato.Comer();
                         gato.Comunicarse();
                         break;

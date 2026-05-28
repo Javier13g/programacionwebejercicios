@@ -2,7 +2,7 @@ package ejercicio89.Classes;
 
 import java.util.Date;
 
-public abstract class Mamiferos {
+public class Mamiferos {
     private String Nombre;
     private String Raza;
     private Date FechaNacimiento;
@@ -17,8 +17,11 @@ public abstract class Mamiferos {
         this.Peso = peso;
     }
 
-    public abstract void Comer();
-    public abstract void Comunicarse();
+    public void Comer() {
+    }
+
+    public void Comunicarse() {
+    }
 
     public String getNombre() {
         return Nombre;
