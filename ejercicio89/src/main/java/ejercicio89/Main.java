@@ -29,17 +29,17 @@ public class Main {
                 switch (opcion) {
                     case 1:
                         System.out.println("Ingrese el nombre del perro: ");
-                        String nombrePerro = scanner.nextLine();
+                        String nombrePerro = LectorDatos.pedirStringMinimo(scanner, 3, "Nombre");
                         System.out.println("Ingrese la raza del perro: ");
-                        String razaPerro = scanner.nextLine();
+                        String razaPerro = LectorDatos.pedirStringMinimo(scanner, 3, "Raza");
                         System.out.println("Ingrese la fecha de nacimiento del perro (dd/MM/yyyy): ");
                         Date datePerro = LectorDatos.pedirFecha(scanner);
 
                         System.out.println("Ingrese el peso del perro: ");
-                        Float pesoPerro = LectorDatos.pedirFloat(scanner);
+                        Float pesoPerro = LectorDatos.pedirFloat(scanner, "Peso");
                         
                         System.out.println("Ingrese el lugar de entrenamiento del perro: ");
-                        String lugarEntrenamientoPerro = scanner.nextLine();
+                        String lugarEntrenamientoPerro = LectorDatos.pedirStringMinimo(scanner, 3, "Lugar de entrenamiento");
 
                         Perro perro = new Perro(nombrePerro, razaPerro, datePerro, pesoPerro, lugarEntrenamientoPerro);
                         String[] EncabezadosPerro = {"Nombre", "Raza", "Fecha de nacimiento", "Peso(kg)", "Lugar de entrenamiento"};
@@ -53,17 +53,17 @@ public class Main {
                         break;
                     case 2:
                         System.out.println("Ingrese el nombre del gato: ");
-                        String nombreGato = scanner.nextLine();
+                        String nombreGato = LectorDatos.pedirStringMinimo(scanner, 3, "Nombre");
                         System.out.println("Ingrese la raza del gato: ");
-                        String razaGato = scanner.nextLine();
+                        String razaGato = LectorDatos.pedirStringMinimo(scanner, 3, "Raza");
                         System.out.println("Ingrese la fecha de nacimiento del gato (dd/MM/yyyy): ");
                         Date dateGato = LectorDatos.pedirFecha(scanner);
 
                         System.out.println("Ingrese el peso del gato: ");
-                        Float pesoGato = LectorDatos.pedirFloat(scanner);
+                        Float pesoGato = LectorDatos.pedirFloat(scanner, "Peso");
 
                         System.out.println("Ingrese la altura de salto del gato: ");
-                        Double alturaSaltoGato = LectorDatos.pedirDouble(scanner);
+                        Double alturaSaltoGato = LectorDatos.pedirDouble(scanner, "Altura Salto");
 
                         Gato gato = new Gato(nombreGato, razaGato, dateGato, pesoGato, alturaSaltoGato);
                         System.out.println("\nGato creado exitosamente.");

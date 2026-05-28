@@ -3,18 +3,18 @@ package ejercicio89.Classes;
 import java.util.Date;
 
 public class Mamiferos {
-    private String Nombre;
-    private String Raza;
-    private Date FechaNacimiento;
-    private Float Peso;
+    private String nombre;
+    private String raza;
+    private Date fechaNacimiento;
+    private Float peso;
 
     public Mamiferos() {}
 
     public Mamiferos( String nombre, String raza, Date fechaNacimiento, Float peso) {
-        this.Nombre = nombre;
-        this.Raza = raza;
-        this.FechaNacimiento = fechaNacimiento;
-        this.Peso = peso;
+        this.nombre = nombre;
+        this.raza = raza;
+        this.fechaNacimiento = fechaNacimiento;
+        this.peso = peso;
     }
 
     public void Comer() {
@@ -24,34 +24,34 @@ public class Mamiferos {
     }
 
     public String getNombre() {
-        return Nombre;
+        return nombre;
     }
 
     public void setNombre(String nombre) {
-        Nombre = nombre;
+        this.nombre = nombre;
     }
 
     public String getRaza() {
-        return Raza;
+        return raza;
     }
 
     public void setRaza(String raza) {
-        Raza = raza;
+        this.raza = raza;
     }
 
     public Date getFechaNacimiento() {
-        return FechaNacimiento;
+        return fechaNacimiento;
     }
 
     public void setFechaNacimiento(Date fechaNacimiento) {
-        FechaNacimiento = fechaNacimiento;
+        this.fechaNacimiento = fechaNacimiento;
     }
 
     public Float getPeso() {
-        return Peso;
+        return peso;
     }
 
     public void setPeso(Float peso) {
-        Peso = peso;
+        this.peso = peso;
     }
 }

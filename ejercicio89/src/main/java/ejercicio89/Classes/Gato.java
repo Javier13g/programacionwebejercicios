@@ -3,21 +3,21 @@ package ejercicio89.Classes;
 import java.util.Date;
 
 public class Gato extends Mamiferos {
-    private Double AlturaSalto;
+    private Double alturaSalto;
 
     public Gato() {}
 
     public Gato(String nombre, String raza, Date fechaNacimiento, Float peso, Double alturaSalto) {
         super(nombre, raza, fechaNacimiento, peso);
-        this.AlturaSalto = alturaSalto;
+        this.alturaSalto = alturaSalto;
     }
 
     public Double getAlturaSalto() {
-        return AlturaSalto;
+        return alturaSalto;
     }
 
     public void setAlturaSalto(Double alturaSalto) {
-        AlturaSalto = alturaSalto;
+        this.alturaSalto = alturaSalto;
     }
 
     @Override

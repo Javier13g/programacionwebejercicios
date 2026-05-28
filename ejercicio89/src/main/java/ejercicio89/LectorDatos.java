@@ -17,23 +17,41 @@ public class LectorDatos {
         }
     }
 
-    public static Float pedirFloat(Scanner scanner) {
+    public static Float pedirFloat(Scanner scanner, String campo) {
         while (true) {
             try {
-                return Float.parseFloat(scanner.nextLine());
+                float valor = Float.parseFloat(scanner.nextLine());
+                if (valor > 0) {
+                    return valor;
+                }
+                System.out.println(campo + " debe ser mayor que 0. Intente de nuevo:");
             } catch (NumberFormatException e) {
                 System.out.println("Por favor, ingrese un número decimal válido.");
             }
         }
     }
 
-    public static Double pedirDouble(Scanner scanner) {
+    public static Double pedirDouble(Scanner scanner, String campo) {
         while (true) {
             try {
-                return Double.parseDouble(scanner.nextLine());
+                double valor = Double.parseDouble(scanner.nextLine());
+                if (valor > 0) {
+                    return valor;
+                }
+                System.out.println(campo + " debe ser mayor que 0. Intente de nuevo:");
             } catch (NumberFormatException e) {
                 System.out.println("Por favor, ingrese un número decimal válido.");
             }
+        }
+    }
+
+    public static String pedirStringMinimo(Scanner scanner, int minLength, String campo) {
+        while (true) {
+            String input = scanner.nextLine();
+            if (input.length() >= minLength) {
+                return input;
+            }
+            System.out.println(campo + " debe tener al menos " + minLength + " caracteres. Intente de nuevo:");
         }
     }
 }
