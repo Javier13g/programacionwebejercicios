@@ -8,12 +8,13 @@ import java.util.Scanner;
 public class LectorDatos {
 
     public static Date pedirFecha(Scanner scanner) {
-        String fecha = scanner.nextLine();
-        try {
-            return new SimpleDateFormat("dd/MM/yyyy").parse(fecha);
-        } catch (ParseException e) {
-            System.out.println("Formato inválido. Se usará la fecha actual.");
-            return new Date();
+        while (true) {
+            String fecha = scanner.nextLine();
+            try {
+                return new SimpleDateFormat("dd/MM/yyyy").parse(fecha);
+            } catch (ParseException e) {
+                System.out.println("Formato inválido. Por favor, ingrese la fecha en formato dd/MM/yyyy:");
+            }
         }
     }
 
