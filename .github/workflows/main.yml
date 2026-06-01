@@ -1,0 +1,40 @@
+name: Java CI - Ejercicios Maven
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout del código
+      uses: actions/checkout@v4
+
+    - name: Configurar JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17' # Ajusta a la versión de Java que uses
+        distribution: 'temurin'
+        cache: 'maven'
+
+    # Este paso busca cada carpeta con un pom.xml y compila el proyecto correspondiente
+    - name: Compilar todos los proyectos Maven
+      run: |
+        echo "Buscando proyectos Maven..."
+        # Busca todos los archivos pom.xml que no estén en carpetas ocultas o directorios "target"
+        find . -name "pom.xml" -not -path "*/target/*" -not -path "*/.*" | while read pom; do
+          # Obtiene la ruta de la carpeta que contiene ese pom.xml
+          dir=$(dirname "$pom")
+          echo "=================================================="
+          echo "Compilando proyecto en: $dir"
+          echo "=================================================="
+          
+          # Entra a la carpeta, compila y vuelve atrás
+          cd "$dir"
+          mvn clean compile
+          cd - > /dev/null
+        done
