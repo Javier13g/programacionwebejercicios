@@ -4,6 +4,8 @@ import com.jakewharton.fliptables.FlipTable;
 import ejercicio4.data.DatabaseManager;
 import ejercicio4.model.Pedido;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PedidoService {
     private DatabaseManager db;
@@ -25,7 +27,7 @@ public class PedidoService {
     public void mostrarPedidos() throws Exception {
         ResultSet rs = db.obtenerPedidos();
         String[] encabezados = {"ID", "Cliente", "Fecha", "Estado", "Total($)"};
-        java.util.List<String[]> filas = new java.util.ArrayList<>();
+        List<String[]> filas = new ArrayList<>();
         boolean hayDatos = false;
         while (rs.next()) {
             hayDatos = true;

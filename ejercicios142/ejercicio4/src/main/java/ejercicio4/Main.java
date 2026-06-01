@@ -1,5 +1,6 @@
 package ejercicio4;
 
+import com.jakewharton.fliptables.FlipTable;
 import ejercicio4.business.ClienteService;
 import ejercicio4.business.PedidoService;
 import ejercicio4.business.ProductoService;
@@ -26,7 +27,8 @@ public class Main {
             System.out.println("4. Mostrar Clientes");
             System.out.println("5. Mostrar Productos");
             System.out.println("6. Mostrar Pedidos");
-            System.out.println("7. Salir");
+            System.out.println("7. Buscar Producto por ID");
+            System.out.println("8. Salir");
             System.out.print("Seleccione una opción: ");
 
             String entrada = scanner.nextLine();
@@ -85,6 +87,17 @@ public class Main {
                     }
                     System.out.print("ID del cliente: ");
                     int clienteId = LectorDatos.pedirInt(scanner, "ID Cliente");
+
+                    try {
+                        if (clienteService.buscarClientePorId(clienteId) == null) {
+                            System.out.println("Error: No existe un cliente con ese ID.");
+                            break;
+                        }
+                    } catch (Exception ex) {
+                        System.out.println("Error al validar cliente: " + ex.getMessage());
+                        break;
+                    }
+
                     System.out.print("Fecha del pedido (dd/MM/yyyy): ");
                     String fecha = LectorDatos.pedirFechaString(scanner);
                     System.out.print("Estado (Pendiente/Enviado/Entregado): ");
@@ -126,6 +139,17 @@ public class Main {
                     break;
 
                 case 7:
+                    System.out.println("\n--- Buscar Producto por ID ---");
+                    System.out.print("ID del producto: ");
+                    int productoId = LectorDatos.pedirInt(scanner, "ID Producto");
+                    try {
+                        productoService.mostrarProductoPorId(productoId);
+                    } catch (Exception ex) {
+                        System.out.println("Error: " + ex.getMessage());
+                    }
+                    break;
+
+                case 8:
                     System.out.println("Saliendo del sistema...");
                     try {
                         db.close();

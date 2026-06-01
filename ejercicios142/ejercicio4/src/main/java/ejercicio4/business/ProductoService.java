@@ -4,6 +4,8 @@ import com.jakewharton.fliptables.FlipTable;
 import ejercicio4.data.DatabaseManager;
 import ejercicio4.model.Producto;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductoService {
     private DatabaseManager db;
@@ -25,7 +27,7 @@ public class ProductoService {
     public void mostrarProductos() throws Exception {
         ResultSet rs = db.obtenerProductos();
         String[] encabezados = {"ID", "Nombre", "Precio($)", "Stock"};
-        java.util.List<String[]> filas = new java.util.ArrayList<>();
+        List<String[]> filas = new ArrayList<>();
         boolean hayDatos = false;
         while (rs.next()) {
             hayDatos = true;
@@ -58,5 +60,22 @@ public class ProductoService {
         }
         rs.close();
         return producto;
+    }
+
+    public void mostrarProductoPorId(int id) throws Exception {
+        Producto producto = buscarProductoPorId(id);
+        if (producto != null) {
+            String[] encabezados = {"ID", "Nombre", "Precio", "Stock"};
+            String[][] datos = {{
+                String.valueOf(producto.getId()),
+                producto.getNombre(),
+                String.format("%.2f", producto.getPrecio()),
+                String.valueOf(producto.getStock())
+            }};
+            System.out.println("\n========== PRODUCTO ENCONTRADO ==========");
+            System.out.println(FlipTable.of(encabezados, datos));
+        } else {
+            System.out.println("No se encontró un producto con ese ID.");
+        }
     }
 }
