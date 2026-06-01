@@ -39,14 +39,14 @@ public class Main {
             }
 
             switch (opcion) {
-                case 1: // Registrar Cliente
+                case 1:
                     System.out.println("\n--- Registrar Cliente ---");
                     System.out.print("Nombre: ");
                     String nombre = LectorDatos.pedirString(scanner, 1, "Nombre");
                     System.out.print("Teléfono: ");
-                    String telefono = scanner.nextLine();
+                    String telefono = LectorDatos.pedirString(scanner, 1, "Teléfono");
                     System.out.print("Dirección: ");
-                    String direccion = scanner.nextLine();
+                    String direccion = LectorDatos.pedirString(scanner, 1, "Dirección");
 
                     Cliente cliente = new Cliente(0, nombre, telefono, direccion);
                     try {
@@ -57,7 +57,7 @@ public class Main {
                     }
                     break;
 
-                case 2: // Registrar Producto
+                case 2:
                     System.out.println("\n--- Registrar Producto ---");
                     System.out.print("Nombre: ");
                     String prodNombre = LectorDatos.pedirString(scanner, 1, "Nombre");
@@ -75,7 +75,7 @@ public class Main {
                     }
                     break;
 
-                case 3: // Registrar Pedido
+                case 3:
                     System.out.println("\n--- Registrar Pedido ---");
                     try {
                         clienteService.mostrarClientes();
@@ -101,7 +101,7 @@ public class Main {
                     }
                     break;
 
-                case 4: // Mostrar Clientes
+                case 4:
                     try {
                         clienteService.mostrarClientes();
                     } catch (Exception ex) {
@@ -109,7 +109,7 @@ public class Main {
                     }
                     break;
 
-                case 5: // Mostrar Productos
+                case 5:
                     try {
                         productoService.mostrarProductos();
                     } catch (Exception ex) {
@@ -117,7 +117,7 @@ public class Main {
                     }
                     break;
 
-                case 6: // Mostrar Pedidos
+                case 6:
                     try {
                         pedidoService.mostrarPedidos();
                     } catch (Exception ex) {
