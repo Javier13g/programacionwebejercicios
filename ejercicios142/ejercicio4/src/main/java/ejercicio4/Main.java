@@ -1,6 +1,5 @@
 package ejercicio4;
 
-import com.jakewharton.fliptables.FlipTable;
 import ejercicio4.business.ClienteService;
 import ejercicio4.business.PedidoService;
 import ejercicio4.business.ProductoService;
