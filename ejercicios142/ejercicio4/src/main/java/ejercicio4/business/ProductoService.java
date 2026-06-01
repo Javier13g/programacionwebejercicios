@@ -4,6 +4,7 @@ import com.jakewharton.fliptables.FlipTable;
 import ejercicio4.data.DatabaseManager;
 import ejercicio4.model.Producto;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,55 +15,48 @@ public class ProductoService {
         this.db = db;
     }
 
-    public void registrarProducto(Producto producto) throws Exception {
-        if (producto.getNombre() == null || producto.getNombre().trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre del producto no puede estar vacío.");
-        }
-        if (producto.getPrecio() <= 0) {
-            throw new IllegalArgumentException("El precio del producto debe ser mayor que 0.");
-        }
+    public void registrarProducto(Producto producto) throws SQLException {
         db.insertarProducto(producto);
     }
 
-    public void mostrarProductos() throws Exception {
-        ResultSet rs = db.obtenerProductos();
-        String[] encabezados = {"ID", "Nombre", "Precio($)", "Stock"};
-        List<String[]> filas = new ArrayList<>();
-        boolean hayDatos = false;
-        while (rs.next()) {
-            hayDatos = true;
-            filas.add(new String[]{
-                String.valueOf(rs.getInt("id")),
-                rs.getString("nombre"),
-                String.format("%.2f", rs.getDouble("precio")),
-                String.valueOf(rs.getInt("stock"))
-            });
+    public void mostrarProductos() throws SQLException {
+        try (ResultSet rs = db.obtenerProductos()) {
+            String[] encabezados = {"ID", "Nombre", "Precio($)", "Stock"};
+            List<String[]> filas = new ArrayList<>();
+            boolean hayDatos = false;
+            while (rs.next()) {
+                hayDatos = true;
+                filas.add(new String[]{
+                    String.valueOf(rs.getInt("id")),
+                    rs.getString("nombre"),
+                    String.format("%.2f", rs.getDouble("precio")),
+                    String.valueOf(rs.getInt("stock"))
+                });
+            }
+            if (!hayDatos) {
+                System.out.println("\nNo hay productos registrados.\n");
+            } else {
+                System.out.println("\n========== LISTA DE PRODUCTOS ==========");
+                System.out.println(FlipTable.of(encabezados, filas.toArray(new String[][]{})));
+            }
         }
-        if (!hayDatos) {
-            System.out.println("\nNo hay productos registrados.\n");
-        } else {
-            System.out.println("\n========== LISTA DE PRODUCTOS ==========");
-            System.out.println(FlipTable.of(encabezados, filas.toArray(new String[][]{})));
-        }
-        rs.close();
     }
 
-    public Producto buscarProductoPorId(int id) throws Exception {
-        ResultSet rs = db.obtenerProductoPorId(id);
-        Producto producto = null;
-        if (rs.next()) {
-            producto = new Producto(
-                rs.getInt("id"),
-                rs.getString("nombre"),
-                rs.getDouble("precio"),
-                rs.getInt("stock")
-            );
+    public Producto buscarProductoPorId(int id) throws SQLException {
+        try (ResultSet rs = db.obtenerProductoPorId(id)) {
+            if (rs.next()) {
+                return new Producto(
+                    rs.getInt("id"),
+                    rs.getString("nombre"),
+                    rs.getDouble("precio"),
+                    rs.getInt("stock")
+                );
+            }
         }
-        rs.close();
-        return producto;
+        return null;
     }
 
-    public void mostrarProductoPorId(int id) throws Exception {
+    public void mostrarProductoPorId(int id) throws SQLException {
         Producto producto = buscarProductoPorId(id);
         if (producto != null) {
             String[] encabezados = {"ID", "Nombre", "Precio", "Stock"};
