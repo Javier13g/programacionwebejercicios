@@ -9,6 +9,7 @@ import java.sql.Statement;
 import ejercicio4.model.Cliente;
 import ejercicio4.model.Producto;
 import ejercicio4.model.Pedido;
+import ejercicio4.model.DetallePedido;
 
 public class DatabaseManager {
     private static final String DATABASE_URL = "jdbc:sqlite:./ejercicios142/ejercicio4/tienda_pedidos.db";
@@ -26,34 +27,41 @@ public class DatabaseManager {
 
     private void createTablesIfNotExist() throws SQLException {
         try (Statement stmt = connection.createStatement()) {
-            stmt.execute("""
-                CREATE TABLE IF NOT EXISTS Cliente (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    nombre TEXT NOT NULL,
-                    telefono TEXT,
-                    direccion TEXT
-                )
-            """);
+            stmt.execute(
+                "CREATE TABLE IF NOT EXISTS Cliente (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "nombre TEXT NOT NULL," +
+                "telefono TEXT," +
+                "direccion TEXT)"
+            );
 
-            stmt.execute("""
-                CREATE TABLE IF NOT EXISTS Producto (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    nombre TEXT NOT NULL,
-                    precio REAL NOT NULL,
-                    stock INTEGER NOT NULL
-                )
-            """);
+            stmt.execute(
+                "CREATE TABLE IF NOT EXISTS Producto (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "nombre TEXT NOT NULL," +
+                "precio REAL NOT NULL," +
+                "stock INTEGER NOT NULL)"
+            );
 
-            stmt.execute("""
-                CREATE TABLE IF NOT EXISTS Pedido (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    cliente_id INTEGER NOT NULL,
-                    fecha_pedido TEXT NOT NULL,
-                    estado TEXT NOT NULL,
-                    total REAL NOT NULL,
-                    FOREIGN KEY (cliente_id) REFERENCES Cliente(id)
-                )
-            """);
+            stmt.execute(
+                "CREATE TABLE IF NOT EXISTS Pedido (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "cliente_id INTEGER NOT NULL," +
+                "fecha_pedido TEXT NOT NULL," +
+                "estado TEXT NOT NULL," +
+                "total REAL NOT NULL," +
+                "FOREIGN KEY (cliente_id) REFERENCES Cliente(id))"
+            );
+
+            stmt.execute(
+                "CREATE TABLE IF NOT EXISTS PedidoProducto (" +
+                "pedido_id INTEGER NOT NULL," +
+                "producto_id INTEGER NOT NULL," +
+                "cantidad INTEGER NOT NULL," +
+                "PRIMARY KEY (pedido_id, producto_id)," +
+                "FOREIGN KEY (pedido_id) REFERENCES Pedido(id)," +
+                "FOREIGN KEY (producto_id) REFERENCES Producto(id))"
+            );
         }
     }
 
@@ -69,7 +77,7 @@ public class DatabaseManager {
             insertProduct(new Producto(0, "Teclado Mecánico", 1200.00, 25));
         }
 
-        if (!hasData("Pedido")) {
+        if (!hasData("Pedido") || !hasData("PedidoProducto")) {
             String sql = "INSERT INTO Pedido (cliente_id, fecha_pedido, estado, total) VALUES (?, ?, ?, ?)";
             try (PreparedStatement ps = connection.prepareStatement(sql)) {
                 ps.setInt(1, 1);
@@ -84,6 +92,10 @@ public class DatabaseManager {
                 ps.setDouble(4, 1200.00);
                 ps.executeUpdate();
             }
+            // Insertar datos iniciales de PedidoProducto
+            insertPedidoProducto(1, 1, 1); // Pedido 1: 1 Laptop HP
+            insertPedidoProducto(1, 2, 1); // Pedido 1: 1 Mouse
+            insertPedidoProducto(2, 3, 1); // Pedido 2: 1 Teclado
         }
     }
 
@@ -179,6 +191,53 @@ public class DatabaseManager {
         return ps.executeQuery();
     }
 
+    public ResultSet obtenerProductoPorIdLock(int id) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM Producto WHERE id = ?");
+        ps.setInt(1, id);
+        return ps.executeQuery();
+    }
+
+    private void insertPedidoProducto(int pedidoId, int productoId, int cantidad) throws SQLException {
+        String sql = "INSERT INTO PedidoProducto (pedido_id, producto_id, cantidad) VALUES (?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, pedidoId);
+            ps.setInt(2, productoId);
+            ps.setInt(3, cantidad);
+            ps.executeUpdate();
+        }
+    }
+
+    public void insertarDetallePedido(DetallePedido detalle) throws SQLException {
+        if (detalle.getPedidoId() <= 0 || detalle.getProductoId() <= 0 || detalle.getCantidad() <= 0) {
+            throw new IllegalArgumentException("Datos del detalle de pedido inválidos.");
+        }
+        insertPedidoProducto(detalle.getPedidoId(), detalle.getProductoId(), detalle.getCantidad());
+    }
+
+    public void reducirStock(int productoId, int cantidad) throws SQLException {
+        String sql = "UPDATE Producto SET stock = stock - ? WHERE id = ? AND stock >= ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, cantidad);
+            ps.setInt(2, productoId);
+            ps.setInt(3, cantidad);
+            int filasAfectadas = ps.executeUpdate();
+            if (filasAfectadas == 0) {
+                throw new SQLException("No se pudo reducir stock. Producto ID: " + productoId + ", cantidad: " + cantidad);
+            }
+        }
+    }
+
+    public int obtenerUltimoPedidoId() throws SQLException {
+        String sql = "SELECT last_insert_rowid() as id";
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+            throw new SQLException("No se pudo obtener el ID del último pedido.");
+        }
+    }
+
     public void insertarPedido(Pedido pedido) throws SQLException {
         validatePedido(pedido);
         String sql = "INSERT INTO Pedido (cliente_id, fecha_pedido, estado, total) VALUES (?, ?, ?, ?)";
@@ -201,14 +260,24 @@ public class DatabaseManager {
     }
 
     public ResultSet obtenerPedidos() throws SQLException {
-        String sql = """
-            SELECT p.id, p.cliente_id, c.nombre as cliente_nombre, p.fecha_pedido, p.estado, p.total
-            FROM Pedido p
-            LEFT JOIN Cliente c ON p.cliente_id = c.id
-            ORDER BY p.id DESC
-        """;
+        String sql = "SELECT p.id, p.cliente_id, c.nombre as cliente_nombre, " +
+                     "p.fecha_pedido, p.estado, p.total " +
+                     "FROM Pedido p " +
+                     "LEFT JOIN Cliente c ON p.cliente_id = c.id " +
+                     "ORDER BY p.id DESC";
         Statement stmt = connection.createStatement();
         return stmt.executeQuery(sql);
+    }
+
+    public ResultSet obtenerDetallePedido(int pedidoId) throws SQLException {
+        String sql = "SELECT pp.producto_id, pr.nombre as producto_nombre, " +
+                     "pp.cantidad, pr.precio " +
+                     "FROM PedidoProducto pp " +
+                     "JOIN Producto pr ON pp.producto_id = pr.id " +
+                     "WHERE pp.pedido_id = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, pedidoId);
+        return ps.executeQuery();
     }
 
     public void close() throws SQLException {

@@ -7,6 +7,9 @@ import ejercicio4.data.DatabaseManager;
 import ejercicio4.model.Cliente;
 import ejercicio4.model.Pedido;
 import ejercicio4.model.Producto;
+import ejercicio4.model.DetallePedido;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -101,13 +104,45 @@ public class Main {
                     String fecha = LectorDatos.pedirFechaString(scanner);
                     System.out.print("Estado (Pendiente/Enviado/Entregado): ");
                     String estado = LectorDatos.pedirString(scanner, 1, "Estado");
-                    System.out.print("Total: ");
-                    double total = LectorDatos.pedirDouble(scanner, "Total");
 
-                    Pedido pedido = new Pedido(0, clienteId, fecha, estado, total);
+                    List<DetallePedido> detalles = new ArrayList<>();
+
+                    while (true) {
+                        try {
+                            productoService.mostrarProductos();
+                        } catch (Exception ex) {
+                            System.out.println("Error al mostrar productos: " + ex.getMessage());
+                            break;
+                        }
+                        System.out.print("ID del producto (0 = terminar): ");
+                        int productoId = LectorDatos.pedirInt(scanner, "ID Producto");
+
+                        if (productoId == 0) {
+                            if (detalles.isEmpty()) {
+                                System.out.println("Debe agregar al menos un producto.");
+                                continue;
+                            }
+                            break;
+                        }
+
+                        System.out.print("Cantidad: ");
+                        int cantidad = LectorDatos.pedirInt(scanner, "Cantidad");
+
+                        try {
+                            productoService.validarStock(productoId, cantidad);
+                        } catch (Exception ex) {
+                            System.out.println("Error: " + ex.getMessage());
+                            continue;
+                        }
+
+                        detalles.add(new DetallePedido(0, productoId, cantidad));
+                        System.out.println("Producto agregado.");
+                    }
+
+                    Pedido pedido = new Pedido(0, clienteId, fecha, estado, 0);
                     try {
-                        pedidoService.registrarPedido(pedido);
-                        System.out.println("¡Pedido registrado exitosamente!");
+                        int pedidoId = pedidoService.registrarPedido(pedido, detalles);
+                        System.out.println("¡Pedido registrado exitosamente! ID: " + pedidoId);
                     } catch (Exception ex) {
                         System.out.println("Error: " + ex.getMessage());
                     }

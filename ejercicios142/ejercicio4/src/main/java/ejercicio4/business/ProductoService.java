@@ -72,4 +72,15 @@ public class ProductoService {
             System.out.println("No se encontró un producto con ese ID.");
         }
     }
+
+    public void validarStock(int productoId, int cantidad) throws SQLException {
+        Producto producto = buscarProductoPorId(productoId);
+        if (producto == null) {
+            throw new IllegalArgumentException("Producto ID " + productoId + " no existe.");
+        }
+        if (producto.getStock() < cantidad) {
+            throw new IllegalArgumentException(
+                "Stock insuficiente. Stock actual: " + producto.getStock() + ", solicitado: " + cantidad);
+        }
+    }
 }
