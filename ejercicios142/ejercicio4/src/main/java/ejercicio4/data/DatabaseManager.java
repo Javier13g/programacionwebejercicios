@@ -67,8 +67,8 @@ public class DatabaseManager {
 
     private void insertInitialDataIfEmpty() throws SQLException {
         if (!hasData("Cliente")) {
-            insertClient(new Cliente(0, "Juan Pérez", "555-1234", "Calle Principal #123"));
-            insertClient(new Cliente(0, "María López", "555-5678", "Avenida Central #456"));
+            insertClient(new Cliente(0, "Lebron James", "555-1234", "Calle Principal #123"));
+            insertClient(new Cliente(0, "Sammy Sosa", "555-5678", "Avenida Central #456"));
         }
 
         if (!hasData("Producto")) {
