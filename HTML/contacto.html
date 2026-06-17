@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Formulario de Contacto</title>
+</head>
+<body>
+
+    <header>
+        <h1>TechStore - Centro de Ayuda</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="productos.html">Productos</a></li>
+                <li><a href="carrito.html">Carrito</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+                <li><a href="acerca.html">Acerca de</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="contacto-avanzado">
+            <h2>Formulario Integral de Contacto y Validación de Usuario</h2>
+            
+            <form action="#" method="POST" enctype="multipart/form-data">
+                
+                <fieldset>
+                    <legend>Información de Identidad Obligatoria</legend>
+                    
+                    <p>
+                        <label for="id-nombre">Nombre de Usuario:</label>
+                        <input type="text" id="id-nombre" name="nombre" placeholder="Escriba su nombre completo" required autocomplete="name">
+                    </p>
+
+                    <p>
+                        <label for="id-correo">Dirección de Correo Electrónico:</label>
+                        <input type="email" id="id-correo" name="correo" placeholder="correo@ejemplo.com" required>
+                    </p>
+
+                    <p>
+                        <label for="id-clave">Contraseña de Seguridad de Cuenta:</label>
+                        <input type="password" id="id-clave" name="clave" placeholder="Digite una clave segura" required readonly value="ClavePredefinida2026">
+                    </p>
+
+                    <p>
+                        <label for="id-tel">Teléfono Celular o Residencial:</label>
+                        <input type="tel" id="id-tel" name="telefono" placeholder="809-555-5555" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+                    </p>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Datos Avanzados de Gestión Técnica</legend>
+
+                    <p>
+                        <label for="id-numero">Número de Orden de Compra o Referencia (1 a 100):</label>
+                        <input type="number" id="id-numero" name="orden_num" min="1" max="100" step="1">
+                    </p>
+
+                    <p>
+                        <label for="id-fecha">Fecha Preferida para Entrega Física:</label>
+                        <input type="date" id="id-fecha" name="fecha_entrega">
+                    </p>
+
+                    <p>
+                        <label for="id-fecha-hora">Horario de Llamada Telefónica de Soporte Técnico:</label>
+                        <input type="datetime-local" id="id-fecha-hora" name="fecha_hora_llamada">
+                    </p>
+
+                    <p>
+                        <label for="id-color">Seleccione Color de Interés para el Producto:</label>
+                        <input type="color" id="id-color" name="color_interes" value="#1e3a8a">
+                    </p>
+
+                    <p>
+                        <label for="id-rango">Nivel de Satisfacción General de Navegación:</label>
+                        <input type="range" id="id-rango" name="rango_satisfaccion" min="1" max="10">
+                    </p>
+
+                    <p>
+                        <label for="id-archivos">Adjuntar Foto del Producto Defectuoso (Soporta múltiples archivos):</label>
+                        <input type="file" id="id-archivos" name="capturas_error" multiple>
+                    </p>
+
+                    <p>
+                        <label for="id-url">Dirección de su Portafolio o Red Social Externa:</label>
+                        <input type="url" id="id-url" name="url_personal" placeholder="https://ejemplo.com">
+                    </p>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Opciones de Preferencia y Mensajería</legend>
+
+                    <p>
+                        <label><input type="checkbox" name="suscripcion" value="si" checked> Acepto recibir notificaciones periódicas por correo.</label>
+                    </p>
+
+                    <p>Seleccione Método de Pago Preferido:
+                        <label><input type="radio" name="pago" value="tarjeta" required disabled> Tarjeta de Crédito (No disponible)</label>
+                        <label><input type="radio" name="pago" value="efectivo"> Transferencia o Efectivo</label>
+                    </p>
+
+                    <p>
+                        <label for="id-motivo">Motivo Principal del Mensaje:</label>
+                        <select id="id-motivo" name="motivo">
+                            <option value="ventas">Consulta de Ventas</option>
+                            <option value="soporte">Soporte Técnico de Equipos</option>
+                        </select>
+                    </p>
+
+                    <p>
+                        <label for="id-texto">Escriba su mensaje detallado aquí:</label><br>
+                        <textarea id="id-texto" name="mensaje_area" rows="6" cols="60" placeholder="Escriba sus dudas..."></textarea>
+                    </p>
+                </fieldset>
+
+                <input type="hidden" name="id_sesion_oculto" value="SEC-998877">
+
+                <p>
+                    <input type="submit" value="Enviar Datos de Formulario">
+                    <input type="reset" value="Limpiar Todo el Formulario">
+                </p>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <address><p>Contacto: info@techstore.com</p></address>
+        <p><small>&copy; 2026 TechStore Online.</small></p>
+    </footer>
+
+</body>
+</html>

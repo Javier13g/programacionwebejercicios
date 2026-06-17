@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Catálogo de Productos</title>
+</head>
+<body>
+
+    <header>
+        <h1>TechStore - Catálogo</h1>
+        <nav aria-label="Menú principal">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="productos.html">Productos</a></li>
+                <li><a href="carrito.html">Carrito</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+                <li><a href="acerca.html">Acerca de</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <aside>
+            <h2>Filtrar Catálogo</h2>
+            <form action="#" method="GET">
+                <fieldset>
+                    <legend>Filtros Avanzados</legend>
+                    
+                    <p>
+                        <label for="filtro-precio">Precio Máximo:</label>
+                        <input type="range" id="filtro-precio" name="precio" min="1000" max="1000000" step="5000">
+                    </p>
+
+                    <p>
+                        <label for="filtro-marca">Escriba o elija una Marca:</label>
+                        <input list="marcas" id="filtro-marca" name="marca" placeholder="Buscar marca...">
+                        <datalist id="marcas">
+                            <option value="Samsung">
+                            <option value="Lenovo">
+                            <option value="Sony">
+                            <option value="Xiaomi">
+                            <option value="Apple">
+                        </datalist>
+                    </p>
+
+                    <p>
+                        <label for="filtro-categoria">Categoría:</label>
+                        <select id="filtro-categoria" name="categoria">
+                            <option value="">Todas las categorías</option>
+                            <option value="laptops">Laptops</option>
+                            <option value="smartphones">Smartphones</option>
+                            <option value="accesorios">Accesorios</option>
+                            <option value="gaming">Gaming</option>
+                        </select>
+                    </p>
+
+                    <p>
+                        <label for="filtro-color">Color base del equipo:</label>
+                        <input type="color" id="filtro-color" name="color" value="#ffffff">
+                    </p>
+
+                    <button type="submit">Aplicar Filtros</button>
+                </fieldset>
+            </form>
+        </aside>
+
+        <section id="lista-productos">
+            <h2>Todos los artículos disponibles</h2>
+            <article>
+                <h3>Smartphone Galaxy A54 5G</h3>
+                <img src="img/galaxy-a54.jpg" alt="Galaxy A54 5G">
+                <p>Precio: <strong>$409.900</strong></p>
+                <a href="producto.html"><button type="button">Ver Ficha Técnica</button></a>
+            </article>
+            </section>
+    </main>
+
+    <footer>
+        <address><p>Contacto: info@techstore.com</p></address>
+        <p><small>&copy; 2026 TechStore Online.</small></p>
+    </footer>
+
+</body>
+</html>
