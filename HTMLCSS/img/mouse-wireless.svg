@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 200">
+  <rect width="150" height="200" fill="#f5f5f5"/>
+  <path d="M30 80 Q30 30 75 30 L75 30 Q120 30 120 80 L120 150 Q120 180 75 180 Q30 180 30 150 Z" fill="#1a1a2e"/>
+  <ellipse cx="75" cy="70" rx="25" ry="25" fill="#2d2d2d"/>
+  <rect x="65" y="60" width="20" height="30" rx="3" fill="#333"/>
+  <rect x="40" y="100" width="70" height="8" rx="4" fill="#00d4ff"/>
+  <rect x="55" y="90" width="40" height="50" rx="5" fill="#1a1a2e" opacity="0.3"/>
+  <text x="75" y="195" font-family="Arial" font-size="10" fill="#333" text-anchor="middle">Mouse Inalámbrico</text>
+</svg>

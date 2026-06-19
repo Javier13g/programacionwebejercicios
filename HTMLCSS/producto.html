@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Vista de Detalle</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/animaciones.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+    <header>
+        <h1>TechStore - Detalle de Producto</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="productos.html">Productos</a></li>
+                <li><a href="carrito.html">Carrito</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+                <li><a href="acerca.html">Acerca de</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="detalle-multimedia">
+            <h2>Ficha Técnica Avanzada</h2>
+            
+            <figure>
+                <picture>
+                    <source media="(min-width: 1025px)" srcset="img/producto-desktop.jpg">
+                    <source media="(max-width: 768px)" srcset="img/producto-mobile.jpg">
+                    <img src="img/producto-default.jpg" alt="Vista tridimensional del producto estrella">
+                </picture>
+                <figcaption>Galería adaptativa oficial del producto.</figcaption>
+            </figure>
+
+            <article>
+                <h3>Video del producto en acción</h3>
+                <video controls width="480">
+                    <source src="video/review-producto.mp4" type="video/mp4">
+                    Tu navegador no soporta la reproducción de video nativo en HTML5.
+                </video>
+            </article>
+
+            <article>
+                <h3>Escuchar Spot Promocional Oficial</h3>
+                <audio controls>
+                    <source src="audio/spot-promocional.mp3" type="audio/mp3">
+                    Tu navegador no soporta la reproducción de audio nativo en HTML5.
+                </audio>
+            </article>
+        </section>
+
+        <section id="informacion-tecnica">
+            <h2>Especificaciones de Componentes</h2>
+            <table>
+                <caption>Tabla Comparativa de Rendimiento de Hardware</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Característica Técnica</th>
+                        <th scope="col">Valor Asignado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Memoria RAM Interna</td>
+                        <td>16 GB LPDDR5</td>
+                    </tr>
+                    <tr>
+                        <td>Unidad de Almacenamiento Sólido</td>
+                        <td>512 GB NVMe PCIe M.2</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2">Todos los componentes descritos cuentan con certificación internacional de fábrica.</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <address><p>Contacto: info@techstore.com</p></address>
+        <p><small>&copy; 2026 TechStore Online.</small></p>
+    </footer>
+
+</body>
+</html>
