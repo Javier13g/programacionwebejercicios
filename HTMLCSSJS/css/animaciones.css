@@ -1,0 +1,271 @@
+/* ========================================
+   TechStore Online - Animaciones
+   ======================================== */
+
+/* Transiciones suaves */
+a, button, .producto, .producto img, nav a {
+    transition: all 0.3s ease;
+}
+
+/* Hover lift para productos */
+.producto:hover {
+    transform: translateY(-8px);
+}
+
+/* Hover scale para imágenes de productos */
+.producto:hover img {
+    transform: scale(1.05);
+}
+
+.producto img {
+    transition: transform 0.4s ease;
+}
+
+/* Hover lift para categorías */
+#categorias-destacadas article:hover {
+    transform: translateY(-8px);
+}
+
+/* Efecto shimmer para botón principal */
+#banner button {
+    position: relative;
+    overflow: hidden;
+}
+
+#banner button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transition: left 0.5s ease;
+}
+
+#banner button:hover::before {
+    left: 100%;
+}
+
+/* Pulse para elementos disponibles */
+.producto mark:contains("Disponible") {
+    animation: pulse 2s infinite;
+}
+
+mark {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Fade in para secciones */
+section {
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Slide in para productos */
+.producto {
+    animation: slideIn 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.producto:nth-child(1) { animation-delay: 0.1s; }
+.producto:nth-child(2) { animation-delay: 0.2s; }
+.producto:nth-child(3) { animation-delay: 0.3s; }
+.producto:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hover glow para botones */
+.producto button:hover,
+form button:hover {
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+}
+
+/* Float animation para banner image */
+#banner img {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+/* Rotate hover para logo */
+.logo:hover img {
+    transform: rotate(10deg);
+}
+
+/* Bounce para elementos de categoría al hover */
+#categorias-destacadas article:hover h3 {
+    animation: bounce 0.5s ease;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Focus glow para inputs */
+form input:focus,
+form select:focus {
+    animation: focusGlow 0.5s ease;
+}
+
+@keyframes focusGlow {
+    from {
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+    }
+    to {
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+}
+
+/* Skeleton loading para imágenes */
+img {
+    background: linear-gradient(
+        90deg,
+        var(--gray-200) 0%,
+        var(--gray-100) 50%,
+        var(--gray-200) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Success animation para checkmarks */
+input[type="checkbox"]:checked {
+    animation: checkmark 0.3s ease;
+}
+
+@keyframes checkmark {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Ribbon effect para precios */
+.producto footer {
+    position: relative;
+}
+
+.producto strong {
+    position: relative;
+}
+
+.producto strong::before {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.producto:hover strong::before {
+    transform: scaleX(1);
+}
+
+/* Stagger animation para filas de tabla */
+#informacion-tecnica tbody tr,
+#lista-carrito tbody tr {
+    animation: fadeInRow 0.4s ease-out;
+    animation-fill-mode: both;
+}
+
+#informacion-tecnica tbody tr:nth-child(1) { animation-delay: 0.1s; }
+#informacion-tecnica tbody tr:nth-child(2) { animation-delay: 0.2s; }
+
+@keyframes fadeInRow {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Parallax sutil para banner */
+#banner {
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+/* Gradient shift para header */
+header {
+    background-size: 200% 200%;
+    animation: gradientShift 10s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}

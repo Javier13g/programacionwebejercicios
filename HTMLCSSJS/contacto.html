@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Formulario de Contacto</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/animaciones.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/dinamico.css">
+</head>
+<body>
+
+    <header>
+        <h1>TechStore - Centro de Ayuda</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="productos.html">Productos</a></li>
+                <li><a href="carrito.html">Carrito <span data-carrito-contador style="display:none">(0)</span></a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+                <li><a href="acerca.html">Acerca de</a></li>
+            </ul>
+        </nav>
+        <button id="btn-tema" type="button" class="btn-tema">[Oscuro]</button>
+    </header>
+
+    <main>
+        <section id="contacto-avanzado">
+            <h2>Formulario Integral de Contacto y Validacion de Usuario</h2>
+
+            <form id="form-contacto" action="#" method="POST" enctype="multipart/form-data" novalidate>
+
+                <fieldset>
+                    <legend>Informacion de Identidad Obligatoria</legend>
+
+                    <p>
+                        <label for="id-nombre">Nombre de Usuario:</label>
+                        <input type="text" id="id-nombre" name="nombre" placeholder="Escriba su nombre completo" required autocomplete="name">
+                    </p>
+
+                    <p>
+                        <label for="id-correo">Direccion de Correo Electronico:</label>
+                        <input type="email" id="id-correo" name="correo" placeholder="correo@ejemplo.com" required>
+                    </p>
+
+                    <p>
+                        <label for="id-clave">Contrasena de Seguridad de Cuenta:</label>
+                        <input type="password" id="id-clave" name="clave" placeholder="Digite una clave segura" required value="">
+                    </p>
+
+                    <p>
+                        <label for="id-tel">Telefono Celular o Residencial:</label>
+                        <input type="tel" id="id-tel" name="telefono" placeholder="809-555-5555">
+                    </p>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Datos Avanzados de Gestion Tecnica</legend>
+
+                    <p>
+                        <label for="id-numero">Numero de Orden de Compra o Referencia (1 a 100):</label>
+                        <input type="number" id="id-numero" name="orden_num" min="1" max="100" step="1">
+                    </p>
+
+                    <p>
+                        <label for="id-fecha">Fecha Preferida para Entrega Fisica:</label>
+                        <input type="date" id="id-fecha" name="fecha_entrega">
+                    </p>
+
+                    <p>
+                        <label for="id-fecha-hora">Horario de Llamada Telefonica de Soporte Tecnico:</label>
+                        <input type="datetime-local" id="id-fecha-hora" name="fecha_hora_llamada">
+                    </p>
+
+                    <p>
+                        <label for="id-color">Seleccione Color de Interes para el Producto:</label>
+                        <input type="color" id="id-color" name="color_interes" value="#1e3a8a">
+                    </p>
+
+                    <p>
+                        <label for="id-rango">Nivel de Satisfaccion General de Navegacion:</label>
+                        <input type="range" id="id-rango" name="rango_satisfaccion" min="1" max="10">
+                    </p>
+
+                    <p>
+                        <label for="id-archivos">Adjuntar Foto del Producto Defectuoso (Soporta multiples archivos):</label>
+                        <input type="file" id="id-archivos" name="capturas_error" multiple>
+                    </p>
+
+                    <p>
+                        <label for="id-url">Direccion de su Portafolio o Red Social Externa:</label>
+                        <input type="url" id="id-url" name="url_personal" placeholder="https://ejemplo.com">
+                    </p>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Opciones de Preferencia y Mensajeria</legend>
+
+                    <p>
+                        <label><input type="checkbox" name="suscripcion" value="si" checked> Acepto recibir notificaciones periodicas por correo.</label>
+                    </p>
+
+                    <p>Seleccione Metodo de Pago Preferido:
+                        <label><input type="radio" name="pago" value="tarjeta" disabled> Tarjeta de Credito (No disponible)</label>
+                        <label><input type="radio" name="pago" value="efectivo"> Transferencia o Efectivo</label>
+                    </p>
+
+                    <p>
+                        <label for="id-motivo">Motivo Principal del Mensaje:</label>
+                        <select id="id-motivo" name="motivo">
+                            <option value="ventas">Consulta de Ventas</option>
+                            <option value="soporte">Soporte Tecnico de Equipos</option>
+                        </select>
+                    </p>
+
+                    <p>
+                        <label for="id-texto">Escriba su mensaje detallado aqui:</label><br>
+                        <textarea id="id-texto" name="mensaje_area" rows="6" cols="60" placeholder="Escriba sus dudas..."></textarea>
+                    </p>
+                </fieldset>
+
+                <input type="hidden" name="id_sesion_oculto" value="SEC-998877">
+
+                <p>
+                    <input type="submit" value="Enviar Datos de Formulario">
+                    <input type="reset" value="Limpiar Todo el Formulario">
+                </p>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <address><p>Contacto: info@techstore.com</p></address>
+        <p><small>&copy; 2026 TechStore Online.</small></p>
+    </footer>
+
+    <script type="module" src="js/app.js"></script>
+    <script type="module">
+        import { validarFormularioContacto, validarCampo, mostrarEstadoCampo } from "./js/validaciones.js";
+        import { mostrarNotificacion, almacenamiento } from "./js/utilidades.js";
+
+        const form = document.getElementById("form-contacto");
+        const campos = {
+            nombre: form.querySelector("#id-nombre"),
+            correo: form.querySelector("#id-correo"),
+            clave: form.querySelector("#id-clave"),
+            telefono: form.querySelector("#id-tel"),
+            url: form.querySelector("#id-url"),
+            texto: form.querySelector("#id-texto"),
+        };
+
+        const validadores = {
+            "id-nombre": validarCampo.nombre,
+            "id-correo": validarCampo.email,
+            "id-clave": validarCampo.password,
+            "id-tel": validarCampo.telefono,
+            "id-url": validarCampo.url,
+            "id-texto": validarCampo.mensaje,
+        };
+
+        Object.values(campos).forEach(campo => {
+            if (!campo) return;
+            const v = validadores[campo.id];
+            if (!v) return;
+            campo.addEventListener("input", (e) => mostrarEstadoCampo(e.target, v(e.target.value)));
+            campo.addEventListener("blur", (e) => mostrarEstadoCampo(e.target, v(e.target.value)));
+        });
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            try {
+                const esValido = validarFormularioContacto(form);
+                if (!esValido) {
+                    mostrarNotificacion("Por favor corrija los errores antes de enviar.", "error");
+                    return;
+                }
+                const datos = {
+                    nombre: campos.nombre.value,
+                    correo: campos.correo.value,
+                    telefono: campos.telefono.value,
+                    motivo: form.querySelector("#id-motivo").value,
+                    mensaje: campos.texto.value,
+                    fecha: new Date().toISOString(),
+                };
+                almacenamiento.guardar("techstore_ultimo_contacto", datos);
+                mostrarNotificacion("Mensaje enviado con exito!", "success");
+                form.reset();
+            } catch (error) {
+                console.error("Error al enviar formulario:", error);
+                mostrarNotificacion("Ocurrio un error al procesar el formulario.", "error");
+            }
+        });
+    </script>
+</body>
+</html>

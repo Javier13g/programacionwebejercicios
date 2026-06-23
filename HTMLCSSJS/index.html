@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TechStore Online - Tu tienda favorita de tecnologia">
+    <title>TechStore Online - Inicio</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/animaciones.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/dinamico.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="img/logo.svg" alt="Logo oficial de TechStore Online">
+        </div>
+
+        <nav aria-label="Menu principal">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="productos.html">Productos</a></li>
+                <li><a href="carrito.html">Carrito <span data-carrito-contador style="display:none">(0)</span></a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+                <li><a href="acerca.html">Acerca de</a></li>
+            </ul>
+        </nav>
+
+        <button id="btn-tema" type="button" class="btn-tema">[Oscuro]</button>
+
+        <div id="reloj" class="reloj-digital" aria-label="Reloj digital"></div>
+
+        <form role="search" action="productos.html" method="GET">
+            <label for="buscar-input" aria-label="Buscar productos en la tienda">Buscar:</label>
+            <input type="search" id="buscar-input" name="q" placeholder="Buscar productos..." autocomplete="off">
+            <button type="submit">Buscar</button>
+        </form>
+    </header>
+
+    <main>
+        <section id="banner">
+            <p id="banner-msg" class="banner-msg"></p>
+            <article>
+                <div class="banner-text">
+                    <h1>Auriculares Inalambricos SoundPro X1</h1>
+                    <p>Sonido premium, cancelacion de ruido y hasta 30 horas de bateria.</p>
+                </div>
+                <figure>
+                    <img src="img/auriculares-banner.svg" alt="Auriculares Inalambricos SoundPro X1 en color negro mate">
+                    <figcaption>Modelo insignia SoundPro X1 2026</figcaption>
+                </figure>
+                <a href="producto.html?id=9"><button type="button">Comprar ahora</button></a>
+                <p id="oferta-timer" class="oferta-timer"></p>
+            </article>
+        </section>
+
+        <section id="categorias-destacadas">
+            <h2>Categorias destacadas</h2>
+            <nav aria-label="Categorias de productos">
+                <article data-cat="smartphones">
+                    <h3>Smartphones</h3>
+                    <p>Explora dispositivos moviles de ultima generacion.</p>
+                </article>
+                <article data-cat="laptops">
+                    <h3>Computadoras</h3>
+                    <p>Laptops y PCs de escritorio para productividad y gaming.</p>
+                </article>
+                <article data-cat="audio">
+                    <h3>Audio</h3>
+                    <p>Auriculares, bocinas y sistemas de sonido profesional.</p>
+                </article>
+                <article data-cat="accesorios">
+                    <h3>Accesorios</h3>
+                    <p>Complementos perfectos para tus dispositivos cotidianos.</p>
+                </article>
+                <article data-cat="gaming">
+                    <h3>Gaming</h3>
+                    <p>Consolas, controles y perifericos para entusiastas.</p>
+                </article>
+            </nav>
+        </section>
+
+        <section id="productos-destacados">
+            <h2>Productos destacados</h2>
+            <div id="lista-destacados" class="grid-productos"></div>
+        </section>
+
+        <dialog id="promo-modal" class="promo-modal">
+            <div class="promo-content">
+                <span class="promo-icon">!</span>
+                <h3>Bono Especial de Apertura!</h3>
+                <p>Disfruta de <strong>envios totalmente gratis</strong> en compras mayores a <strong>RD$ 50,000</strong>.</p>
+                <form method="dialog">
+                    <button type="submit" class="promo-btn">Genial, gracias!</button>
+                </form>
+            </div>
+        </dialog>
+    </main>
+
+    <footer>
+        <address>
+            <p>Contacto: info@techstore.com</p>
+            <p>Tel: 809-555-5555</p>
+        </address>
+        <p><small>&copy; 2026 TechStore Online.</small></p>
+    </footer>
+
+    <script type="module" src="js/app.js"></script>
+    <script type="module">
+        import { cargarProductosLocales, renderizarProductos } from "./js/productos.js";
+        import { iniciarOfertasTemporales } from "./js/app.js";
+
+        const cont = document.getElementById("lista-destacados");
+        cont.innerHTML = '<p style="text-align:center; padding:20px;">Cargando productos...</p>';
+
+        cargarProductosLocales().then(productos => {
+            console.log("Productos cargados:", productos.length);
+            if (productos.length === 0) {
+                cont.innerHTML = '<p style="text-align:center; padding:20px; color:red;">No se pudieron cargar los productos.</p>';
+                return;
+            }
+            renderizarProductos(productos.slice(0, 8), cont);
+        }).catch(error => {
+            console.error("Error:", error);
+            cont.innerHTML = '<p style="text-align:center; padding:20px; color:red;">Error: ' + error.message + '</p>';
+        });
+
+        setTimeout(() => {
+            const modal = document.getElementById("promo-modal");
+            if (modal && typeof modal.showModal === "function") {
+                try { modal.showModal(); } catch (e) { console.warn(e); }
+            }
+        }, 2000);
+
+        iniciarOfertasTemporales();
+    </script>
+</body>
+</html>

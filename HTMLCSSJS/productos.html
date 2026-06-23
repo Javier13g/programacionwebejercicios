@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Catalogo de Productos</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/animaciones.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/dinamico.css">
+</head>
+<body>
+
+    <header>
+        <h1>TechStore - Catalogo</h1>
+        <nav aria-label="Menu principal">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="productos.html">Productos</a></li>
+                <li><a href="carrito.html">Carrito <span data-carrito-contador style="display:none">(0)</span></a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+                <li><a href="acerca.html">Acerca de</a></li>
+            </ul>
+        </nav>
+        <button id="btn-tema" type="button" class="btn-tema">[Oscuro]</button>
+    </header>
+
+    <main>
+        <aside>
+            <h2>Filtrar Catalogo</h2>
+            <form id="form-filtros">
+                <fieldset>
+                    <legend>Filtros Avanzados</legend>
+
+                    <p>
+                        <label for="filtro-busqueda">Busqueda en tiempo real:</label>
+                        <input type="search" id="filtro-busqueda" placeholder="Escriba para buscar..." autocomplete="off">
+                    </p>
+
+                    <p>
+                        <label for="filtro-precio">Precio Maximo: <span id="filtro-precio-valor">RD$ 1,000,000</span></label>
+                        <input type="range" id="filtro-precio" name="precio" min="0" max="1000000" step="1000">
+                    </p>
+
+                    <p>
+                        <label for="filtro-marca">Escriba o elija una Marca:</label>
+                        <input list="marcas" id="filtro-marca" name="marca" placeholder="Buscar marca...">
+                        <datalist id="marcas">
+                            <option value="Samsung">
+                            <option value="Lenovo">
+                            <option value="Sony">
+                            <option value="Xiaomi">
+                            <option value="Apple">
+                            <option value="Microsoft">
+                            <option value="Logitech">
+                            <option value="Amazon">
+                            <option value="JBL">
+                        </datalist>
+                    </p>
+
+                    <p>
+                        <label for="filtro-categoria">Categoria:</label>
+                        <select id="filtro-categoria" name="categoria">
+                            <option value="">Todas las categorias</option>
+                            <option value="laptops">Laptops</option>
+                            <option value="smartphones">Smartphones</option>
+                            <option value="accesorios">Accesorios</option>
+                            <option value="gaming">Gaming</option>
+                            <option value="audio">Audio</option>
+                        </select>
+                    </p>
+
+                    <p>
+                        <label for="filtro-disponibilidad">
+                            <input type="checkbox" id="filtro-disponibilidad" name="disponibilidad">
+                            Solo productos disponibles
+                        </label>
+                    </p>
+
+                    <p>
+                        <label for="filtro-orden">Ordenar por:</label>
+                        <select id="filtro-orden">
+                            <option value="defecto">Por defecto</option>
+                            <option value="precio-asc">Precio: menor a mayor</option>
+                            <option value="precio-desc">Precio: mayor a menor</option>
+                            <option value="nombre">Nombre (A-Z)</option>
+                        </select>
+                    </p>
+
+                    <p>
+                        <button type="submit">Aplicar Filtros</button>
+                        <button type="reset" id="btn-limpiar">Limpiar</button>
+                    </p>
+                </fieldset>
+            </form>
+        </aside>
+
+        <section id="lista-productos">
+            <h2>Todos los articulos disponibles</h2>
+            <p id="contador-resultados"></p>
+            <div id="grid-productos" class="grid-productos"></div>
+        </section>
+    </main>
+
+    <footer>
+        <address><p>Contacto: info@techstore.com</p></address>
+        <p><small>&copy; 2026 TechStore Online.</small></p>
+    </footer>
+
+    <script type="module" src="js/app.js"></script>
+    <script type="module">
+        import { cargarProductosLocales, filtrarProductos, renderizarProductos } from "./js/productos.js";
+        import { leerParametroURL, debounce, formatearMoneda } from "./js/utilidades.js";
+
+        const cont = document.getElementById("grid-productos");
+        const contador = document.getElementById("contador-resultados");
+        const filtroBusqueda = document.getElementById("filtro-busqueda");
+        const filtroPrecio = document.getElementById("filtro-precio");
+        const filtroPrecioValor = document.getElementById("filtro-precio-valor");
+        const filtroMarca = document.getElementById("filtro-marca");
+        const filtroCategoria = document.getElementById("filtro-categoria");
+        const filtroDisponibilidad = document.getElementById("filtro-disponibilidad");
+        const filtroOrden = document.getElementById("filtro-orden");
+        const form = document.getElementById("form-filtros");
+        const btnLimpiar = document.getElementById("btn-limpiar");
+
+        let productos = [];
+
+        const aplicarFiltros = () => {
+            const criterios = {
+                texto: filtroBusqueda.value,
+                categoria: filtroCategoria.value,
+                precioMax: Number(filtroPrecio.value),
+                soloDisponibles: filtroDisponibilidad.checked,
+            };
+
+            let filtrados = filtrarProductos(productos, criterios);
+
+            const marca = filtroMarca.value.trim().toLowerCase();
+            if (marca) {
+                filtrados = filtrados.filter(p => p.marca.toLowerCase().includes(marca));
+            }
+
+            switch (filtroOrden.value) {
+                case "precio-asc":
+                    filtrados.sort((a, b) => a.precioConDescuento - b.precioConDescuento);
+                    break;
+                case "precio-desc":
+                    filtrados.sort((a, b) => b.precioConDescuento - a.precioConDescuento);
+                    break;
+                case "nombre":
+                    filtrados.sort((a, b) => a.nombre.localeCompare(b.nombre));
+                    break;
+            }
+
+            renderizarProductos(filtrados, cont);
+            contador.textContent = "Mostrando " + filtrados.length + " de " + productos.length + " productos.";
+        };
+
+        cargarProductosLocales().then(data => {
+            productos = data;
+            aplicarFiltros();
+        });
+
+        filtroBusqueda.addEventListener("input", debounce(aplicarFiltros, 200));
+        filtroPrecio.addEventListener("input", () => {
+            filtroPrecioValor.textContent = formatearMoneda(filtroPrecio.value);
+            aplicarFiltros();
+        });
+        filtroMarca.addEventListener("input", debounce(aplicarFiltros, 200));
+        filtroCategoria.addEventListener("change", aplicarFiltros);
+        filtroDisponibilidad.addEventListener("change", aplicarFiltros);
+        filtroOrden.addEventListener("change", aplicarFiltros);
+
+        form.addEventListener("submit", (e) => { e.preventDefault(); aplicarFiltros(); });
+        btnLimpiar.addEventListener("click", (e) => {
+            setTimeout(() => {
+                filtroPrecioValor.textContent = formatearMoneda(filtroPrecio.value);
+                aplicarFiltros();
+            }, 10);
+        });
+
+        const queryURL = leerParametroURL("q");
+        if (queryURL) {
+            filtroBusqueda.value = queryURL;
+            setTimeout(aplicarFiltros, 100);
+        }
+    </script>
+</body>
+</html>

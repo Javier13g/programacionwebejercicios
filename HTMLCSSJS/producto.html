@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Vista de Detalle</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/animaciones.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/dinamico.css">
+</head>
+<body>
+
+    <header>
+        <h1>TechStore - Detalle de Producto</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="productos.html">Productos</a></li>
+                <li><a href="carrito.html">Carrito <span data-carrito-contador style="display:none">(0)</span></a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+                <li><a href="acerca.html">Acerca de</a></li>
+            </ul>
+        </nav>
+        <button id="btn-tema" type="button" class="btn-tema">[Oscuro]</button>
+    </header>
+
+    <main>
+        <section id="detalle-producto">
+            <h2>Ficha Tecnica Avanzada</h2>
+            <div id="detalle-contenido"></div>
+        </section>
+
+        <section id="detalle-multimedia">
+            <figure>
+                <picture>
+                    <source media="(min-width: 1025px)" srcset="img/producto-desktop.jpg">
+                    <source media="(max-width: 768px)" srcset="img/producto-mobile.jpg">
+                    <img src="img/producto-default.jpg" alt="Vista tridimensional del producto estrella">
+                </picture>
+                <figcaption>Galeria adaptativa oficial del producto.</figcaption>
+            </figure>
+
+            <article>
+                <h3>Video del producto en accion</h3>
+                <video controls width="480">
+                    <source src="video/review-producto.mp4" type="video/mp4">
+                    Tu navegador no soporta la reproduccion de video nativo en HTML5.
+                </video>
+            </article>
+
+            <article>
+                <h3>Escuchar Spot Promocional Oficial</h3>
+                <audio controls>
+                    <source src="audio/spot-promocional.mp3" type="audio/mp3">
+                    Tu navegador no soporta la reproduccion de audio nativo en HTML5.
+                </audio>
+            </article>
+        </section>
+
+        <section id="informacion-tecnica">
+            <h2>Especificaciones de Componentes</h2>
+            <table>
+                <caption>Tabla Comparativa de Rendimiento de Hardware</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Caracteristica Tecnica</th>
+                        <th scope="col">Valor Asignado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Memoria RAM Interna</td><td>16 GB LPDDR5</td></tr>
+                    <tr><td>Unidad de Almacenamiento Solido</td><td>512 GB NVMe PCIe M.2</td></tr>
+                </tbody>
+                <tfoot>
+                    <tr><td colspan="2">Todos los componentes descritos cuentan con certificacion internacional de fabrica.</td></tr>
+                </tfoot>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <address><p>Contacto: info@techstore.com</p></address>
+        <p><small>&copy; 2026 TechStore Online.</small></p>
+    </footer>
+
+    <script type="module" src="js/app.js"></script>
+    <script type="module">
+        import { cargarProductosLocales } from "./js/productos.js";
+        import { obtenerCarrito } from "./js/carrito.js";
+        import { leerParametroURL, formatearMoneda } from "./js/utilidades.js";
+
+        const cont = document.getElementById("detalle-contenido");
+        const id = Number(leerParametroURL("id")) || 1;
+
+        cargarProductosLocales().then(productos => {
+            const producto = productos.find(p => p.id === id);
+            if (!producto) {
+                cont.innerHTML = "<p>Producto no encontrado.</p>";
+                return;
+            }
+
+            const precioHTML = producto.tieneOferta
+                ? '<p class="precio-anterior">' + formatearMoneda(producto.precio) + '</p>' +
+                  '<p class="precio"><strong>' + formatearMoneda(producto.precioConDescuento) + '</strong></p>' +
+                  '<p><mark>' + producto.oferta + '% OFF</mark></p>'
+                : '<p class="precio"><strong>' + formatearMoneda(producto.precio) + '</strong></p>';
+
+            cont.innerHTML =
+                '<article class="detalle-card">' +
+                    '<img src="' + producto.imagen + '" alt="' + producto.nombre + '">' +
+                    '<div>' +
+                        '<h3>' + producto.nombre + '</h3>' +
+                        '<p><strong>Marca:</strong> ' + producto.marca + '</p>' +
+                        '<p><strong>Categoria:</strong> ' + producto.categoria + '</p>' +
+                        '<p>' + producto.descripcion + '</p>' +
+                        precioHTML +
+                        '<p>Disponibilidad: <mark class="' + (producto.agotado ? 'agotado' : 'disponible') + '">' + producto.estado + '</mark></p>' +
+                        '<label for="cantidad-input">Cantidad:</label>' +
+                        '<input type="number" id="cantidad-input" value="1" min="1" max="' + (producto.stock || 99) + '">' +
+                        '<button id="btn-agregar" type="button" ' + (producto.agotado ? 'disabled' : '') + '>' +
+                            (producto.agotado ? 'Agotado' : 'Agregar al carrito') +
+                        '</button>' +
+                    '</div>' +
+                '</article>';
+
+            const btnAgregar = document.getElementById("btn-agregar");
+            const cantidadInput = document.getElementById("cantidad-input");
+
+            if (btnAgregar) {
+                btnAgregar.addEventListener("click", () => {
+                    const cantidad = Number(cantidadInput.value) || 1;
+                    obtenerCarrito().agregar(producto, cantidad);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

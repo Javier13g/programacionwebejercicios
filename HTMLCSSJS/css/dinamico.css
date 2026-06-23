@@ -1,0 +1,248 @@
+/* ============================================
+   css/dinamico.css
+   Estilos para funcionalidades JavaScript:
+   - Modo oscuro
+   - Notificaciones (toasts)
+   - Validación de formularios
+   - Dashboard
+   - Carrito dinámico
+   ============================================ */
+
+/* -----------------------------
+   MODO OSCURO (data-tema="oscuro")
+   ----------------------------- */
+[data-tema="oscuro"] {
+    --primary: #3b82f6;
+    --primary-dark: #60a5fa;
+    --secondary: #94a3b8;
+    --accent: #fbbf24;
+    --dark: #f8fafc;
+    --light: #0f172a;
+    --white: #1e293b;
+    --gray-100: #1e293b;
+    --gray-200: #334155;
+    --gray-300: #475569;
+    --gray-400: #64748b;
+    --gray-500: #94a3b8;
+    background-color: #0f172a;
+    color: #f8fafc;
+}
+
+[data-tema="oscuro"] body { background: #0f172a; color: #f8fafc; }
+[data-tema="oscuro"] header,
+[data-tema="oscuro"] footer { background: #1e293b; color: #f8fafc; }
+[data-tema="oscuro"] .producto,
+[data-tema="oscuro"] article,
+[data-tema="oscuro"] aside,
+[data-tema="oscuro"] section { background: #1e293b; color: #f8fafc; }
+[data-tema="oscuro"] input,
+[data-tema="oscuro"] select,
+[data-tema="oscuro"] textarea { background: #334155; color: #f8fafc; border-color: #475569; }
+[data-tema="oscuro"] table { background: #1e293b; color: #f8fafc; }
+[data-tema="oscuro"] th, [data-tema="oscuro"] td { border-color: #475569; }
+[data-tema="oscuro"] .stat-card { background: #334155; color: #f8fafc; }
+
+/* Botón modo oscuro */
+.btn-tema {
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    padding: 8px 14px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+.btn-tema:hover { background: var(--primary-dark); }
+
+/* -----------------------------
+   RELOJ DIGITAL
+   ----------------------------- */
+.reloj-digital {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    background: var(--dark);
+    color: var(--accent);
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    text-align: center;
+    letter-spacing: 1.5px;
+    display: inline-block;
+    margin: 6px 0;
+}
+
+/* -----------------------------
+   BANNER ROTATIVO Y OFERTAS
+   ----------------------------- */
+.banner-msg {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    padding: 10px;
+    border-radius: var(--radius);
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    animation: fadeIn 0.5s ease;
+}
+.oferta-timer {
+    background: var(--danger);
+    color: white;
+    padding: 8px;
+    border-radius: var(--radius);
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* -----------------------------
+   GRID DE PRODUCTOS
+   ----------------------------- */
+.grid-productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 15px 0;
+}
+.producto {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 15px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+.producto:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.producto img { max-width: 100%; height: 160px; object-fit: contain; }
+.producto footer { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.producto .precio { font-size: 1.2rem; color: var(--primary); }
+.producto .precio-anterior { text-decoration: line-through; color: var(--gray-500); font-size: 0.9rem; }
+.producto .oferta-tag { color: var(--danger); font-weight: bold; }
+.producto button { background: var(--primary); color: white; border: none; padding: 8px 12px; border-radius: var(--radius); cursor: pointer; }
+.producto button:hover:not(:disabled) { background: var(--primary-dark); }
+.producto button:disabled { background: var(--gray-400); cursor: not-allowed; }
+
+/* -----------------------------
+   NOTIFICACIONES (TOASTS)
+   ----------------------------- */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 320px;
+}
+.toast {
+    background: var(--dark);
+    color: var(--white);
+    padding: 12px 18px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    animation: slideIn 0.3s ease;
+    border-left: 4px solid var(--primary);
+}
+.toast-success { border-left-color: var(--success); background: #064e3b; }
+.toast-error { border-left-color: var(--danger); background: #7f1d1d; }
+.toast-info { border-left-color: var(--primary); background: #1e3a8a; }
+.toast-salir { animation: slideOut 0.3s ease forwards; }
+@keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* -----------------------------
+   VALIDACIÓN DE FORMULARIOS
+   ----------------------------- */
+input.valido, textarea.valido, select.valido {
+    border: 2px solid var(--success) !important;
+    background: rgba(16, 185, 129, 0.05);
+}
+input.invalido, textarea.invalido, select.invalido {
+    border: 2px solid var(--danger) !important;
+    background: rgba(239, 68, 68, 0.05);
+}
+.mensaje-validacion {
+    display: block;
+    font-size: 0.85rem;
+    margin-top: 4px;
+    font-weight: 500;
+}
+.mensaje-validacion.valido { color: var(--success); }
+.mensaje-validacion.invalido { color: var(--danger); }
+
+/* -----------------------------
+   DASHBOARD
+   ----------------------------- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+.stat-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--primary);
+}
+.stat-card h3 {
+    font-size: 2rem;
+    margin: 0;
+    color: var(--primary);
+}
+.stat-card p { margin: 5px 0 0; color: var(--secondary); }
+.stat-card.stat-destacado { border-left-color: var(--accent); }
+.stat-card.stat-destacado h3 { color: var(--accent); font-size: 1.5rem; }
+
+/* -----------------------------
+   CARRITO
+   ----------------------------- */
+.tabla-carrito {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+.tabla-carrito th, .tabla-carrito td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid var(--gray-200);
+}
+.tabla-carrito tfoot td { font-weight: bold; }
+.tabla-carrito .total-row { background: var(--gray-100); color: var(--primary); }
+.carrito-img { width: 60px; height: 60px; object-fit: contain; }
+.input-cantidad { width: 60px; padding: 4px; text-align: center; }
+.btn-eliminar { background: var(--danger); color: white; border: none; padding: 6px 10px; border-radius: var(--radius); cursor: pointer; }
+.btn-agregar { background: var(--success); color: white; border: none; padding: 8px 12px; border-radius: var(--radius); cursor: pointer; margin-top: 6px; }
+.btn-agregar:hover:not(:disabled) { background: #059669; }
+.carrito-acciones { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; }
+.carrito-acciones button { padding: 10px 20px; border: none; border-radius: var(--radius); cursor: pointer; font-weight: bold; }
+#btn-vaciar { background: var(--danger); color: white; }
+#btn-finalizar { background: var(--success); color: white; }
+.carrito-vacio { text-align: center; padding: 40px; }
+.sin-resultados { text-align: center; padding: 30px; color: var(--secondary); font-style: italic; }
+
+/* -----------------------------
+   DETALLE PRODUCTO
+   ----------------------------- */
+.detalle-card {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+    background: var(--white);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+}
+.detalle-card img { width: 100%; object-fit: contain; }
+@media (max-width: 768px) {
+    .detalle-card { grid-template-columns: 1fr; }
+}
+
+/* -----------------------------
+   MARKS / TAGS
+   ----------------------------- */
+mark.disponible { background: #d1fae5; color: var(--success); padding: 2px 8px; border-radius: 4px; }
+mark.agotado { background: #fee2e2; color: var(--danger); padding: 2px 8px; border-radius: 4px; }
