@@ -1,0 +1,88 @@
+/* Estilos globales de GameStore Angular
+ * Los CSS detallados se cargan desde angular.json (public/css/*.css) */
+
+/* Tipografías base (cargadas desde index.html) */
+:root {
+  --font-display: 'Orbitron', system-ui, sans-serif;
+  --font-body: 'Rajdhani', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* Reset mínimo para Angular */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* El router-outlet no debe romper el layout */
+router-outlet {
+  display: contents;
+}
+
+/* Pantalla de carga inicial (FOUC mitigation) */
+.app-loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  background: radial-gradient(ellipse at center, #1a0633 0%, #0a0118 70%);
+  color: #fff;
+  z-index: 9999;
+  font-family: var(--font-body);
+}
+
+.app-loading__logo {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #00f0ff 0%, #b026ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.5));
+  animation: app-logo-pulse 1.6s ease-in-out infinite;
+}
+
+.app-loading__logo span { color: #ff007a; -webkit-text-fill-color: #ff007a; }
+
+.app-loading__bar {
+  width: min(280px, 60vw);
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.app-loading__bar span {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #00f0ff, #b026ff);
+  box-shadow: 0 0 12px #00f0ff;
+  animation: app-bar-slide 1.2s ease-in-out infinite;
+}
+
+.app-loading__text {
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes app-logo-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.98); }
+}
+
+@keyframes app-bar-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}

@@ -1,0 +1,109 @@
+<main>
+  <!-- Banner principal -->
+  <section id="banner">
+    <p id="banner-msg" class="banner-msg">
+      <span class="terminal-cursor">{{ bannerMsg() }}</span>
+    </p>
+    @if (juegoBanner(); as top) {
+      <article
+        [ngClass]="{
+          'banner-articulo': true,
+          'banner-articulo--oferta': top.tieneOferta,
+          'banner-articulo--agotado': top.agotado
+        }"
+      >
+        <div class="banner-text">
+          <span class="banner-eyebrow">▶ Destacado de la semana</span>
+          <h1>{{ top.nombre | uppercase }}</h1>
+          <p>{{ top.descripcion }}</p>
+          <div class="banner-meta">
+            <span class="banner-chip">★ {{ top.rating }}/5</span>
+            <span class="banner-chip">{{ top.categoria }}</span>
+            @if (top.metacritic) {
+              <span class="banner-chip banner-chip--accent">MC {{ top.metacritic }}</span>
+            }
+          </div>
+          <p class="banner-precio">
+            @if (top.tieneOferta) {
+              <span class="precio-anterior">
+                {{ top.precio | currency: 'DOP':'symbol-narrow':'1.0-0':'es' }}
+              </span>
+              <strong class="precio-oferta">
+                {{ top.precioConDescuento | currency: 'DOP' }}
+              </strong>
+            } @else {
+              <strong>{{ top.precioConDescuento | currency: 'DOP' }}</strong>
+            }
+          </p>
+        </div>
+        <figure>
+          <img
+            [src]="top.imagen"
+            [alt]="top.nombre"
+            [ngStyle]="{
+              'border-radius': '12px',
+              'box-shadow': '0 8px 30px rgba(0, 240, 255, 0.25)'
+            }"
+          />
+          <figcaption>Rating {{ top.rating }}/5 · {{ top.categoria }}</figcaption>
+        </figure>
+        <a [routerLink]="['/juego', top.id]">
+          <button type="button">Comprar ahora</button>
+        </a>
+        <p id="oferta-timer" class="oferta-timer">{{ ofertaTexto() }}</p>
+      </article>
+    }
+  </section>
+
+  <!-- Categorías destacadas con CategoryMenu -->
+  <section id="categorias-destacadas">
+    <h2>Géneros destacados</h2>
+    <app-category-menu
+      modo="pills"
+      [categorias]="categorias"
+      (seleccionar)="$any($event)"
+    />
+  </section>
+
+  <!-- Juegos destacados -->
+  <section id="productos-destacados">
+    <h2>Top juegos mejor valorados</h2>
+
+    <!-- ngSwitch: muestra uno de tres estados -->
+    <ng-container [ngSwitch]="estadoCarga()">
+      <div *ngSwitchCase="'cargando'" class="loading-state">
+        <div class="loading-spinner" aria-hidden="true"></div>
+        <p>Cargando juegos...</p>
+      </div>
+
+      <p *ngSwitchCase="'error'" class="error-state">
+        No se pudieron cargar los juegos: {{ error() }}
+      </p>
+
+      <div *ngSwitchDefault id="lista-destacados" class="grid-juegos">
+        @for (j of destacados(); track j.id) {
+          <app-juego-card [juego]="j" (agregado)="alAgregar($event)" />
+        } @empty {
+          <p>No hay juegos destacados para mostrar.</p>
+        }
+      </div>
+    </ng-container>
+  </section>
+
+  <!-- Modal promocional -->
+  @if (modalAbierto()) {
+    <dialog open class="promo-modal">
+      <div class="promo-content">
+        <span class="promo-icon" aria-hidden="true">⚡</span>
+        <h3>Bono de Bienvenida GameStore!</h3>
+        <p>
+          Disfruta de <strong>envíos totalmente gratis</strong> en compras mayores a
+          <strong>RD$ 25,000</strong>.
+        </p>
+        <button type="button" class="promo-btn" (click)="cerrarModal()">
+          ¡Genial, gracias!
+        </button>
+      </div>
+    </dialog>
+  }
+</main>

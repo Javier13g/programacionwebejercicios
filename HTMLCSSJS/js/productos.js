@@ -1,13 +1,5 @@
-// ============================================
-// js/productos.js
-// Clase Producto, Cliente y renderizado de catálogo
-// ============================================
-
 import { $, $$, crearElemento, formatearMoneda, capitalizar } from "./utilidades.js";
 
-// --------------------------------------------
-// Clase Producto (POO con encapsulación básica)
-// --------------------------------------------
 export class Producto {
   #id;
   #nombre;
@@ -19,6 +11,7 @@ export class Producto {
   #imagen;
   #descripcion;
   #disponible;
+  #especificaciones;
 
   constructor({
     id,
@@ -31,6 +24,7 @@ export class Producto {
     imagen = "img/producto-default.jpg",
     descripcion = "",
     disponible = true,
+    especificaciones = [],
   }) {
     this.#id = id;
     this.#nombre = nombre;
@@ -42,6 +36,7 @@ export class Producto {
     this.#imagen = imagen;
     this.#descripcion = descripcion;
     this.#disponible = disponible;
+    this.#especificaciones = Array.isArray(especificaciones) ? especificaciones : [];
   }
 
   get id() { return this.#id; }
@@ -55,6 +50,7 @@ export class Producto {
   get imagen() { return this.#imagen; }
   get descripcion() { return this.#descripcion; }
   get disponible() { return this.#disponible; }
+  get especificaciones() { return this.#especificaciones; }
 
   get precioConDescuento() {
     if (this.#oferta <= 0) return this.#precio;
@@ -77,6 +73,7 @@ export class Producto {
       imagen: this.#imagen,
       descripcion: this.#descripcion,
       disponible: this.#disponible,
+      especificaciones: this.#especificaciones,
     };
   }
 

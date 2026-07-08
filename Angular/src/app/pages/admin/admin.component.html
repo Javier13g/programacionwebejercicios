@@ -1,0 +1,182 @@
+<main class="admin">
+  <header class="admin__header">
+    <div>
+      <h1>Panel administrativo</h1>
+      <p>
+        Bienvenido, <strong>{{ auth.usuario()?.nombre }}</strong>
+        ({{ auth.usuario()?.rol | titlecase }}).
+      </p>
+    </div>
+  </header>
+
+  <section class="admin__grid">
+    <!-- FORMULARIO -->
+    <article class="admin__form-card">
+      <h2>
+        @if (editando(); as e) {
+          Editar: {{ e.nombre }}
+        } @else {
+          Agregar nuevo producto
+        }
+      </h2>
+
+      <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+        <p class="campo">
+          <label for="ad-nombre">Nombre *</label>
+          <input
+            id="ad-nombre"
+            type="text"
+            formControlName="nombre"
+            [class.input-error]="tieneError('nombre', 'required') || tieneError('nombre', 'minlength')"
+          />
+          @if (tieneError('nombre', 'required')) {
+            <small class="error-text">Obligatorio.</small>
+          } @else if (tieneError('nombre', 'minlength')) {
+            <small class="error-text">Mínimo 3 caracteres.</small>
+          }
+        </p>
+
+        <p class="campo">
+          <label for="ad-categoria">Categoría *</label>
+          <select
+            id="ad-categoria"
+            formControlName="categoria"
+            [class.input-error]="tieneError('categoria', 'required')"
+          >
+            <option value="">Selecciona...</option>
+            @for (cat of categoriasDisponibles; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+          @if (tieneError('categoria', 'required')) {
+            <small class="error-text">Obligatoria.</small>
+          }
+        </p>
+
+        <div class="campo-doble">
+          <p class="campo">
+            <label for="ad-precio">Precio (RD$) *</label>
+            <input
+              id="ad-precio"
+              type="number"
+              formControlName="precio"
+              min="0"
+              step="0.01"
+              [class.input-error]="tieneError('precio', 'required') || tieneError('precio', 'min')"
+            />
+            @if (tieneError('precio', 'required')) {
+              <small class="error-text">Obligatorio.</small>
+            } @else if (tieneError('precio', 'min')) {
+              <small class="error-text">Debe ser mayor a 0.</small>
+            }
+          </p>
+          <p class="campo">
+            <label for="ad-precio-anterior">Precio anterior</label>
+            <input id="ad-precio-anterior" type="number" formControlName="precioAnterior" min="0" step="0.01" />
+            <small class="hint">Opcional. Si es mayor al precio actual, se mostrará como oferta.</small>
+          </p>
+        </div>
+
+        <p class="campo">
+          <label for="ad-stock">Stock *</label>
+          <input
+            id="ad-stock"
+            type="number"
+            formControlName="stock"
+            min="0"
+            [class.input-error]="tieneError('stock', 'required') || tieneError('stock', 'min')"
+          />
+          @if (tieneError('stock', 'required')) {
+            <small class="error-text">Obligatorio.</small>
+          } @else if (tieneError('stock', 'min')) {
+            <small class="error-text">No puede ser negativo.</small>
+          }
+        </p>
+
+        <p class="campo">
+          <label for="ad-imagen">URL de imagen *</label>
+          <input
+            id="ad-imagen"
+            type="url"
+            formControlName="imagen"
+            placeholder="https://..."
+            [class.input-error]="tieneError('imagen', 'required') || tieneError('imagen', 'pattern')"
+          />
+          @if (tieneError('imagen', 'required')) {
+            <small class="error-text">Obligatoria.</small>
+          } @else if (tieneError('imagen', 'pattern')) {
+            <small class="error-text">Debe ser una URL http(s) válida.</small>
+          }
+        </p>
+
+        <p class="campo">
+          <label for="ad-descripcion">Descripción *</label>
+          <textarea
+            id="ad-descripcion"
+            rows="3"
+            formControlName="descripcion"
+            [class.input-error]="tieneError('descripcion', 'required') || tieneError('descripcion', 'minlength')"
+          ></textarea>
+          @if (tieneError('descripcion', 'required')) {
+            <small class="error-text">Obligatoria.</small>
+          } @else if (tieneError('descripcion', 'minlength')) {
+            <small class="error-text">Mínimo 10 caracteres.</small>
+          }
+        </p>
+
+        <div class="admin__form-acciones">
+          <button type="submit" class="btn-primary" [disabled]="form.invalid || cargando()">
+            @if (editando()) {
+              Actualizar producto
+            } @else {
+              Crear producto
+            }
+          </button>
+          @if (editando()) {
+            <button type="button" class="btn-secondary" (click)="cancelarEdicion()">
+              Cancelar
+            </button>
+          } @else {
+            <button type="button" class="btn-secondary" (click)="nuevo()">
+              Limpiar
+            </button>
+          }
+        </div>
+      </form>
+    </article>
+
+    <!-- LISTA DE PRODUCTOS -->
+    <article class="admin__lista-card">
+      <h2>Inventario ({{ productos().length }} productos)</h2>
+
+      @if (cargando() && productos().length === 0) {
+        <p>Cargando inventario...</p>
+      } @else if (productos().length === 0) {
+        <p>No hay productos. Crea el primero con el formulario.</p>
+      } @else {
+        <ul class="admin__lista">
+          @for (p of productos(); track p.id) {
+            <li class="admin__item">
+              <img [src]="p.imagen" [alt]="p.nombre" />
+              <div class="admin__item-info">
+                <p class="admin__item-nombre">{{ p.nombre }}</p>
+                <p class="admin__item-meta">
+                  <span class="badge">{{ p.categoria }}</span>
+                  <span>Stock: <strong [class.stock-bajo]="p.stock < 5">{{ p.stock }}</strong></span>
+                  <span>{{ p.precio | currency: 'DOP' }}</span>
+                </p>
+                <p class="admin__item-fecha">
+                  <small>Creado: {{ p.creadoEn | date: 'shortDate' }}</small>
+                </p>
+              </div>
+              <div class="admin__item-acciones">
+                <button type="button" class="btn-edit" (click)="editar(p)">Editar</button>
+                <button type="button" class="btn-delete" (click)="eliminar(p)">Eliminar</button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </article>
+  </section>
+</main>

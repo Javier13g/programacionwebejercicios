@@ -9,7 +9,16 @@
     "disponible": true,
     "oferta": 0,
     "imagen": "img/galaxy-a54.svg",
-    "descripcion": "Pantalla Super AMOLED y conectividad móvil de alta velocidad."
+    "descripcion": "Pantalla Super AMOLED y conectividad móvil de alta velocidad.",
+    "especificaciones": [
+      { "caracteristica": "Pantalla", "valor": "6.4\" Super AMOLED 120Hz" },
+      { "caracteristica": "Procesador", "valor": "Exynos 1380 Octa-core" },
+      { "caracteristica": "Memoria RAM", "valor": "8 GB" },
+      { "caracteristica": "Almacenamiento", "valor": "256 GB expandible" },
+      { "caracteristica": "Camara principal", "valor": "50 MP + 12 MP + 5 MP" },
+      { "caracteristica": "Bateria", "valor": "5000 mAh con carga rapida 25W" },
+      { "caracteristica": "Sistema operativo", "valor": "Android 14 con One UI 6" }
+    ]
   },
   {
     "id": 2,
@@ -21,7 +30,16 @@
     "disponible": true,
     "oferta": 0,
     "imagen": "img/lenovo-ideapad.svg",
-    "descripcion": "Procesador eficiente, ideal para estudios y trabajo remoto."
+    "descripcion": "Procesador eficiente, ideal para estudios y trabajo remoto.",
+    "especificaciones": [
+      { "caracteristica": "Pantalla", "valor": "15.6\" Full HD TN 250 nits" },
+      { "caracteristica": "Procesador", "valor": "AMD Ryzen 5 5500U" },
+      { "caracteristica": "Memoria RAM", "valor": "12 GB DDR4" },
+      { "caracteristica": "Almacenamiento", "valor": "512 GB SSD NVMe" },
+      { "caracteristica": "Tarjeta grafica", "valor": "AMD Radeon integrada" },
+      { "caracteristica": "Bateria", "valor": "45Wh hasta 8 horas" },
+      { "caracteristica": "Sistema operativo", "valor": "Windows 11 Home" }
+    ]
   },
   {
     "id": 3,
@@ -33,7 +51,16 @@
     "disponible": true,
     "oferta": 20,
     "imagen": "img/sony-ch720n.svg",
-    "descripcion": "Cancelación de ruido activa y almohadillas sumamente cómodas."
+    "descripcion": "Cancelación de ruido activa y almohadillas sumamente cómodas.",
+    "especificaciones": [
+      { "caracteristica": "Tipo", "valor": "Over-ear inalambricos" },
+      { "caracteristica": "Cancelacion de ruido", "valor": "ANC activa con modo ambiente" },
+      { "caracteristica": "Drivers", "valor": "30 mm dinamicos" },
+      { "caracteristica": "Conectividad", "valor": "Bluetooth 5.2 multipunto" },
+      { "caracteristica": "Codecs", "valor": "SBC, AAC, LDAC" },
+      { "caracteristica": "Bateria", "valor": "Hasta 35 horas (ANC off)" },
+      { "caracteristica": "Peso", "valor": "192 g" }
+    ]
   },
   {
     "id": 4,
@@ -45,7 +72,16 @@
     "disponible": true,
     "oferta": 0,
     "imagen": "img/xiaomi-watch2.svg",
-    "descripcion": "Monitoreo avanzado de salud, ritmo cardíaco y sueño profundo."
+    "descripcion": "Monitoreo avanzado de salud, ritmo cardíaco y sueño profundo.",
+    "especificaciones": [
+      { "caracteristica": "Pantalla", "valor": "1.43\" AMOLED 466x466" },
+      { "caracteristica": "Sensores", "valor": "Frecuencia cardiaca, SpO2, estres" },
+      { "caracteristica": "GPS", "valor": "Multisistema GNSS" },
+      { "caracteristica": "Resistencia", "valor": "5 ATM + IP68" },
+      { "caracteristica": "Conectividad", "valor": "Bluetooth 5.3, Wi-Fi" },
+      { "caracteristica": "Bateria", "valor": "495 mAh hasta 16 dias" },
+      { "caracteristica": "Compatibilidad", "valor": "Android 8.0+ / iOS 12+" }
+    ]
   },
   {
     "id": 5,
@@ -57,7 +93,16 @@
     "disponible": false,
     "oferta": 0,
     "imagen": "img/control-xbox.svg",
-    "descripcion": "Diseño ergonómico texturizado y compatibilidad multiplataforma."
+    "descripcion": "Diseño ergonómico texturizado y compatibilidad multiplataforma.",
+    "especificaciones": [
+      { "caracteristica": "Compatibilidad", "valor": "Xbox Series X|S, One, PC, movil" },
+      { "caracteristica": "Conectividad", "valor": "Bluetooth + Wireless Xbox" },
+      { "caracteristica": "Puertos", "valor": "USB-C, jack 3.5 mm" },
+      { "caracteristica": "Bateria", "valor": "AA x2 hasta 40 horas" },
+      { "caracteristica": "Vibracion", "valor": "Impulsos de gatillo" },
+      { "caracteristica": "Textura", "valor": "Grip antideslizante en trasera" },
+      { "caracteristica": "Botones", "valor": "Share, menu, vista" }
+    ]
   },
   {
     "id": 6,
@@ -69,10 +114,28 @@
     "disponible": true,
     "oferta": 0,
     "imagen": "img/echo-dot5.svg",
-    "descripcion": "Bocina inteligente equipada con el asistente de voz Alexa."
+    "descripcion": "Bocina inteligente equipada con el asistente de voz Alexa.",
+    "especificaciones": [
+      { "caracteristica": "Asistente", "valor": "Amazon Alexa" },
+      { "caracteristica": "Parlante", "valor": "1.73\" frontal de 1.95\"" },
+      { "caracteristica": "Conectividad", "valor": "Wi-Fi ac, Bluetooth, Matter" },
+      { "caracteristica": "Microfonos", "valor": "Array de largo alcance" },
+      { "caracteristica": "Puertos", "valor": "Jack 3.5 mm, alimentacion" },
+      { "caracteristica": "Procesador", "valor": "AZ2 Neural Edge" },
+      { "caracteristica": "Compatibilidad", "valor": "iOS, Android, Fire OS" }
+    ]
   },
   {
     "id": 7,
+    "especificaciones": [
+      { "caracteristica": "Tipo", "valor": "Mecanico tenkeyless" },
+      { "caracteristica": "Switches", "valor": "Outemu Red lineales 50M pulsaciones" },
+      { "caracteristica": "Iluminacion", "valor": "RGB por tecla 16.8M colores" },
+      { "caracteristica": "Anti-ghosting", "valor": "N-key rollover completo" },
+      { "caracteristica": "Conexion", "valor": "USB-A cable mallado" },
+      { "caracteristica": "Construccion", "valor": "Aluminio cepillado" },
+      { "caracteristica": "Compatibilidad", "valor": "Windows, macOS, Linux" }
+    ],
     "nombre": "Teclado Mecánico RGB",
     "marca": "Logitech",
     "categoria": "accesorios",
@@ -85,6 +148,15 @@
   },
   {
     "id": 8,
+    "especificaciones": [
+      { "caracteristica": "Sensor", "valor": "Optico 1600 DPI" },
+      { "caracteristica": "Forma", "valor": "Ergonomica vertical 57 grados" },
+      { "caracteristica": "Botones", "valor": "6 programables" },
+      { "caracteristica": "Conectividad", "valor": "USB 2.4 GHz inalambrico" },
+      { "caracteristica": "Alcance", "valor": "Hasta 10 metros" },
+      { "caracteristica": "Bateria", "valor": "1 AA hasta 18 meses" },
+      { "caracteristica": "Compatibilidad", "valor": "Windows, macOS, ChromeOS" }
+    ],
     "nombre": "Mouse Ergonómico Inalámbrico",
     "marca": "Logitech",
     "categoria": "accesorios",
@@ -97,6 +169,15 @@
   },
   {
     "id": 9,
+    "especificaciones": [
+      { "caracteristica": "Tipo", "valor": "Over-ear circumaural cerrado" },
+      { "caracteristica": "Drivers", "valor": "40 mm neodimio" },
+      { "caracteristica": "Cancelacion de ruido", "valor": "Hibrida adaptativa premium" },
+      { "caracteristica": "Conectividad", "valor": "Bluetooth 5.3 multipunto + jack 3.5" },
+      { "caracteristica": "Codecs", "valor": "LDAC, AAC, aptX HD" },
+      { "caracteristica": "Bateria", "valor": "Hasta 30 h (ANC on)" },
+      { "caracteristica": "Carga rapida", "valor": "10 min = 5 horas" }
+    ],
     "nombre": "Auriculares Inalámbricos SoundPro X1",
     "marca": "Sony",
     "categoria": "audio",
@@ -109,6 +190,15 @@
   },
   {
     "id": 10,
+    "especificaciones": [
+      { "caracteristica": "Pantalla", "valor": "13.6\" Liquid Retina 2560x1664" },
+      { "caracteristica": "Procesador", "valor": "Apple M2 8 nucleos" },
+      { "caracteristica": "Memoria unificada", "valor": "8 GB" },
+      { "caracteristica": "Almacenamiento", "valor": "256 GB SSD" },
+      { "caracteristica": "GPU", "valor": "8 nucleos integrada" },
+      { "caracteristica": "Bateria", "valor": "Hasta 18 horas de video" },
+      { "caracteristica": "Peso", "valor": "1.24 kg" }
+    ],
     "nombre": "MacBook Air M2",
     "marca": "Apple",
     "categoria": "laptops",
@@ -121,6 +211,15 @@
   },
   {
     "id": 11,
+    "especificaciones": [
+      { "caracteristica": "Pantalla", "valor": "6.1\" Super Retina XDR ProMotion" },
+      { "caracteristica": "Procesador", "valor": "Apple A17 Pro 3nm" },
+      { "caracteristica": "Memoria RAM", "valor": "8 GB" },
+      { "caracteristica": "Almacenamiento", "valor": "128 GB" },
+      { "caracteristica": "Camara", "valor": "48 MP + 12 MP + 12 MP zoom 5x" },
+      { "caracteristica": "Bateria", "valor": "3274 mAh carga 20W" },
+      { "caracteristica": "Material", "valor": "Titanio grado 5" }
+    ],
     "nombre": "iPhone 15 Pro",
     "marca": "Apple",
     "categoria": "smartphones",
@@ -141,7 +240,16 @@
     "disponible": true,
     "oferta": 0,
     "imagen": "img/producto-default.jpg",
-    "descripcion": "Consola de nueva generación con SSD ultra rápido y soporte 4K."
+    "descripcion": "Consola de nueva generación con SSD ultra rápido y soporte 4K.",
+    "especificaciones": [
+      { "caracteristica": "CPU", "valor": "AMD Zen 2 8 nucleos 3.5 GHz" },
+      { "caracteristica": "GPU", "valor": "AMD RDNA 2 10.28 TFLOPs" },
+      { "caracteristica": "Memoria", "valor": "16 GB GDDR6" },
+      { "caracteristica": "Almacenamiento", "valor": "1 TB SSD personalizado" },
+      { "caracteristica": "Resolucion", "valor": "Hasta 4K @ 120fps, 8K ready" },
+      { "caracteristica": "Ray tracing", "valor": "Aceleracion por hardware" },
+      { "caracteristica": "Unidad optica", "valor": "Blu-ray 4K UHD" }
+    ]
   },
   {
     "id": 13,
@@ -153,7 +261,16 @@
     "disponible": true,
     "oferta": 15,
     "imagen": "img/producto-default.jpg",
-    "descripcion": "Panel VA curvo 1500R, 1ms de respuesta y FreeSync Premium."
+    "descripcion": "Panel VA curvo 1500R, 1ms de respuesta y FreeSync Premium.",
+    "especificaciones": [
+      { "caracteristica": "Tamano", "valor": "27 pulgadas curvo 1500R" },
+      { "caracteristica": "Resolucion", "valor": "Full HD 1920x1080" },
+      { "caracteristica": "Tasa de refresco", "valor": "144 Hz" },
+      { "caracteristica": "Tiempo de respuesta", "valor": "1 ms MPRT" },
+      { "caracteristica": "Panel", "valor": "VA" },
+      { "caracteristica": "Sincronizacion", "valor": "FreeSync Premium" },
+      { "caracteristica": "Puertos", "valor": "HDMI x2, DisplayPort 1.2" }
+    ]
   },
   {
     "id": 14,
@@ -165,10 +282,28 @@
     "disponible": true,
     "oferta": 0,
     "imagen": "img/producto-default.jpg",
-    "descripcion": "Pantalla Dynamic AMOLED 2X de 11 pulgadas y S Pen incluido."
+    "descripcion": "Pantalla Dynamic AMOLED 2X de 11 pulgadas y S Pen incluido.",
+    "especificaciones": [
+      { "caracteristica": "Pantalla", "valor": "11\" Dynamic AMOLED 2X 120Hz" },
+      { "caracteristica": "Procesador", "valor": "Snapdragon 8 Gen 2 for Galaxy" },
+      { "caracteristica": "Memoria RAM", "valor": "8 GB" },
+      { "caracteristica": "Almacenamiento", "valor": "128 GB expandible" },
+      { "caracteristica": "Camara", "valor": "13 MP trasera, 12 MP ultra wide frontal" },
+      { "caracteristica": "Bateria", "valor": "8400 mAh carga 45W" },
+      { "caracteristica": "Resistencia", "valor": "IP68 + S Pen incluido" }
+    ]
   },
   {
     "id": 15,
+    "especificaciones": [
+      { "caracteristica": "Potencia", "valor": "30 W RMS" },
+      { "caracteristica": "Drivers", "valor": "Racetrack + tweeter dedicado" },
+      { "caracteristica": "Conectividad", "valor": "Bluetooth 5.1, PartyBoost" },
+      { "caracteristica": "Resistencia", "valor": "IP67 polvo y agua" },
+      { "caracteristica": "Bateria", "valor": "12 horas de reproduccion" },
+      { "caracteristica": "Carga", "valor": "USB-C 5V/3A" },
+      { "caracteristica": "Peso", "valor": "550 g" }
+    ],
     "nombre": "Bocina JBL Flip 6",
     "marca": "JBL",
     "categoria": "audio",
@@ -181,6 +316,15 @@
   },
   {
     "id": 16,
+    "especificaciones": [
+      { "caracteristica": "Resolucion", "valor": "Full HD 1080p @ 30fps" },
+      { "caracteristica": "Sensor", "valor": "CMOS 1/2.7\" con enfoque auto" },
+      { "caracteristica": "Lente", "valor": "Carl Zeiss 78 grados" },
+      { "caracteristica": "Microfono", "valor": "Doble estereo con reduccion de ruido" },
+      { "caracteristica": "Conexion", "valor": "USB-A plug and play" },
+      { "caracteristica": "Compatibilidad", "valor": "Windows, macOS, ChromeOS" },
+      { "caracteristica": "Extras", "valor": "Clip universal y tripode listo" }
+    ],
     "nombre": "Webcam Logitech C920",
     "marca": "Logitech",
     "categoria": "accesorios",

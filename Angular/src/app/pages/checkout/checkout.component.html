@@ -1,0 +1,359 @@
+<main class="checkout">
+  @if (ordenGenerada(); as orden) {
+    <!-- ====================================================== -->
+    <!-- Pantalla de confirmación tras generar la orden         -->
+    <!-- ====================================================== -->
+    <section class="checkout__confirmacion">
+      <h1>¡Compra realizada con éxito! 🎮</h1>
+      <p class="checkout__gracias">
+        Gracias <strong>{{ orden.comprador.nombre | uppercase }}</strong>,
+        hemos procesado tu pedido.
+      </p>
+
+      <article class="checkout__resumen-final">
+        <h2>Resumen de la orden</h2>
+        <p>
+          <strong>Número:</strong>
+          <code>{{ orden.numero }}</code>
+        </p>
+        <p>
+          <strong>Fecha:</strong>
+          {{ orden.fecha | date: 'fullDate':'':'es' }}
+          - {{ orden.fecha | date: 'shortTime':'':'es' }}
+        </p>
+        <p>
+          <strong>Email de contacto:</strong> {{ orden.comprador.email }}
+        </p>
+        <p>
+          <strong>Dirección de envío:</strong> {{ orden.comprador.direccion }}
+        </p>
+        <p>
+          <strong>Método de pago:</strong>
+          {{ orden.comprador.metodoPago | titlecase }}
+        </p>
+
+        <table class="checkout__tabla">
+          <thead>
+            <tr>
+              <th>Juego</th>
+              <th>Cant.</th>
+              <th>Precio</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (it of orden.items; track it.id) {
+              <tr>
+                <td>{{ it.nombre }}</td>
+                <td>{{ it.cantidad }}</td>
+                <td>{{ it.precio | currency: 'DOP':'symbol-narrow':'1.2-2':'es' }}</td>
+                <td>{{ it.precio * it.cantidad | currency: 'DOP':'symbol-narrow':'1.2-2':'es' }}</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3">Subtotal</td>
+              <td>{{ orden.datos.subtotal | currency: 'DOP' }}</td>
+            </tr>
+            <tr>
+              <td colspan="3">ITBIS (18%)</td>
+              <td>{{ orden.datos.impuestos | currency: 'DOP' }}</td>
+            </tr>
+            <tr>
+              <td colspan="3">Envío</td>
+              <td>
+                @if (orden.datos.envio === 0) {
+                  <strong style="color: #10b981;">GRATIS</strong>
+                } @else {
+                  {{ orden.datos.envio | currency: 'DOP' }}
+                }
+              </td>
+            </tr>
+            <tr class="total">
+              <td colspan="3"><strong>TOTAL</strong></td>
+              <td><strong>{{ orden.datos.total | currency: 'DOP' }}</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div class="checkout__acciones">
+          <a routerLink="/"><button type="button">Volver al inicio</button></a>
+          <a routerLink="/productos"><button type="button">Seguir comprando</button></a>
+        </div>
+      </article>
+    </section>
+  } @else if (carrito.vacio()) {
+    <section class="checkout__vacio">
+      <p>🛒 Tu carrito está vacío.</p>
+      <a routerLink="/productos"><button type="button">Ir al catálogo</button></a>
+    </section>
+  } @else {
+    <!-- ====================================================== -->
+    <!-- Formulario de checkout                                  -->
+    <!-- ====================================================== -->
+    <h1>Finalizar compra</h1>
+
+    <div class="checkout__grid">
+      <!-- IZQUIERDA: Formulario reactivo -->
+      <form [formGroup]="form" (ngSubmit)="enviar()" class="checkout__form" novalidate>
+        <fieldset>
+          <legend>Datos del comprador</legend>
+
+          <p class="campo">
+            <label for="ck-nombre">Nombre completo *</label>
+            <input
+              id="ck-nombre"
+              type="text"
+              formControlName="nombre"
+              autocomplete="name"
+              [class.input-error]="tieneError('nombre', 'required') || tieneError('nombre', 'pattern')"
+            />
+            @if (tieneError('nombre', 'required')) {
+              <small class="error-text">El nombre es obligatorio.</small>
+            } @else if (tieneError('nombre', 'minlength')) {
+              <small class="error-text">Mínimo 3 caracteres.</small>
+            } @else if (tieneError('nombre', 'pattern')) {
+              <small class="error-text">Solo letras y espacios.</small>
+            }
+          </p>
+
+          <p class="campo">
+            <label for="ck-email">Email *</label>
+            <input
+              id="ck-email"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              [class.input-error]="tieneError('email', 'required') || tieneError('email', 'email')"
+            />
+            @if (tieneError('email', 'required')) {
+              <small class="error-text">El email es obligatorio.</small>
+            } @else if (tieneError('email', 'email')) {
+              <small class="error-text">Formato de email inválido.</small>
+            }
+          </p>
+
+          <p class="campo">
+            <label for="ck-telefono">Teléfono *</label>
+            <input
+              id="ck-telefono"
+              type="tel"
+              formControlName="telefono"
+              autocomplete="tel"
+              placeholder="809-555-5555"
+              [class.input-error]="tieneError('telefono', 'required') || tieneError('telefono', 'pattern')"
+            />
+            @if (tieneError('telefono', 'required')) {
+              <small class="error-text">El teléfono es obligatorio.</small>
+            } @else if (tieneError('telefono', 'pattern')) {
+              <small class="error-text">Solo números, espacios y guiones (7-15 dígitos).</small>
+            }
+          </p>
+
+          <p class="campo">
+            <label for="ck-direccion">Dirección *</label>
+            <input
+              id="ck-direccion"
+              type="text"
+              formControlName="direccion"
+              placeholder="Calle, número, sector..."
+              [class.input-error]="tieneError('direccion', 'required') || tieneError('direccion', 'minlength')"
+            />
+            @if (tieneError('direccion', 'required')) {
+              <small class="error-text">La dirección es obligatoria.</small>
+            } @else if (tieneError('direccion', 'minlength')) {
+              <small class="error-text">Mínimo 10 caracteres.</small>
+            }
+          </p>
+
+          <div class="campo-doble">
+            <p class="campo">
+              <label for="ck-ciudad">Ciudad *</label>
+              <input
+                id="ck-ciudad"
+                type="text"
+                formControlName="ciudad"
+                [class.input-error]="tieneError('ciudad', 'required') || tieneError('ciudad', 'pattern')"
+              />
+              @if (tieneError('ciudad', 'required')) {
+                <small class="error-text">Requerida.</small>
+              } @else if (tieneError('ciudad', 'pattern')) {
+                <small class="error-text">Solo letras.</small>
+              }
+            </p>
+            <p class="campo">
+              <label for="ck-cp">Código postal *</label>
+              <input
+                id="ck-cp"
+                type="text"
+                formControlName="codigoPostal"
+                placeholder="10100"
+                [class.input-error]="tieneError('codigoPostal', 'required') || tieneError('codigoPostal', 'pattern')"
+              />
+              @if (tieneError('codigoPostal', 'required')) {
+                <small class="error-text">Requerido.</small>
+              } @else if (tieneError('codigoPostal', 'pattern')) {
+                <small class="error-text">Solo dígitos (4-8).</small>
+              }
+            </p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Método de pago</legend>
+
+          <p class="campo-metodos">
+            <label class="metodo">
+              <input type="radio" formControlName="metodoPago" value="tarjeta" />
+              💳 Tarjeta de crédito
+            </label>
+            <label class="metodo">
+              <input type="radio" formControlName="metodoPago" value="efectivo" />
+              💵 Contra entrega
+            </label>
+          </p>
+
+          @if (esTarjeta) {
+            <p class="campo">
+              <label for="ck-tarjeta">Número de tarjeta *</label>
+              <input
+                id="ck-tarjeta"
+                type="text"
+                formControlName="numeroTarjeta"
+                maxlength="19"
+                placeholder="4111111111111111"
+                [class.input-error]="tieneError('numeroTarjeta', 'required') || tieneError('numeroTarjeta', 'pattern')"
+              />
+              @if (tieneError('numeroTarjeta', 'required')) {
+                <small class="error-text">Número requerido.</small>
+              } @else if (tieneError('numeroTarjeta', 'pattern')) {
+                <small class="error-text">Debe ser 13-19 dígitos.</small>
+              }
+            </p>
+
+            <p class="campo">
+              <label for="ck-nombre-tarjeta">Nombre en la tarjeta *</label>
+              <input
+                id="ck-nombre-tarjeta"
+                type="text"
+                formControlName="nombreTarjeta"
+                [class.input-error]="tieneError('nombreTarjeta', 'required') || tieneError('nombreTarjeta', 'minlength')"
+              />
+              @if (tieneError('nombreTarjeta', 'required')) {
+                <small class="error-text">Requerido.</small>
+              } @else if (tieneError('nombreTarjeta', 'minlength')) {
+                <small class="error-text">Mínimo 3 caracteres.</small>
+              }
+            </p>
+
+            <div class="campo-doble">
+              <p class="campo">
+                <label for="ck-vencimiento">Vencimiento (MM/AA) *</label>
+                <input
+                  id="ck-vencimiento"
+                  type="text"
+                  formControlName="vencimiento"
+                  placeholder="12/27"
+                  maxlength="5"
+                  [class.input-error]="tieneError('vencimiento', 'required') || tieneError('vencimiento', 'pattern')"
+                />
+                @if (tieneError('vencimiento', 'required')) {
+                  <small class="error-text">Requerido.</small>
+                } @else if (tieneError('vencimiento', 'pattern')) {
+                  <small class="error-text">Formato MM/AA.</small>
+                }
+              </p>
+              <p class="campo">
+                <label for="ck-cvv">CVV *</label>
+                <input
+                  id="ck-cvv"
+                  type="text"
+                  formControlName="cvv"
+                  maxlength="4"
+                  placeholder="123"
+                  [class.input-error]="tieneError('cvv', 'required') || tieneError('cvv', 'pattern')"
+                />
+                @if (tieneError('cvv', 'required')) {
+                  <small class="error-text">Requerido.</small>
+                } @else if (tieneError('cvv', 'pattern')) {
+                  <small class="error-text">3 o 4 dígitos.</small>
+                }
+              </p>
+            </div>
+          }
+        </fieldset>
+
+        <p class="campo-check">
+          <label>
+            <input type="checkbox" formControlName="aceptaTerminos" />
+            Acepto los términos y condiciones *
+          </label>
+          @if (tieneError('aceptaTerminos', 'required')) {
+            <small class="error-text">Debes aceptar los términos para continuar.</small>
+          }
+        </p>
+
+        <button type="submit" class="checkout__submit" [disabled]="enviando() || form.invalid">
+          @if (enviando()) {
+            <span class="spinner-inline" aria-hidden="true"></span>
+            Procesando...
+          } @else {
+            Confirmar y pagar
+          }
+        </button>
+      </form>
+
+      <!-- DERECHA: Resumen del carrito -->
+      <aside class="checkout__resumen">
+        <h2>Resumen de tu compra</h2>
+        <ul class="checkout__items">
+          @for (it of carrito.items(); track it.id) {
+            <li>
+              <img [src]="it.imagen" [alt]="it.nombre" />
+              <div>
+                <p class="item-nombre">{{ it.nombre }}</p>
+                <p class="item-cantidad">x{{ it.cantidad }}</p>
+              </div>
+              <span class="item-precio">
+                {{ it.precio * it.cantidad | currency: 'DOP' }}
+              </span>
+            </li>
+          }
+        </ul>
+
+        <dl class="checkout__totales">
+          <div>
+            <dt>Subtotal</dt>
+            <dd>{{ resumen().subtotal | currency: 'DOP' }}</dd>
+          </div>
+          <div>
+            <dt>ITBIS (18%)</dt>
+            <dd>{{ resumen().impuestos | currency: 'DOP' }}</dd>
+          </div>
+          <div [class.gratis]="resumen().envio === 0">
+            <dt>Envío</dt>
+            <dd>
+              @if (resumen().envio === 0) {
+                <span>GRATIS 🎉</span>
+              } @else {
+                {{ resumen().envio | currency: 'DOP' }}
+              }
+            </dd>
+          </div>
+          <div class="total">
+            <dt>TOTAL</dt>
+            <dd>{{ resumen().total | currency: 'DOP' }}</dd>
+          </div>
+        </dl>
+
+        <p class="checkout__envio-gratis">
+          @if (resumen().envio > 0) {
+            ¡Envío gratis en compras mayores a
+            <strong>RD$ 25,000</strong>!
+          }
+        </p>
+      </aside>
+    </div>
+  }
+</main>

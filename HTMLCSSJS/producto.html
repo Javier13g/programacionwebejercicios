@@ -68,10 +68,7 @@
                         <th scope="col">Valor Asignado</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr><td>Memoria RAM Interna</td><td>16 GB LPDDR5</td></tr>
-                    <tr><td>Unidad de Almacenamiento Solido</td><td>512 GB NVMe PCIe M.2</td></tr>
-                </tbody>
+                <tbody id="tabla-especificaciones"></tbody>
                 <tfoot>
                     <tr><td colspan="2">Todos los componentes descritos cuentan con certificacion internacional de fabrica.</td></tr>
                 </tfoot>
@@ -101,10 +98,19 @@
             }
 
             const precioHTML = producto.tieneOferta
-                ? '<p class="precio-anterior">' + formatearMoneda(producto.precio) + '</p>' +
-                  '<p class="precio"><strong>' + formatearMoneda(producto.precioConDescuento) + '</strong></p>' +
-                  '<p><mark>' + producto.oferta + '% OFF</mark></p>'
-                : '<p class="precio"><strong>' + formatearMoneda(producto.precio) + '</strong></p>';
+                ? '<div class="bloque-precio bloque-precio--oferta">' +
+                    '<span class="precio-badge">' + producto.oferta + '%<small>OFF</small></span>' +
+                    '<div class="precio-textos">' +
+                        '<span class="precio-anterior">Antes ' + formatearMoneda(producto.precio) + '</span>' +
+                        '<span class="precio-actual">' + formatearMoneda(producto.precioConDescuento) + '</span>' +
+                        '<span class="precio-ahorro">Ahorras ' + formatearMoneda(producto.precio - producto.precioConDescuento) + '</span>' +
+                    '</div>' +
+                  '</div>'
+                : '<div class="bloque-precio">' +
+                    '<div class="precio-textos">' +
+                        '<span class="precio-actual">' + formatearMoneda(producto.precio) + '</span>' +
+                    '</div>' +
+                  '</div>';
 
             cont.innerHTML =
                 '<article class="detalle-card">' +
@@ -123,6 +129,17 @@
                         '</button>' +
                     '</div>' +
                 '</article>';
+
+            const tablaCuerpo = document.getElementById("tabla-especificaciones");
+            if (tablaCuerpo) {
+                if (Array.isArray(producto.especificaciones) && producto.especificaciones.length > 0) {
+                    tablaCuerpo.innerHTML = producto.especificaciones
+                        .map(esp => '<tr><td>' + esp.caracteristica + '</td><td>' + esp.valor + '</td></tr>')
+                        .join("");
+                } else {
+                    tablaCuerpo.innerHTML = '<tr><td colspan="2">No hay especificaciones tecnicas disponibles para este producto.</td></tr>';
+                }
+            }
 
             const btnAgregar = document.getElementById("btn-agregar");
             const cantidadInput = document.getElementById("cantidad-input");

@@ -1,0 +1,71 @@
+.activo {
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* Contenedor de controles a la derecha del header */
+.header__controles {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* Botón "Salir" / logout */
+.btn-logout {
+  padding: 0.4rem 0.9rem;
+  background: transparent;
+  color: var(--color-texto, #e0d4ff);
+  border: 1px solid #ff3860;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-logout:hover {
+  background: #ff3860;
+  color: #fff;
+}
+
+.btn-logout:active {
+  transform: translateY(1px);
+}
+
+/* Botón de tema (claro/oscuro) */
+.btn-tema {
+  padding: 0.4rem 0.9rem;
+  background: var(--color-superficie, #1a0b2e);
+  color: var(--color-texto, #e0d4ff);
+  border: 1px solid var(--color-borde, #2a1850);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.1s ease, filter 0.2s ease;
+}
+
+.btn-tema:hover {
+  border-color: var(--color-acento, #00f0ff);
+  filter: brightness(1.1);
+}
+
+.btn-tema:active {
+  transform: translateY(1px);
+}
+
+/* Reloj digital a la derecha */
+.reloj-digital {
+  font-family: 'Orbitron', 'Rajdhani', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--color-borde, #2a1850);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--color-acento, #00f0ff);
+  min-width: 90px;
+  text-align: center;
+}

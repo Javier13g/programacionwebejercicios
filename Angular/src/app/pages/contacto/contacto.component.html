@@ -1,0 +1,69 @@
+<main class="contacto">
+  <section id="contacto-avanzado">
+    <h1>Contacto</h1>
+    <p>
+      ¿Tienes alguna duda o sugerencia? Escríbenos a
+      <a href="mailto:info&#64;gamestore.do">info&#64;gamestore.do</a>
+      o llámanos al <strong>809-555-5555</strong>.
+    </p>
+
+    <form class="contacto__form" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <p class="campo">
+        <label for="ct-nombre">Nombre *</label>
+        <input id="ct-nombre" type="text" formControlName="nombre"
+          [class.input-error]="tieneError('nombre', 'required') || tieneError('nombre', 'minlength')" />
+        @if (tieneError('nombre', 'required')) {
+          <small class="error-text">El nombre es obligatorio.</small>
+        } @else if (tieneError('nombre', 'minlength')) {
+          <small class="error-text">Mínimo 3 caracteres.</small>
+        }
+      </p>
+
+      <p class="campo">
+        <label for="ct-email">Email *</label>
+        <input id="ct-email" type="email" formControlName="email"
+          [class.input-error]="tieneError('email', 'required') || tieneError('email', 'email')" />
+        @if (tieneError('email', 'required')) {
+          <small class="error-text">El email es obligatorio.</small>
+        } @else if (tieneError('email', 'email')) {
+          <small class="error-text">Formato de email inválido.</small>
+        }
+      </p>
+
+      <p class="campo">
+        <label for="ct-asunto">Asunto *</label>
+        <input id="ct-asunto" type="text" formControlName="asunto"
+          [class.input-error]="tieneError('asunto', 'required') || tieneError('asunto', 'minlength')" />
+        @if (tieneError('asunto', 'required')) {
+          <small class="error-text">El asunto es obligatorio.</small>
+        } @else if (tieneError('asunto', 'minlength')) {
+          <small class="error-text">Mínimo 5 caracteres.</small>
+        }
+      </p>
+
+      <p class="campo">
+        <label for="ct-mensaje">Mensaje *</label>
+        <textarea id="ct-mensaje" rows="5" formControlName="mensaje"
+          [class.input-error]="tieneError('mensaje', 'required') || tieneError('mensaje', 'minlength')"></textarea>
+        @if (tieneError('mensaje', 'required')) {
+          <small class="error-text">El mensaje es obligatorio.</small>
+        } @else if (tieneError('mensaje', 'minlength')) {
+          <small class="error-text">Mínimo 20 caracteres.</small>
+        }
+      </p>
+
+      <button type="submit" class="contacto__submit" [disabled]="cargando() || form.invalid">
+        @if (cargando()) {
+          <span class="spinner-inline" aria-hidden="true"></span>
+          Enviando...
+        } @else {
+          Enviar mensaje
+        }
+      </button>
+
+      @if (enviado()) {
+        <p class="contacto__ok">✅ Mensaje enviado. ¡Gracias por contactarnos!</p>
+      }
+    </form>
+  </section>
+</main>

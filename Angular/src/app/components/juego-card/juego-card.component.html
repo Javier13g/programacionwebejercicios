@@ -1,0 +1,59 @@
+<article class="juego">
+  <header>
+    <h3>{{ juego.nombre }}</h3>
+    <p class="rating" [attr.aria-label]="'Rating ' + juego.rating + ' de 5'">
+      <span class="estrellas">{{ estrellas() }}</span>
+      <span class="rating-num">{{ juego.rating | number:'1.1-1' }}/5</span>
+    </p>
+  </header>
+
+  <img
+    [src]="juego.imagen"
+    [alt]="juego.nombre"
+    loading="lazy"
+    (error)="$any($event.target).src = 'img/no-image.svg'"
+  />
+
+  <p class="categoria">
+    <span class="badge-cat">{{ juego.categoria }}</span>
+  </p>
+
+  <p class="plataformas"><small>{{ juego.plataformas }}</small></p>
+
+  <p class="descripcion">{{ juego.descripcion }}</p>
+
+  <footer>
+    @if (juego.tieneOferta) {
+      <p class="precio-anterior">{{ utils.formatearMoneda(juego.precio) }}</p>
+      <p class="precio">
+        <strong>{{ utils.formatearMoneda(juego.precioConDescuento) }}</strong>
+      </p>
+      <p class="oferta-tag"><mark>{{ juego.oferta }}% OFF</mark></p>
+    } @else {
+      <p class="precio">
+        <strong>{{ utils.formatearMoneda(juego.precioConDescuento) }}</strong>
+      </p>
+    }
+
+    <p>
+      Disponibilidad:
+      <mark [class.disponible]="!juego.agotado" [class.agotado]="juego.agotado">
+        {{ juego.estado }}
+      </mark>
+    </p>
+
+    <a [routerLink]="['/juego', juego.id]">
+      <button type="button" (click)="seleccionar()">Ver detalles</button>
+    </a>
+
+    <button
+      type="button"
+      class="btn-agregar"
+      [attr.data-id]="juego.id"
+      [disabled]="juego.agotado"
+      (click)="agregar()"
+    >
+      {{ juego.agotado ? 'Agotado' : 'Agregar al carrito' }}
+    </button>
+  </footer>
+</article>

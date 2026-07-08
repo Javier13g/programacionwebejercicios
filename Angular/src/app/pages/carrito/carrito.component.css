@@ -1,0 +1,487 @@
+/* ========================================
+   Carrito - Cyberpunk Neon
+   ======================================== */
+
+main { padding: 1.5rem; }
+
+/* ========================================
+   Lista del carrito (tabla principal)
+   ======================================== */
+#lista-carrito {
+  margin-bottom: 2rem;
+}
+
+#lista-carrito h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: var(--white);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: inline-block;
+}
+
+#lista-carrito h2::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+  border-radius: 2px;
+  box-shadow: var(--glow-cyan);
+}
+
+.tabla-carrito {
+  width: 100%;
+  border-collapse: collapse;
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-mid) 100%);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-top: 1rem;
+  border: 1px solid var(--gray-300);
+  box-shadow: var(--shadow);
+}
+
+.tabla-carrito caption {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1rem;
+  background: linear-gradient(90deg, var(--neon-purple), var(--neon-magenta));
+  color: var(--white);
+  text-align: left;
+}
+
+.tabla-carrito th,
+.tabla-carrito td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--gray-300);
+  text-align: left;
+  color: var(--white);
+}
+
+.tabla-carrito th {
+  background: var(--bg-deep);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+}
+
+.tabla-carrito tbody tr {
+  transition: background 0.2s ease;
+}
+
+.tabla-carrito tbody tr:hover {
+  background: rgba(0, 240, 255, 0.04);
+}
+
+.tabla-carrito tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-carrito tfoot td {
+  background: var(--bg-deep);
+  font-weight: 700;
+  color: var(--gray-500);
+}
+
+.tabla-carrito tfoot td[colspan] {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+}
+
+/* Fila total (resaltada) */
+.tabla-carrito .total-row td {
+  background: linear-gradient(90deg, rgba(0, 240, 255, 0.1), rgba(176, 38, 255, 0.1));
+  font-size: 1.1rem;
+  border-top: 2px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+}
+
+.tabla-carrito .total-row strong {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+}
+
+/* Imagen del juego en el carrito */
+.carrito-img {
+  width: 70px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-300);
+}
+
+/* Input de cantidad */
+.input-cantidad {
+  width: 70px;
+  padding: 0.5rem;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  background: var(--bg-deep);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-weight: 700;
+  text-align: center;
+}
+
+.input-cantidad:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* Botón eliminar */
+.btn-eliminar {
+  background: linear-gradient(135deg, var(--danger), #d11d44);
+  color: var(--white);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: var(--transition);
+}
+
+.btn-eliminar:hover {
+  box-shadow: 0 0 12px var(--danger);
+  transform: translateY(-1px);
+}
+
+/* Acciones del carrito (vaciar / finalizar) */
+.carrito-acciones {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+#btn-vaciar {
+  background: linear-gradient(135deg, var(--gray-500), #4a3f6e);
+  color: var(--white);
+  border: 1px solid var(--gray-400);
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: var(--transition);
+}
+
+#btn-vaciar:hover {
+  background: linear-gradient(135deg, var(--danger), #d11d44);
+  border-color: var(--danger);
+  box-shadow: 0 0 12px var(--danger);
+  transform: translateY(-1px);
+}
+
+#btn-finalizar {
+  background: linear-gradient(135deg, var(--neon-green), #2acc10);
+  color: var(--bg-deep);
+  border: none;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: var(--transition);
+  box-shadow: 0 0 12px rgba(57, 255, 20, 0.4);
+}
+
+#btn-finalizar:hover {
+  box-shadow: 0 0 20px var(--neon-green), 0 0 40px rgba(57, 255, 20, 0.4);
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   Carrito vacío
+   ======================================== */
+.carrito-vacio {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-mid) 100%);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--neon-cyan);
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.15);
+}
+
+.carrito-vacio p {
+  font-size: 1.2rem;
+  color: var(--gray-500);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.carrito-vacio a button[type="button"] {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  color: var(--bg-deep);
+  border: none;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: var(--transition);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+
+.carrito-vacio a button[type="button"]:hover {
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   Confirmación de compra
+   ======================================== */
+.confirmacion {
+  background: linear-gradient(135deg, rgba(57, 255, 20, 0.15) 0%, var(--bg-surface) 100%);
+  padding: 1.75rem;
+  border-radius: var(--radius-lg);
+  margin: 1.5rem 0;
+  border: 1px solid var(--neon-green);
+  border-left: 4px solid var(--neon-green);
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.25);
+  max-width: 600px;
+}
+
+.confirmacion h3 {
+  font-family: var(--font-display);
+  color: var(--neon-green);
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 12px rgba(57, 255, 20, 0.5);
+  text-transform: uppercase;
+}
+
+.confirmacion p {
+  color: var(--white);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.confirmacion p strong {
+  color: var(--neon-cyan);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-right: 0.25rem;
+}
+
+/* ========================================
+   Estado y beneficios aplicados (indicadores)
+   ======================================== */
+#indicadores-compra {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface-2) 100%);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-300);
+  box-shadow: var(--shadow);
+}
+
+#indicadores-compra article {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#indicadores-compra h3 {
+  font-family: var(--font-display);
+  color: var(--white);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.5rem;
+}
+
+#indicadores-compra h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+  border-radius: 2px;
+  box-shadow: var(--glow-cyan);
+}
+
+#indicadores-compra p {
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--gray-500);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+#indicadores-compra meter,
+#indicadores-compra progress {
+  flex: 1;
+  height: 14px;
+  border-radius: 7px;
+  border: 1px solid var(--gray-300);
+  background: var(--bg-deep);
+  min-width: 120px;
+}
+
+/* Estilos del elemento meter */
+#indicadores-compra meter {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+#indicadores-compra meter::-webkit-meter-bar {
+  background: var(--bg-deep);
+  border-radius: 7px;
+  border: none;
+}
+
+#indicadores-compra meter::-webkit-meter-optimum-value {
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green));
+  border-radius: 7px;
+  box-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
+}
+
+#indicadores-compra meter::-moz-meter-bar {
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green));
+  border-radius: 7px;
+}
+
+/* Estilos del elemento progress */
+#indicadores-compra progress {
+  -webkit-appearance: none;
+  appearance: none;
+  overflow: hidden;
+}
+
+#indicadores-compra progress::-webkit-progress-bar {
+  background: var(--bg-deep);
+  border-radius: 7px;
+}
+
+#indicadores-compra progress::-webkit-progress-value {
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+  border-radius: 7px;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+  transition: width 0.4s ease;
+}
+
+#indicadores-compra progress::-moz-progress-bar {
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+  border-radius: 7px;
+}
+
+/* Texto fallback para los elementos meter/progress */
+#indicadores-compra meter + text,
+#indicadores-compra progress + text {
+  display: none;
+}
+
+/* ========================================
+   Responsive
+   ======================================== */
+@media (max-width: 768px) {
+  main { padding: 1rem; }
+
+  #lista-carrito h2,
+  #indicadores-compra h3 {
+    font-size: 1.3rem;
+  }
+
+  .tabla-carrito {
+    font-size: 0.85rem;
+  }
+
+  .tabla-carrito th,
+  .tabla-carrito td {
+    padding: 0.625rem 0.5rem;
+  }
+
+  .carrito-img {
+    width: 50px;
+    height: 40px;
+  }
+
+  .input-cantidad {
+    width: 55px;
+    padding: 0.4rem;
+  }
+
+  .carrito-acciones {
+    flex-direction: column-reverse;
+    gap: 0.625rem;
+  }
+
+  .carrito-acciones button {
+    width: 100%;
+  }
+
+  #indicadores-compra {
+    padding: 1.25rem;
+  }
+
+  #indicadores-compra p {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  #indicadores-compra meter,
+  #indicadores-compra progress {
+    width: 100%;
+  }
+
+  .confirmacion {
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabla-carrito-wrapper,
+  #lista-carrito {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabla-carrito {
+    min-width: 540px;
+  }
+}

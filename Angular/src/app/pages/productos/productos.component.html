@@ -1,0 +1,176 @@
+<main>
+  <aside>
+    <h2>Filtrar catálogo</h2>
+
+    <!-- SearchBarComponent reutilizable -->
+    <app-search-bar
+      placeholder="Buscar por nombre (ej: Zelda, GTA, Elden Ring...)"
+      [valorInicial]="texto()"
+      (buscar)="onBuscarTermino($event)"
+      (limpiar)="onBuscarTermino('')"
+    />
+
+    <form id="form-filtros" (submit)="$event.preventDefault()">
+      <fieldset>
+        <legend>Filtros de videojuegos</legend>
+
+        <p>
+          <label for="filtro-precio">Precio Máximo: <span id="filtro-precio-valor">{{ precioMaxFormateado() }}</span></label>
+          <input
+            type="range"
+            id="filtro-precio"
+            name="precio"
+            min="0"
+            max="100000"
+            step="500"
+            [ngModel]="precioMax()"
+            (ngModelChange)="precioMax.set(+$event)"
+          />
+        </p>
+
+        <div class="filtro-categoria">
+          <p>Géneros (categorías):</p>
+          <app-category-menu
+            modo="pills"
+            [categorias]="categorias"
+            [activa]="categoria()"
+            (seleccionar)="onSeleccionarCategoria($event)"
+          />
+        </div>
+
+        <p>
+          <label for="filtro-categoria">Género (select):</label>
+          <select
+            id="filtro-categoria"
+            name="categoria"
+            [ngModel]="categoria()"
+            (ngModelChange)="categoria.set($event)"
+          >
+            <option value="">Todos los géneros</option>
+            @for (g of generos; track g.slug) {
+              <option [value]="g.slug">{{ g.nombre }}</option>
+            }
+          </select>
+        </p>
+
+        <p>
+          <label for="filtro-disponibilidad">
+            <input
+              type="checkbox"
+              id="filtro-disponibilidad"
+              name="disponibilidad"
+              [ngModel]="soloDisponibles()"
+              (ngModelChange)="soloDisponibles.set($event)"
+            />
+            Solo juegos disponibles
+          </label>
+        </p>
+
+        <p>
+          <label for="filtro-orden">Ordenar por:</label>
+          <select
+            id="filtro-orden"
+            name="orden"
+            [ngModel]="orden()"
+            (ngModelChange)="orden.set($event)"
+          >
+            <option value="defecto">Por defecto</option>
+            <option value="rating">Mejor valorados</option>
+            <option value="precio-asc">Precio: menor a mayor</option>
+            <option value="precio-desc">Precio: mayor a menor</option>
+            <option value="nombre">Nombre (A-Z)</option>
+          </select>
+        </p>
+
+        <p class="filtros-acciones">
+          <button type="submit">Aplicar Filtros</button>
+          <button type="button" id="btn-limpiar" (click)="limpiar()">Limpiar</button>
+        </p>
+      </fieldset>
+    </form>
+  </aside>
+
+  <section id="lista-productos">
+    <h2>
+      @if (modoBusqueda()) {
+        Resultados para "{{ textoBusqueda() }}"
+      } @else {
+        Todos los juegos disponibles
+      }
+    </h2>
+
+    <p id="contador-resultados">
+      Mostrando <strong>{{ filtrados().length }}</strong>
+      @if (totalApi() !== null) {
+        de <strong>{{ totalApi() }}</strong> resultados en RAWG
+      }
+      · página <strong>{{ paginaActual() }}</strong>
+      @if (cargando() && juegos().length > 0) {
+        <span class="progreso-carga">
+          · buscando...
+        </span>
+      }
+    </p>
+
+    <!-- *ngSwitch para alternar entre los tres estados -->
+    <ng-container [ngSwitch]="estadoCarga()">
+      <div *ngSwitchCase="'cargando'" class="loading-state">
+        <div class="loading-spinner" aria-hidden="true"></div>
+        <p>Buscando juegos en RAWG...</p>
+        <p class="loading-sub">
+          @if (modoBusqueda()) {
+            Búsqueda por nombre "{{ textoBusqueda() }}"
+          } @else {
+            Cargando primera página del catálogo
+          }
+        </p>
+      </div>
+
+      <p *ngSwitchCase="'error'" class="error-state">
+        Error: {{ error() }}
+      </p>
+
+      <ng-container *ngSwitchDefault>
+        <div id="grid-productos" class="grid-juegos">
+          @for (j of filtrados(); track j.id) {
+            <app-juego-card [juego]="j" (agregado)="alAgregar($event)" />
+          } @empty {
+            <p class="sin-resultados">
+              @if (modoBusqueda()) {
+                No se encontraron juegos que coincidan con "{{ textoBusqueda() }}".
+                <button type="button" class="btn-retry-busqueda" (click)="limpiar()">
+                  Ver todos los juegos
+                </button>
+              } @else {
+                No se encontraron juegos que coincidan con los filtros.
+              }
+            </p>
+          }
+        </div>
+
+        <!-- Paginación: botón "Cargar más" -->
+        <div class="paginacion">
+          @if (tieneSiguiente()) {
+            <button
+              type="button"
+              class="btn-cargar-mas"
+              [disabled]="cargandoMas()"
+              (click)="cargarMas()"
+            >
+              @if (cargandoMas()) {
+                <span class="loading-spinner loading-spinner--sm" aria-hidden="true"></span>
+                Cargando página {{ paginaActual() + 1 }}...
+              } @else {
+                ▶ Cargar más juegos (página {{ paginaActual() + 1 }})
+              }
+            </button>
+          } @else if (juegos().length > 0) {
+            <p class="fin-pagina">
+              ✓ Has llegado al final ({{ juegos().length }} juegos cargados)
+            </p>
+          }
+        </div>
+      </ng-container>
+    </ng-container>
+  </section>
+</main>

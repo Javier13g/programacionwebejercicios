@@ -1,0 +1,121 @@
+<main>
+  @if (cargando()) {
+    <p style="text-align:center; padding:20px;">Cargando juego...</p>
+  } @else if (error()) {
+    <p style="text-align:center; padding:20px; color:red;">{{ error() }}</p>
+  } @else {
+  @if (juego(); as j) {
+    <section id="detalle-producto">
+      <h2>Ficha del juego</h2>
+      <div id="detalle-contenido">
+        <article class="detalle-card">
+          <img
+            [src]="j.imagen"
+            [alt]="j.nombre"
+            (error)="$any($event.target).src = 'img/no-image.svg'"
+          />
+          <div>
+            <h3>{{ j.nombre }}</h3>
+            <p><strong>Género:</strong> {{ j.categoria }}</p>
+            <p><strong>Plataformas:</strong> {{ j.plataformas }}</p>
+            <p><strong>Lanzamiento:</strong> {{ j.released }}</p>
+            <p class="rating">
+              <span class="estrellas">{{ estrellas() }}</span>
+              <span>{{ j.rating | number:'1.1-1' }}/5</span>
+              @if (j.metacritic) {
+                <span class="meta">Metacritic: {{ j.metacritic }}</span>
+              }
+            </p>
+            <div class="descripcion-bloque">
+              @if (traduciendoDescripcion()) {
+                <p class="traduciendo">
+                  <span class="spinner-inline" aria-hidden="true"></span>
+                  Traduciendo descripción al español...
+                </p>
+              }
+              <p class="descripcion-texto">
+                {{ descripcionTraducida() ?? j.descripcion }}
+              </p>
+            </div>
+
+            @if (j.tieneOferta) {
+              <div class="bloque-precio bloque-precio--oferta">
+                <span class="precio-badge">{{ j.oferta }}%<small>OFF</small></span>
+                <div class="precio-textos">
+                  <span class="precio-anterior">Antes {{ utils.formatearMoneda(j.precio) }}</span>
+                  <span class="precio-actual">{{ utils.formatearMoneda(j.precioConDescuento) }}</span>
+                  <span class="precio-ahorro">Ahorras {{ utils.formatearMoneda(j.precio - j.precioConDescuento) }}</span>
+                </div>
+              </div>
+            } @else {
+              <div class="bloque-precio">
+                <div class="precio-textos">
+                  <span class="precio-actual">{{ utils.formatearMoneda(j.precio) }}</span>
+                </div>
+              </div>
+            }
+
+            <p>
+              Disponibilidad:
+              <mark [class.disponible]="!j.agotado" [class.agotado]="j.agotado">
+                {{ j.estado }}
+              </mark>
+            </p>
+
+            <label for="cantidad-input">Cantidad:</label>
+            <input
+              type="number"
+              id="cantidad-input"
+              [ngModel]="cantidad()"
+              (ngModelChange)="cantidad.set(+$event || 1)"
+              min="1"
+              max="10"
+            />
+            <button
+              id="btn-agregar"
+              type="button"
+              [disabled]="j.agotado"
+              (click)="agregar()"
+            >
+              {{ j.agotado ? 'Agotado' : 'Agregar al carrito' }}
+            </button>
+
+            @if (mensaje(); as m) {
+              <p style="color: #10b981; margin-top: 10px;">{{ m }}</p>
+            }
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="informacion-tecnica">
+      <h2>Ficha técnica</h2>
+      <table>
+        <caption>Detalles del juego</caption>
+        <thead>
+          <tr>
+            <th scope="col">Característica</th>
+            <th scope="col">Valor</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-especificaciones">
+          @if (j.especificaciones && j.especificaciones.length > 0) {
+            @for (esp of j.especificaciones; track esp.caracteristica) {
+              <tr>
+                <td>{{ esp.caracteristica }}</td>
+                <td>{{ esp.valor }}</td>
+              </tr>
+            }
+          } @else {
+            <tr>
+              <td colspan="2">No hay información técnica disponible para este juego.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <a routerLink="/productos"><button type="button" style="margin-top: 16px;">← Volver al catálogo</button></a>
+  }
+  }
+</main>

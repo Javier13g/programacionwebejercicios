@@ -1,0 +1,74 @@
+<header>
+  <div class="logo">
+    <span class="logo-icon" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00f0ff"/>
+            <stop offset="100%" stop-color="#ff007a"/>
+          </linearGradient>
+        </defs>
+        <rect x="6" y="20" width="52" height="28" rx="14" fill="none" stroke="url(#logoGrad)" stroke-width="2.5"/>
+        <rect x="14" y="30" width="10" height="8" rx="1.5" fill="url(#logoGrad)"/>
+        <circle cx="44" cy="32" r="3" fill="#00f0ff"/>
+        <circle cx="50" cy="38" r="3" fill="#ff007a"/>
+        <circle cx="22" cy="42" r="2.5" fill="#00f0ff" opacity="0.8"/>
+      </svg>
+    </span>
+    <span class="logo-text">Game<span class="logo-accent">Store</span></span>
+  </div>
+
+  <nav aria-label="Menú principal">
+    <ul>
+      <li><a routerLink="/" routerLinkActive="activo" [routerLinkActiveOptions]="{ exact: true }">Inicio</a></li>
+      <li><a routerLink="/productos" routerLinkActive="activo">Catálogo</a></li>
+      <li>
+        <a routerLink="/carrito" routerLinkActive="activo">
+          Carrito
+          @if (cantidadCarrito() > 0) {
+            <span data-carrito-contador>{{ cantidadCarrito() }}</span>
+          } @else {
+            <span data-carrito-contador style="display:none">0</span>
+          }
+        </a>
+      </li>
+      <li><a routerLink="/checkout" routerLinkActive="activo">Checkout</a></li>
+      <li><a routerLink="/contacto" routerLinkActive="activo">Contacto</a></li>
+      <li><a routerLink="/acerca" routerLinkActive="activo">Acerca de</a></li>
+      @if (auth.autenticado()) {
+        <li><a routerLink="/perfil" routerLinkActive="activo">Mi perfil</a></li>
+        <li><a routerLink="/historial" routerLinkActive="activo">Historial</a></li>
+        @if (auth.esAdmin()) {
+          <li><a routerLink="/admin" routerLinkActive="activo">Admin</a></li>
+        }
+      } @else {
+        <li><a routerLink="/login" routerLinkActive="activo">Login</a></li>
+      }
+    </ul>
+  </nav>
+
+  <div class="header__controles">
+    <app-search-bar
+      placeholder="Buscar juegos..."
+      (buscar)="alBuscar($event)"
+    />
+
+    @if (auth.autenticado()) {
+      <button type="button" class="btn-logout" (click)="cerrarSesion()" title="Cerrar sesión">
+        Salir
+      </button>
+    }
+
+    <button id="btn-tema" type="button" class="btn-tema" (click)="alternarTema()" aria-label="Cambiar tema">
+      @if (tema.tema() === 'oscuro') {
+        <span aria-hidden="true">☀</span> Claro
+      } @else {
+        <span aria-hidden="true">☾</span> Oscuro
+      }
+    </button>
+
+    <div id="reloj" class="reloj-digital" aria-label="Reloj digital">
+      {{ reloj() | date: 'HH:mm:ss' }}
+    </div>
+  </div>
+</header>

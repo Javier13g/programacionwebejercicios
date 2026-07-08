@@ -1,0 +1,122 @@
+<main>
+  <section id="lista-carrito">
+    <h2>Juegos listos para comprar</h2>
+    <div id="contenido-carrito">
+      @if (carrito.vacio()) {
+        <div class="carrito-vacio">
+          <p>🛒 Tu carrito está vacío.</p>
+          <a routerLink="/productos"><button type="button">Ir al catálogo</button></a>
+        </div>
+      } @else {
+        <table class="tabla-carrito">
+          <caption>Resumen de compra actual</caption>
+          <thead>
+            <tr>
+              <th colspan="2">Juego</th>
+              <th>Cantidad</th>
+              <th>Precio unitario</th>
+              <th>Subtotal</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of carrito.items(); track item.id) {
+              <tr
+                [attr.data-id]="item.id"
+                [ngClass]="{ 'carrito-fila--agotado': item.cantidad > 10 }"
+              >
+                <td>
+                  <img
+                    [src]="item.imagen"
+                    [alt]="item.nombre"
+                    class="carrito-img"
+                    (error)="$any($event.target).src = 'img/no-image.svg'"
+                  />
+                </td>
+                <td>{{ item.nombre | titlecase }}</td>
+                <td>
+                  <input
+                    type="number"
+                    class="input-cantidad"
+                    [attr.data-id]="item.id"
+                    [ngModel]="item.cantidad"
+                    (ngModelChange)="cambiarCantidad(item.id, +$event)"
+                    min="1"
+                    max="10"
+                  />
+                </td>
+                <td>{{ item.precio | currency: 'DOP' }}</td>
+                <td>{{ (item.precio * item.cantidad) | currency: 'DOP' }}</td>
+                <td>
+                  <button class="btn-eliminar" (click)="eliminar(item.id)">Eliminar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4">Subtotal</td>
+              <td colspan="2">{{ carrito.subtotal() | currency: 'DOP' }}</td>
+            </tr>
+            @if (descuento() > 0) {
+              <tr class="descuento-row">
+                <td colspan="4">Descuento aplicado ({{ descuento() }}%)</td>
+                <td colspan="2">
+                  − {{ (carrito.subtotal() | descuento: descuento : 'ahorro') }}
+                </td>
+              </tr>
+            }
+            <tr>
+              <td colspan="4">ITBIS (18%)</td>
+              <td colspan="2">{{ carrito.impuestos() | currency: 'DOP' }}</td>
+            </tr>
+            <tr class="total-row">
+              <td colspan="4"><strong>TOTAL</strong></td>
+              <td colspan="2">
+                <strong>{{ carrito.total() | currency: 'DOP' }}</strong>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div class="carrito-acciones">
+          <button id="btn-vaciar" type="button" (click)="vaciar()">Vaciar carrito</button>
+          <button id="btn-finalizar" type="button" (click)="finalizar()">Finalizar compra rápida</button>
+          <a routerLink="/checkout"><button type="button" class="btn-checkout">Ir al checkout formal →</button></a>
+        </div>
+      }
+    </div>
+  </section>
+
+  @if (ordenConfirmada(); as orden) {
+    <article id="confirmacion-compra" class="confirmacion">
+      <h3>¡Compra realizada con éxito!</h3>
+      <p><strong>Número de orden:</strong> {{ orden.numero | uppercase }}</p>
+      <p><strong>Fecha:</strong> {{ orden.fecha | date: 'fullDate':'':'es' }}</p>
+      <p><strong>Total:</strong> {{ orden.total | currency: 'DOP' }}</p>
+      <p>
+        <a routerLink="/checkout">
+          <button type="button">Ir al checkout formal</button>
+        </a>
+      </p>
+    </article>
+  }
+
+  <section id="indicadores-compra">
+    <article>
+      <h3>Estado y beneficios aplicados</h3>
+      <p id="descuento-msg">
+        Porcentaje de descuento por volumen de compra:
+        <meter id="descuento-meter" [value]="descuento()" min="0" max="100">
+          {{ descuento() }}% de descuento activo
+        </meter>
+      </p>
+      <p id="progreso-msg">
+        Progreso estimado de la preparación de tu pedido:
+        <progress id="progreso-compra" [value]="pasos()" max="10">
+          Paso {{ pasos() }} de 10 completado
+        </progress>
+      </p>
+    </article>
+  </section>
+</main>

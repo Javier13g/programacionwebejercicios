@@ -34,7 +34,20 @@
 
                     <p>
                         <label for="filtro-busqueda">Busqueda en tiempo real:</label>
-                        <input type="search" id="filtro-busqueda" placeholder="Escriba para buscar..." autocomplete="off">
+                        <span class="search-wrap">
+                            <svg class="search-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="7"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="search" id="filtro-busqueda" class="search-input" placeholder="Escriba para buscar productos, marcas o categorias..." autocomplete="off">
+                            <button type="button" class="search-clear" id="filtro-busqueda-clear" aria-label="Limpiar busqueda" hidden>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </span>
+                        <span class="search-hint" id="filtro-busqueda-hint"></span>
                     </p>
 
                     <p>
@@ -87,7 +100,7 @@
                         </select>
                     </p>
 
-                    <p>
+                    <p class="filtros-acciones">
                         <button type="submit">Aplicar Filtros</button>
                         <button type="reset" id="btn-limpiar">Limpiar</button>
                     </p>
@@ -184,6 +197,37 @@
         if (queryURL) {
             filtroBusqueda.value = queryURL;
             setTimeout(aplicarFiltros, 100);
+        }
+
+        // --- Mejoras del input de búsqueda ---
+        const searchClear = document.getElementById("filtro-busqueda-clear");
+        const searchHint = document.getElementById("filtro-busqueda-hint");
+
+        const actualizarEstadoBusqueda = () => {
+            const tieneTexto = filtroBusqueda.value.length > 0;
+            if (searchClear) searchClear.hidden = !tieneTexto;
+            if (searchHint && tieneTexto) {
+                const tarjetas = cont.querySelectorAll(".producto").length;
+                if (tarjetas === 0) {
+                    searchHint.textContent = "Sin coincidencias para \"" + filtroBusqueda.value + "\"";
+                    searchHint.className = "search-hint sin-coincidencias";
+                } else {
+                    searchHint.textContent = tarjetas + " coincidencia" + (tarjetas === 1 ? "" : "s") + " encontrada" + (tarjetas === 1 ? "" : "s");
+                    searchHint.className = "search-hint con-resultados";
+                }
+            } else if (searchHint) {
+                searchHint.textContent = "";
+                searchHint.className = "search-hint";
+            }
+        };
+
+        if (searchClear) {
+            searchClear.addEventListener("click", () => {
+                filtroBusqueda.value = "";
+                filtroBusqueda.focus();
+                actualizarEstadoBusqueda();
+                aplicarFiltros();
+            });
         }
     </script>
 </body>

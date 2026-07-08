@@ -1,0 +1,416 @@
+/* ========================================
+   Catálogo de Productos - Cyberpunk Neon
+   ======================================== */
+
+main {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+  padding: 1.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   Aside de filtros
+   ======================================== */
+aside {
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface-2) 100%);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  height: fit-content;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 120px;
+}
+
+aside h2 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  margin-bottom: 1.25rem;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+
+aside fieldset {
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+aside legend {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--neon-magenta);
+  padding: 0 0.5rem;
+}
+
+aside p {
+  margin-bottom: 0.5rem;
+}
+
+aside label {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  margin-bottom: 0.5rem;
+}
+
+aside input[type="search"],
+aside input[type="range"],
+aside select {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  background: var(--bg-deep);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+aside input[type="search"]:focus,
+aside select:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+aside input[type="range"] {
+  padding: 0;
+  accent-color: var(--neon-cyan);
+}
+
+aside input[type="checkbox"] {
+  accent-color: var(--neon-cyan);
+  margin-right: 0.5rem;
+}
+
+/* Buscador */
+.search-wrap {
+  position: relative;
+  display: block;
+}
+
+.search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--gray-300);
+  border: none;
+  cursor: pointer;
+  color: var(--gray-500);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.search-clear:hover {
+  background: var(--danger);
+  color: var(--white);
+}
+
+/* Botones de filtros */
+.filtros-acciones {
+  display: flex;
+  gap: 0.625rem;
+  margin-top: 0.5rem;
+}
+
+.filtros-acciones button {
+  flex: 1;
+  padding: 0.625rem 0.875rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  color: var(--bg-deep);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: var(--transition);
+}
+
+.filtros-acciones button:hover {
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-1px);
+}
+
+.filtros-acciones button:last-child {
+  background: var(--bg-surface-2);
+  color: var(--gray-500);
+  border: 1px solid var(--gray-300);
+}
+
+.filtros-acciones button:last-child:hover {
+  background: var(--gray-300);
+  color: var(--white);
+  box-shadow: none;
+}
+
+/* ========================================
+   Lista de productos
+   ======================================== */
+.grid-juegos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.sin-resultados {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--gray-500);
+  font-style: italic;
+  background: var(--bg-surface);
+  border: 1px dashed var(--gray-300);
+  border-radius: var(--radius-lg);
+  grid-column: 1 / -1;
+}
+
+/* Indicador de carga en el contador */
+.progreso-carga {
+  display: inline-block;
+  margin-left: 0.5rem;
+  color: var(--neon-cyan);
+  font-weight: 700;
+  font-style: italic;
+  animation: pulse-text 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-text {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Estado de carga inicial (catálogo completo) */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-mid) 100%);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-lg);
+  margin-top: 1.5rem;
+}
+
+.loading-state p {
+  color: var(--gray-500);
+  font-weight: 600;
+  margin: 0;
+}
+
+.loading-state p:first-of-type {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--white);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.loading-sub {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--gray-400) !important;
+}
+
+.loading-spinner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid var(--gray-300);
+  border-top-color: var(--neon-cyan);
+  animation: spin 0.8s linear infinite;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+}
+
+.loading-spinner--sm {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* "Cargando más" inline al final del grid */
+.cargando-mas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem 1rem;
+  margin-top: 1rem;
+  color: var(--gray-500);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Estado de error */
+.error-state {
+  text-align: center;
+  padding: 2rem;
+  background: rgba(255, 56, 96, 0.1);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  color: var(--danger);
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(255, 56, 96, 0.4);
+  margin-top: 1rem;
+}
+
+/* ========================================
+   Paginación
+   ======================================== */
+.paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2.5rem;
+  padding: 1.5rem 1rem;
+}
+
+.btn-cargar-mas {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  color: var(--bg-deep);
+  border: none;
+  padding: 0.875rem 2rem;
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+
+.btn-cargar-mas:hover:not(:disabled) {
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-2px);
+}
+
+.btn-cargar-mas:disabled {
+  background: var(--bg-surface-2);
+  color: var(--gray-500);
+  cursor: not-allowed;
+  box-shadow: none;
+  border: 1px solid var(--gray-300);
+}
+
+.fin-pagina {
+  color: var(--gray-500);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 1rem 1.5rem;
+  border: 1px dashed var(--gray-300);
+  border-radius: var(--radius);
+  background: rgba(0, 240, 255, 0.04);
+}
+
+/* Botón "Ver todos los juegos" dentro del mensaje sin resultados */
+.btn-retry-busqueda {
+  display: inline-block;
+  margin-left: 0.75rem;
+  background: transparent;
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  padding: 0.375rem 0.875rem;
+  border-radius: 50px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-retry-busqueda:hover {
+  background: var(--neon-cyan);
+  color: var(--bg-deep);
+  box-shadow: var(--glow-cyan);
+}
+
+/* ========================================
+   Responsive
+   ======================================== */
+@media (max-width: 900px) {
+  main {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  aside {
+    position: static;
+  }
+}
+
+@media (max-width: 800px) {
+  main {
+    padding: 1rem;
+  }
+
+  .grid-juegos {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .btn-cargar-mas {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-juegos {
+    grid-template-columns: 1fr;
+  }
+
+  .loading-state {
+    padding: 2.5rem 1rem;
+  }
+
+  .paginacion {
+    margin-top: 1.5rem;
+    padding: 1rem 0.5rem;
+  }
+}

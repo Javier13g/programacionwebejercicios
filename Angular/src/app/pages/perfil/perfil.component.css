@@ -1,0 +1,45 @@
+.perfil {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.perfil h1 {
+  background: linear-gradient(135deg, #00f0ff, #ff007a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.perfil__card {
+  background: var(--color-superficie, #1a0b2e);
+  border: 1px solid var(--color-borde, #2a1850);
+  border-radius: 0.8rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.perfil__card code.token {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  font-size: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.3rem;
+}
+
+.perfil__acciones {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-logout {
+  background: #ff3860;
+  color: #fff;
+  border: 0;
+}

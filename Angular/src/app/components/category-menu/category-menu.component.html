@@ -1,0 +1,28 @@
+<nav
+  class="category-menu"
+  [class.category-menu--sidebar]="modo === 'sidebar'"
+  aria-label="Categorías de videojuegos"
+>
+  <button
+    type="button"
+    class="category-menu__item"
+    [class.category-menu__item--active]="activa === null || activa === ''"
+    (click)="onClick('')"
+  >
+    <span class="category-menu__icon" aria-hidden="true">★</span>
+    <span class="category-menu__label">Todos</span>
+  </button>
+
+  @for (cat of categorias; track cat.id) {
+    <button
+      type="button"
+      class="category-menu__item"
+      [class.category-menu__item--active]="activa === cat.id"
+      [attr.data-cat]="cat.id"
+      (click)="onClick(cat.id)"
+    >
+      <span class="category-menu__icon" aria-hidden="true">{{ iconoPara(cat.id) }}</span>
+      <span class="category-menu__label">{{ cat.nombre }}</span>
+    </button>
+  }
+</nav>

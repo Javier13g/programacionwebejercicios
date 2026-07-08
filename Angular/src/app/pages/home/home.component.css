@@ -1,0 +1,178 @@
+/* Home: el banner ya está estilado en estilos.css;
+   aquí solo refinamos detalles específicos del componente */
+
+/* Banner: layout interno (grid 2 columnas) */
+#banner article {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+#banner img {
+  width: 100%;
+  border-radius: var(--radius-lg);
+}
+
+/* Eyebrow tag (encima del título) */
+.banner-eyebrow {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid var(--neon-cyan);
+  padding: 4px 12px;
+  border-radius: 50px;
+  margin-bottom: 0.75rem;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+/* Chips de meta info en el banner */
+.banner-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.banner-chip {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--gray-300);
+  color: var(--gray-500);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 4px 12px;
+  border-radius: 50px;
+}
+
+.banner-chip--accent {
+  background: linear-gradient(135deg, var(--neon-magenta), var(--neon-purple));
+  border-color: var(--neon-magenta);
+  color: var(--white);
+  box-shadow: 0 0 8px rgba(255, 0, 122, 0.3);
+}
+
+/* Categorías: grid específico */
+#categorias-destacadas nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+#categorias-destacadas article {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  outline: none;
+}
+
+#categorias-destacadas article:focus-visible {
+  border-color: var(--neon-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.cat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(176, 38, 255, 0.15));
+  border: 1px solid var(--gray-300);
+  font-size: 1.5rem;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+  transition: var(--transition);
+  margin-bottom: 0.5rem;
+}
+
+#categorias-destacadas article:hover .cat-icon {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  color: var(--bg-deep);
+  border-color: var(--neon-cyan);
+  transform: rotate(360deg);
+  box-shadow: var(--glow-cyan);
+  text-shadow: none;
+}
+
+/* Estados de carga/ error */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem 1rem;
+  color: var(--gray-500);
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid var(--gray-300);
+  border-top-color: var(--neon-cyan);
+  animation: spin 0.8s linear infinite;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-state {
+  text-align: center;
+  padding: 2rem;
+  background: rgba(255, 56, 96, 0.1);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  color: var(--danger);
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(255, 56, 96, 0.4);
+}
+
+/* Modal: centrado y backdrop */
+.promo-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+  z-index: 9999;
+}
+
+.promo-content {
+  text-align: center;
+}
+
+.promo-btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 700px) {
+  #banner article {
+    grid-template-columns: 1fr;
+  }
+
+  #banner img {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}

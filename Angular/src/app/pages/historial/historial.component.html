@@ -1,0 +1,74 @@
+<main class="historial">
+  <h1>Historial de compras</h1>
+
+  @if (cargando()) {
+    <p>Cargando...</p>
+  } @else if (ordenes().length === 0) {
+    <section class="historial__vacio">
+      <p>📜 Aún no tienes compras registradas.</p>
+      <a routerLink="/productos"><button type="button">Ir al catálogo</button></a>
+    </section>
+  } @else {
+    <ul class="historial__lista">
+      @for (o of ordenes(); track o.numero) {
+        <li class="historial__orden">
+          <header>
+            <h2>
+              Orden <code>{{ o.numero }}</code>
+            </h2>
+            <p>
+              <strong>Fecha:</strong>
+              {{ o.fecha | date: 'fullDate':'':'es' }}
+              - {{ o.fecha | date: 'shortTime':'':'es' }}
+            </p>
+            @if (o.comprador?.nombre) {
+              <p>
+                <strong>Comprador:</strong> {{ o.comprador?.nombre }}
+                ({{ o.comprador?.email }})
+              </p>
+            }
+          </header>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Juego</th>
+                <th>Cant.</th>
+                <th>Precio</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (it of o.items; track it.id) {
+                <tr>
+                  <td>{{ it.nombre }}</td>
+                  <td>{{ it.cantidad }}</td>
+                  <td>{{ it.precio | currency: 'DOP' }}</td>
+                  <td>{{ it.precio * it.cantidad | currency: 'DOP' }}</td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3">Subtotal</td>
+                <td>{{ o.datos.subtotal | currency: 'DOP' }}</td>
+              </tr>
+              <tr>
+                <td colspan="3">ITBIS</td>
+                <td>{{ o.datos.impuestos | currency: 'DOP' }}</td>
+              </tr>
+              <tr>
+                <td colspan="3">Envío</td>
+                <td>{{ o.datos.envio | currency: 'DOP' }}</td>
+              </tr>
+              <tr class="total">
+                <td colspan="3"><strong>TOTAL</strong></td>
+                <td><strong>{{ o.datos.total | currency: 'DOP' }}</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </li>
+      }
+    </ul>
+  }
+</main>

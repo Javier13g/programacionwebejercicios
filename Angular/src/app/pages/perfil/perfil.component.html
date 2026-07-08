@@ -1,0 +1,32 @@
+<main class="perfil">
+  @if (auth.usuario(); as u) {
+    <h1>Mi perfil</h1>
+    <article class="perfil__card">
+      <p>
+        <strong>Nombre:</strong> {{ u.nombre | titlecase }}
+      </p>
+      <p>
+        <strong>Email:</strong> {{ u.email }}
+      </p>
+      <p>
+        <strong>Rol:</strong> {{ u.rol | uppercase }}
+      </p>
+      <p>
+        <strong>ID:</strong> <code>{{ u.id }}</code>
+      </p>
+      <p>
+        <strong>Token (demo):</strong>
+        <code class="token">{{ u.token }}</code>
+      </p>
+    </article>
+
+    <div class="perfil__acciones">
+      <a routerLink="/historial"><button type="button">Ver historial de compras</button></a>
+      <a routerLink="/checkout"><button type="button">Ir al checkout</button></a>
+      @if (auth.esAdmin()) {
+        <a routerLink="/admin"><button type="button">Panel administrativo</button></a>
+      }
+      <button type="button" class="btn-logout" (click)="cerrarSesion()">Cerrar sesión</button>
+    </div>
+  }
+</main>

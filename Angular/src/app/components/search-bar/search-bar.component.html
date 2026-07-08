@@ -1,0 +1,26 @@
+<form role="search" class="search-bar" (submit)="onSubmit($event)">
+  <label class="sr-only" for="search-bar-input">Buscar</label>
+  <span class="search-bar__icon" aria-hidden="true">🔍</span>
+  <input
+    id="search-bar-input"
+    type="search"
+    [placeholder]="placeholder"
+    autocomplete="off"
+    [attr.autofocus]="autofocus ? '' : null"
+    [ngModel]="termino()"
+    (ngModelChange)="onInput($event)"
+    name="termino"
+    class="search-bar__input"
+  />
+  @if (termino().length > 0) {
+    <button
+      type="button"
+      class="search-bar__clear"
+      aria-label="Limpiar búsqueda"
+      (click)="onLimpiar()"
+    >
+      ✕
+    </button>
+  }
+  <button type="submit" class="search-bar__submit">Buscar</button>
+</form>

@@ -296,12 +296,6 @@ section h2::after {
     transform: translateX(-50%);
 }
 
-#productos-destacados {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-}
-
 .producto {
     background: var(--white);
     border-radius: var(--radius-lg);
@@ -382,9 +376,16 @@ section h2::after {
    Productos (Catálogo)
    ======================================== */
 #lista-productos {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
+    background: var(--white);
+}
+
+#lista-productos h2 {
+    text-align: center;
+}
+
+#lista-productos h2::after {
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 #lista-productos article {
@@ -477,17 +478,47 @@ aside select:focus {
 
 aside button {
     width: 100%;
-    padding: 0.875rem;
+    padding: 0.875rem 1rem;
     background: var(--primary);
     color: var(--white);
     border: none;
     border-radius: var(--radius);
+    font-size: 1rem;
     font-weight: 600;
+    font-family: inherit;
     cursor: pointer;
     transition: var(--transition);
 }
 
 aside button:hover {
+    background: var(--primary-dark);
+}
+
+/* Contenedor de los botones Aplicar / Limpiar del formulario de filtros */
+.filtros-acciones {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+.filtros-acciones button {
+    flex: 1;
+    font-size: 1rem;
+    letter-spacing: 0.2px;
+}
+.filtros-acciones button[type="reset"] {
+    background: var(--gray-200);
+    color: var(--dark);
+    border: 1px solid var(--gray-300);
+}
+.filtros-acciones button[type="reset"]:hover {
+    background: var(--gray-300);
+    color: var(--dark);
+}
+.filtros-acciones button[type="submit"] {
+    background: var(--primary);
+    color: var(--white);
+}
+.filtros-acciones button[type="submit"]:hover {
     background: var(--primary-dark);
 }
 

@@ -37,9 +37,6 @@ const aplicarTema = (tema) => {
   if (btn) btn.textContent = tema === "oscuro" ? "☀️ Modo Claro" : "🌙 Modo Oscuro";
 };
 
-// ============================================
-// RELOJ DIGITAL (setInterval + clearInterval)
-// ============================================
 export const iniciarReloj = (selector = "#reloj") => {
   const el = document.querySelector(selector);
   if (!el) return null;
@@ -49,9 +46,6 @@ export const iniciarReloj = (selector = "#reloj") => {
   return () => clearInterval(id);
 };
 
-// ============================================
-// BANNER ROTATIVO (setTimeout)
-// ============================================
 const mensajesBanner = [
   "🎧 Hasta 30h de batería en los SoundPro X1",
   "🚚 Envío gratis en compras mayores a RD$ 50,000",

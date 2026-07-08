@@ -1,0 +1,50 @@
+.not-found {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.not-found__content {
+  max-width: 480px;
+}
+
+.not-found__code {
+  font-size: clamp(6rem, 18vw, 12rem);
+  line-height: 1;
+  margin: 0;
+  background: linear-gradient(135deg, #00f0ff, #ff007a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 900;
+}
+
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.not-found h2 {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.not-found p {
+  margin-bottom: 1.5rem;
+  opacity: 0.85;
+}
+
+.not-found__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.not-found__footer {
+  margin-top: 2rem;
+  opacity: 0.5;
+}
