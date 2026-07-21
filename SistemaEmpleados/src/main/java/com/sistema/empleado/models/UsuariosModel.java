@@ -1,5 +1,7 @@
 package com.sistema.empleado.models;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
@@ -37,6 +39,13 @@ public class UsuariosModel {
     @Enumerated(EnumType.STRING)
     @Column(name = "rol", nullable = false, length = 20)
     private RolUsuario rol;
+
+    // === Soft Delete ===
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     public Long getId() {
         return id;
@@ -76,5 +85,21 @@ public class UsuariosModel {
 
     public void setRol(RolUsuario rol) {
         this.rol = rol;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
     }
 }

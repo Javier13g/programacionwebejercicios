@@ -17,6 +17,8 @@ import com.sistema.empleado.dto.PageResponse;
 import com.sistema.empleado.models.DepartamentosModel;
 import com.sistema.empleado.services.DepartamentosService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/departamentos")
 public class DepartamentosController {
@@ -35,14 +37,15 @@ public class DepartamentosController {
     }
 
     @PostMapping
-    public ResponseEntity<DepartamentosModel> saveDepartamento(@RequestBody DepartamentoRequestDto departamento) {
+    public ResponseEntity<DepartamentosModel> saveDepartamento(
+            @Valid @RequestBody DepartamentoRequestDto departamento) {
         DepartamentosModel saved = departamentosService.saveDepartamento(departamento);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<DepartamentosModel> updateDepartamento(
-            @PathVariable Long id, @RequestBody DepartamentoRequestDto dto) {
+            @PathVariable Long id, @Valid @RequestBody DepartamentoRequestDto dto) {
         return departamentosService.updateDepartamento(id, dto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

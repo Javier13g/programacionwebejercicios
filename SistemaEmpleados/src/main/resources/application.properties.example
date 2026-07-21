@@ -1,0 +1,15 @@
+spring.application.name=empleado
+
+# --- DataSource (Aiven MySQL) ---
+# spring.datasource.url=jdbc:mysql://HOST:PORT/DBNAME?ssl-mode=REQUIRED
+# spring.datasource.username=avnadmin
+# spring.datasource.password=your_password_here
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+
+# --- JWT (HS256) ---
+# Mínimo 32 bytes. Genera uno con: openssl rand -base64 48
+# app.jwt.secret=replace-with-secure-random-secret
+app.jwt.expiration-ms=3600000
+app.jwt.issuer=sistema-empleados

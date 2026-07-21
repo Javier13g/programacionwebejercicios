@@ -18,6 +18,8 @@ import com.sistema.empleado.dto.PageResponse;
 import com.sistema.empleado.models.EmpleadosModel;
 import com.sistema.empleado.services.EmpleadosService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/empleados")
 public class EmpleadosController {
@@ -48,14 +50,14 @@ public class EmpleadosController {
     }
 
     @PostMapping
-    public ResponseEntity<EmpleadosModel> saveEmpleado(@RequestBody EmpleadoRequestDto empleado) {
+    public ResponseEntity<EmpleadosModel> saveEmpleado(@Valid @RequestBody EmpleadoRequestDto empleado) {
         EmpleadosModel saved = empleadosService.saveEmpleado(empleado);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<EmpleadosModel> updateEmpleado(
-            @PathVariable Long id, @RequestBody EmpleadoRequestDto dto) {
+            @PathVariable Long id, @Valid @RequestBody EmpleadoRequestDto dto) {
         return empleadosService.updateEmpleado(id, dto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

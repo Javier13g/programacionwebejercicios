@@ -17,6 +17,8 @@ import com.sistema.empleado.dto.PageResponse;
 import com.sistema.empleado.models.CargosModel;
 import com.sistema.empleado.services.CargosService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/cargos")
 public class CargosController {
@@ -34,13 +36,14 @@ public class CargosController {
     }
 
     @PostMapping
-    public ResponseEntity<CargosModel> saveCargo(@RequestBody CargoRequestDto cargo) {
+    public ResponseEntity<CargosModel> saveCargo(@Valid @RequestBody CargoRequestDto cargo) {
         CargosModel saved = cargosService.saveCargo(cargo);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CargosModel> updateCargo(@PathVariable Long id, @RequestBody CargosModel cargo) {
+    public ResponseEntity<CargosModel> updateCargo(
+            @PathVariable Long id, @Valid @RequestBody CargosModel cargo) {
         return cargosService.updateCargo(id, cargo)
                 .map(updatedCargo -> ResponseEntity.ok(updatedCargo))
                 .orElseGet(() -> ResponseEntity.notFound().build());
