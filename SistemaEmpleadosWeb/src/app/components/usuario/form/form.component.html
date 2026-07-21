@@ -1,0 +1,148 @@
+<app-navbar />
+
+<main class="container py-4">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a [routerLink]="['/usuarios']">Usuarios</a></li>
+      @if (modoEdicion() && usuarioId(); as id) {
+        <li class="breadcrumb-item">
+          <a [routerLink]="['/usuarios', id]">Detalle</a>
+        </li>
+        <li class="breadcrumb-item active">Editar</li>
+      } @else {
+        <li class="breadcrumb-item active">Nuevo</li>
+      }
+    </ol>
+  </nav>
+
+  @if (cargando()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="card shadow-sm">
+      <div class="card-header bg-light">
+        <strong>{{ modoEdicion() ? 'Editar usuario' : 'Nuevo usuario' }}</strong>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="username" class="form-label">
+                Username <span class="text-danger">*</span>
+                @if (campoCambiado('username')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <input
+                id="username"
+                type="text"
+                class="form-control"
+                [class.is-invalid]="campoInvalido('username')"
+                formControlName="username"
+                maxlength="50"
+                pattern="[a-zA-Z0-9_.\-]+"
+              />
+              @if (campoInvalido('username')) {
+                <div class="invalid-feedback">Username obligatorio, 3-50 caracteres alfanuméricos (._- permitidos).</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label for="rol" class="form-label">
+                Rol <span class="text-danger">*</span>
+                @if (campoCambiado('rol')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <select
+                id="rol"
+                class="form-select"
+                [class.is-invalid]="campoInvalido('rol')"
+                formControlName="rol"
+              >
+                @for (r of roles; track r) {
+                  <option [value]="r">{{ r }}</option>
+                }
+              </select>
+              <div class="form-text">
+                <strong>admin</strong> = todo · <strong>rrhh</strong> = gestión de personal · <strong>empleado</strong> = solo lectura
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label for="empleadoId" class="form-label">
+                Empleado asociado <span class="text-danger">*</span>
+                @if (campoCambiado('empleadoId')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <select
+                id="empleadoId"
+                class="form-select"
+                [class.is-invalid]="campoInvalido('empleadoId')"
+                formControlName="empleadoId"
+              >
+                <option [ngValue]="null">— Seleccioná —</option>
+                @for (e of empleados(); track e.id) {
+                  <option [ngValue]="e.id">
+                    #{{ e.id }} — {{ e.nombre }} {{ e.apellido }} ({{ e.cedula }})
+                  </option>
+                }
+              </select>
+              @if (campoInvalido('empleadoId')) {
+                <div class="invalid-feedback">Seleccioná un empleado.</div>
+              }
+            </div>
+
+            <div class="col-12">
+              <label for="password" class="form-label">
+                @if (modoEdicion()) {
+                  Nueva contraseña
+                  <span class="text-muted small">(dejar vacío para no cambiar)</span>
+                } @else {
+                  Contraseña <span class="text-danger">*</span>
+                }
+                @if (campoCambiado('password')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <input
+                id="password"
+                type="password"
+                class="form-control"
+                [class.is-invalid]="campoInvalido('password')"
+                formControlName="password"
+                minlength="8"
+                maxlength="128"
+                autocomplete="new-password"
+              />
+              <div class="form-text">Mínimo 8 caracteres. Se hashea con BCrypt antes de guardar.</div>
+            </div>
+          </div>
+
+          <hr class="my-4" />
+
+          <div class="d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="cancelar()"
+              [disabled]="guardando()"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="guardando() || form.invalid"
+            >
+              @if (guardando()) {
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Guardando...
+              } @else if (modoEdicion()) {
+                Guardar cambios
+              } @else {
+                Crear usuario
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</main>

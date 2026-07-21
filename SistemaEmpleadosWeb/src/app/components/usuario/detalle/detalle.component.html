@@ -1,0 +1,106 @@
+<app-navbar />
+
+<main class="container py-4">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a [routerLink]="['/usuarios']">Usuarios</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{ usuario()?.username || 'Detalle' }}
+      </li>
+    </ol>
+  </nav>
+
+  @if (cargando()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  } @else {
+    @let u = usuario();
+    @if (u) {
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card shadow-sm">
+            <div class="card-body text-center">
+              <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3"
+                   style="width: 96px; height: 96px; font-size: 2.5rem;">
+                <i class="bi bi-person-fill"></i>
+              </div>
+              <h4 class="card-title mb-1"><code>{{ u.username }}</code></h4>
+              <p class="text-muted mb-2">ID: {{ u.id }}</p>
+              <span class="badge"
+                    [class]="u.rol === 'admin' ? 'bg-danger' :
+                              u.rol === 'rrhh' ? 'bg-warning text-dark' :
+                              'bg-secondary'">
+                {{ u.rol }}
+              </span>
+            </div>
+          </div>
+
+          <div class="d-grid gap-2 mt-3">
+            <button class="btn btn-outline-secondary" (click)="volver()">
+              <i class="bi bi-arrow-left me-1"></i> Volver
+            </button>
+            <a class="btn btn-primary" [routerLink]="['/usuarios', u.id, 'editar']">
+              <i class="bi bi-pencil me-1"></i> Editar
+            </a>
+          </div>
+        </div>
+
+        <div class="col-md-8">
+          <div class="card shadow-sm">
+            <div class="card-header bg-light">
+              <strong>Información del usuario</strong>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between">
+                <span class="text-muted">ID</span>
+                <span>{{ u.id }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span class="text-muted">Username</span>
+                <code>{{ u.username }}</code>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span class="text-muted">Rol</span>
+                <span class="badge"
+                      [class]="u.rol === 'admin' ? 'bg-danger' :
+                                u.rol === 'rrhh' ? 'bg-warning text-dark' :
+                                'bg-secondary'">
+                  {{ u.rol }}
+                </span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span class="text-muted">Empleado asociado</span>
+                <span>
+                  @if (u.empleado && u.empleado.id) {
+                    <a [routerLink]="['/empleados', u.empleado.id]">
+                      {{ u.empleado.nombre }} {{ u.empleado.apellido }}
+                    </a>
+                  } @else {
+                    <span class="text-muted">— (ID: {{ u.empleadoId ?? '?' }})</span>
+                  }
+                </span>
+              </li>
+              @if (u.deleted) {
+                <li class="list-group-item d-flex justify-content-between">
+                  <span class="text-muted">Estado</span>
+                  <span class="badge bg-dark">Eliminado</span>
+                </li>
+                @if (u.deletedAt) {
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Eliminado el</span>
+                    <span>{{ u.deletedAt }}</span>
+                  </li>
+                }
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <p class="text-muted">No hay datos del usuario.</p>
+    }
+  }
+</main>

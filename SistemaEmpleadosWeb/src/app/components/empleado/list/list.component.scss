@@ -1,0 +1,10 @@
+:host { display: block; }
+
+.empleado-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.empleado-row:hover {
+  background-color: rgba(13, 110, 253, 0.08) !important;
+}

@@ -1,0 +1,137 @@
+<app-navbar />
+
+<main class="container py-4">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a [routerLink]="['/']">Empleados</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        @if (empleado(); as e) {
+          {{ e.nombre }} {{ e.apellido }}
+        } @else {
+          Detalle
+        }
+      </li>
+    </ol>
+  </nav>
+
+  @if (cargando()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  } @else if (empleado(); as e) {
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card shadow-sm">
+          <div class="card-body text-center">
+            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3"
+                 style="width: 96px; height: 96px; font-size: 2.5rem;">
+              {{ e.nombre.charAt(0) }}{{ e.apellido.charAt(0) }}
+            </div>
+            <h4 class="card-title mb-1">{{ e.nombre }} {{ e.apellido }}</h4>
+            <p class="text-muted mb-2">Cédula: {{ e.cedula }}</p>
+            <span class="badge"
+                  [class.bg-success]="e.estado === 'activo'"
+                  [class.bg-secondary]="e.estado !== 'activo'">
+              {{ e.estado }}
+            </span>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2 mt-3">
+          <button class="btn btn-outline-secondary" (click)="volver()">
+            <i class="bi bi-arrow-left me-1"></i> Volver
+          </button>
+          <a class="btn btn-primary" [routerLink]="['/empleados', empleado()?.id, 'editar']">
+            <i class="bi bi-pencil me-1"></i> Editar
+          </a>
+        </div>
+      </div>
+
+      <div class="col-md-8">
+        <div class="card shadow-sm">
+          <div class="card-header bg-light">
+            <strong>Información personal</strong>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">ID</span>
+              <span>{{ e.id }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Nombre</span>
+              <span>{{ e.nombre }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Apellido</span>
+              <span>{{ e.apellido }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Cédula</span>
+              <span>{{ e.cedula }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Email</span>
+              <span>{{ e.email }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Teléfono</span>
+              <span>{{ e.telefono || '—' }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Fecha de ingreso</span>
+              <span>{{ e.fechaIngreso }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card shadow-sm mt-3">
+          <div class="card-header bg-light">
+            <strong>Información organizacional</strong>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Departamento</span>
+              <span>
+                @if (e.departamento?.nombre) {
+                  <span class="badge bg-info text-dark">{{ e.departamento?.nombre }}</span>
+                  <small class="text-muted ms-1">(ID: {{ e.departamentoId }})</small>
+                } @else {
+                  <span class="text-muted">— (ID: {{ e.departamentoId ?? '—' }})</span>
+                }
+              </span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Cargo</span>
+              <span>
+                @if (e.cargo?.nombre) {
+                  <span class="badge bg-primary">{{ e.cargo?.nombre }}</span>
+                  <small class="text-muted ms-2">
+                    {{ e.cargo?.nivel }} · ${{ e.cargo?.salarioBase | number:'1.0-0' }}
+                  </small>
+                } @else {
+                  <span class="text-muted">— (ID: {{ e.cargoId ?? '—' }})</span>
+                }
+              </span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Jefe directo</span>
+              <span>
+                @if (e.jefe) {
+                  <a [routerLink]="['/empleados', e.jefe.id]">
+                    {{ e.jefe.nombre }} {{ e.jefe.apellido }}
+                  </a>
+                } @else if (e.jefeId) {
+                  <a [routerLink]="['/empleados', e.jefeId]">ID: {{ e.jefeId }}</a>
+                } @else {
+                  <span class="text-muted">— (sin jefe asignado)</span>
+                }
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  }
+</main>

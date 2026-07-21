@@ -1,0 +1,113 @@
+<app-navbar />
+
+<main class="container py-4">
+  <div class="row mb-3">
+    <div class="col">
+      <h1 class="h3 mb-0">Listado de Usuarios</h1>
+      <p class="text-muted mb-0">
+        {{ totalElementos() }} usuarios en total
+      </p>
+    </div>
+    <div class="col-auto">
+      <a class="btn btn-primary" [routerLink]="['/usuarios/nuevo']">
+        <i class="bi bi-person-plus me-1"></i> Nuevo usuario
+      </a>
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Username</th>
+              <th scope="col">Rol</th>
+              <th scope="col">Empleado</th>
+              <th scope="col" class="text-end" style="width: 180px;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of usuarios(); track u.id) {
+              <tr
+                role="button"
+                class="usuario-row"
+                [routerLink]="['/usuarios', u.id]"
+              >
+                <th scope="row">{{ u.id }}</th>
+                <td><code>{{ u.username }}</code></td>
+                <td>
+                  <span class="badge"
+                        [class]="u.rol === 'admin' ? 'bg-danger' :
+                                  u.rol === 'rrhh' ? 'bg-warning text-dark' :
+                                  'bg-secondary'">
+                    {{ u.rol }}
+                  </span>
+                </td>
+                <td>
+                  @if (u.empleado) {
+                    <a [routerLink]="['/empleados', u.empleado.id]"
+                       (click)="$event.stopPropagation()">
+                      {{ u.empleado.nombre }} {{ u.empleado.apellido }}
+                    </a>
+                  } @else {
+                    <span class="text-muted">— (ID: {{ u.empleadoId ?? '?' }})</span>
+                  }
+                </td>
+                <td class="text-end">
+                  <div class="btn-group btn-group-sm" role="group">
+                    <a
+                      class="btn btn-outline-primary"
+                      [routerLink]="['/usuarios', u.id]"
+                      (click)="$event.stopPropagation()"
+                    >
+                      <i class="bi bi-eye"></i> Ver
+                    </a>
+                    <a
+                      class="btn btn-outline-secondary"
+                      [routerLink]="['/usuarios', u.id, 'editar']"
+                      (click)="$event.stopPropagation()"
+                    >
+                      <i class="bi bi-pencil"></i> Editar
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                  No hay usuarios cargados.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    @if (totalPaginas() > 1) {
+      <nav class="mt-3">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="paginaActual() === 0">
+            <button class="page-link" (click)="irAPagina(paginaActual() - 1)">Anterior</button>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link">
+              Página {{ paginaActual() + 1 }} de {{ totalPaginas() }}
+            </span>
+          </li>
+          <li class="page-item" [class.disabled]="paginaActual() + 1 >= totalPaginas()">
+            <button class="page-link" (click)="irAPagina(paginaActual() + 1)">Siguiente</button>
+          </li>
+        </ul>
+      </nav>
+    }
+  }
+</main>

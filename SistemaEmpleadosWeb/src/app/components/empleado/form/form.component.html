@@ -1,0 +1,257 @@
+<app-navbar />
+
+<main class="container py-4">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a [routerLink]="['/']">Empleados</a></li>
+      @if (modoEdicion() && empleadoId(); as id) {
+        <li class="breadcrumb-item">
+          <a [routerLink]="['/empleados', id]">Detalle</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Editar</li>
+      } @else {
+        <li class="breadcrumb-item active" aria-current="page">Nuevo</li>
+      }
+    </ol>
+  </nav>
+
+  @if (cargando()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="card shadow-sm">
+      <div class="card-header bg-light">
+        <strong>{{ modoEdicion() ? 'Editar empleado' : 'Nuevo empleado' }}</strong>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label for="cedula" class="form-label">
+                Cédula <span class="text-danger">*</span>
+                @if (campoCambiado('cedula')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <input
+                id="cedula"
+                type="text"
+                class="form-control"
+                [class.is-invalid]="campoInvalido('cedula')"
+                formControlName="cedula"
+                maxlength="15"
+              />
+              @if (campoInvalido('cedula')) {
+                <div class="invalid-feedback">Cédula obligatoria, 6 a 15 dígitos.</div>
+              }
+            </div>
+
+            <div class="col-md-4">
+              <label for="nombre" class="form-label">
+                Nombre <span class="text-danger">*</span>
+                @if (campoCambiado('nombre')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <input
+                id="nombre"
+                type="text"
+                class="form-control"
+                [class.is-invalid]="campoInvalido('nombre')"
+                formControlName="nombre"
+                maxlength="100"
+              />
+              @if (campoInvalido('nombre')) {
+                <div class="invalid-feedback">Nombre obligatorio, 2 a 100 caracteres.</div>
+              }
+            </div>
+
+            <div class="col-md-4">
+              <label for="apellido" class="form-label">
+                Apellido <span class="text-danger">*</span>
+                @if (campoCambiado('apellido')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <input
+                id="apellido"
+                type="text"
+                class="form-control"
+                [class.is-invalid]="campoInvalido('apellido')"
+                formControlName="apellido"
+                maxlength="100"
+              />
+              @if (campoInvalido('apellido')) {
+                <div class="invalid-feedback">Apellido obligatorio, 2 a 100 caracteres.</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label for="email" class="form-label">
+                Email <span class="text-danger">*</span>
+                @if (campoCambiado('email')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <input
+                id="email"
+                type="email"
+                class="form-control"
+                [class.is-invalid]="campoInvalido('email')"
+                formControlName="email"
+                maxlength="150"
+              />
+              @if (campoInvalido('email')) {
+                <div class="invalid-feedback">Email obligatorio y con formato válido.</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label for="telefono" class="form-label">
+                Teléfono
+                @if (campoCambiado('telefono')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <input
+                id="telefono"
+                type="text"
+                class="form-control"
+                formControlName="telefono"
+                maxlength="30"
+              />
+            </div>
+
+            <div class="col-md-4">
+              <label for="fechaIngreso" class="form-label">
+                Fecha de ingreso <span class="text-danger">*</span>
+                @if (campoCambiado('fechaIngreso')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <input
+                id="fechaIngreso"
+                type="date"
+                class="form-control"
+                [class.is-invalid]="campoInvalido('fechaIngreso')"
+                formControlName="fechaIngreso"
+              />
+              @if (campoInvalido('fechaIngreso')) {
+                <div class="invalid-feedback">La fecha de ingreso es obligatoria.</div>
+              }
+            </div>
+
+            <div class="col-md-4">
+              <label for="estado" class="form-label">
+                Estado <span class="text-danger">*</span>
+                @if (campoCambiado('estado')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <select
+                id="estado"
+                class="form-select"
+                [class.is-invalid]="campoInvalido('estado')"
+                formControlName="estado"
+              >
+                @for (e of estados; track e) {
+                  <option [value]="e">{{ e }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label for="departamentoId" class="form-label">
+                Departamento <span class="text-danger">*</span>
+                @if (campoCambiado('departamentoId')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <select
+                id="departamentoId"
+                class="form-select"
+                [class.is-invalid]="campoInvalido('departamentoId')"
+                formControlName="departamentoId"
+              >
+                <option [ngValue]="null">— Seleccioná —</option>
+                @for (d of departamentos(); track d.id) {
+                  <option [ngValue]="d.id">{{ d.nombre }}</option>
+                }
+              </select>
+              @if (campoInvalido('departamentoId')) {
+                <div class="invalid-feedback">Seleccioná un departamento.</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label for="cargoId" class="form-label">
+                Cargo <span class="text-danger">*</span>
+                @if (campoCambiado('cargoId')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <select
+                id="cargoId"
+                class="form-select"
+                [class.is-invalid]="campoInvalido('cargoId')"
+                formControlName="cargoId"
+              >
+                <option [ngValue]="null">— Seleccioná —</option>
+                @for (c of cargos(); track c.id) {
+                  <option [ngValue]="c.id">
+                    {{ c.nombre }} — {{ c.nivel }} (${{ c.salarioBase }})
+                  </option>
+                }
+              </select>
+              @if (campoInvalido('cargoId')) {
+                <div class="invalid-feedback">Seleccioná un cargo.</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label for="jefeId" class="form-label">
+                Jefe directo
+                @if (campoCambiado('jefeId')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <select
+                id="jefeId"
+                class="form-select"
+                [class.is-invalid]="campoInvalido('jefeId')"
+                formControlName="jefeId"
+              >
+                <option [ngValue]="null">— Sin jefe —</option>
+                @for (j of jefesFiltrados(); track j.id) {
+                  <option [ngValue]="j.id">
+                    {{ j.nombre }} {{ j.apellido }}
+                    — {{ j.cargo?.nombre || 'sin cargo' }}
+                    @if (j.cargo?.nombre === 'CEO') { 👑 }
+                    @else if (j.departamentoId) { · Depto #{{ j.departamentoId }} }
+                  </option>
+                } @empty {
+                  <option [ngValue]="null" disabled>
+                    — No hay candidatos disponibles para este departamento —
+                  </option>
+                }
+              </select>
+              <div class="form-text">
+                Solo se muestran empleados del mismo departamento + todos los CEOs.
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4" />
+
+          <div class="d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="cancelar()"
+              [disabled]="guardando()"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="guardando() || form.invalid"
+            >
+              @if (guardando()) {
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Guardando...
+              } @else if (modoEdicion()) {
+                Guardar cambios
+              } @else {
+                Crear empleado
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</main>

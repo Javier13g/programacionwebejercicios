@@ -1,0 +1,120 @@
+<app-navbar />
+
+<main class="container py-4">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a [routerLink]="['/cargos']">Cargos</a></li>
+      @if (modoEdicion() && cargoId(); as id) {
+        <li class="breadcrumb-item">
+          <a [routerLink]="['/cargos', id]">Detalle</a>
+        </li>
+        <li class="breadcrumb-item active">Editar</li>
+      } @else {
+        <li class="breadcrumb-item active">Nuevo</li>
+      }
+    </ol>
+  </nav>
+
+  @if (cargando()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="card shadow-sm">
+      <div class="card-header bg-light">
+        <strong>{{ modoEdicion() ? 'Editar cargo' : 'Nuevo cargo' }}</strong>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="nombre" class="form-label">
+                Nombre <span class="text-danger">*</span>
+                @if (campoCambiado('nombre')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <input
+                id="nombre"
+                type="text"
+                class="form-control"
+                [class.is-invalid]="campoInvalido('nombre')"
+                formControlName="nombre"
+                maxlength="100"
+              />
+              @if (campoInvalido('nombre')) {
+                <div class="invalid-feedback">Nombre obligatorio, 2 a 100 caracteres.</div>
+              }
+            </div>
+
+            <div class="col-md-3">
+              <label for="nivel" class="form-label">
+                Nivel <span class="text-danger">*</span>
+                @if (campoCambiado('nivel')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <select
+                id="nivel"
+                class="form-select"
+                [class.is-invalid]="campoInvalido('nivel')"
+                formControlName="nivel"
+              >
+                @for (n of niveles; track n) {
+                  <option [value]="n">{{ n }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label for="salarioBase" class="form-label">
+                Salario base <span class="text-danger">*</span>
+                @if (campoCambiado('salarioBase')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input
+                  id="salarioBase"
+                  type="number"
+                  class="form-control"
+                  [class.is-invalid]="campoInvalido('salarioBase')"
+                  formControlName="salarioBase"
+                  min="0.01"
+                  step="0.01"
+                />
+              </div>
+              @if (campoInvalido('salarioBase')) {
+                <div class="invalid-feedback d-block">Salario obligatorio, mayor a 0.</div>
+              }
+            </div>
+          </div>
+
+          <hr class="my-4" />
+
+          <div class="d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="cancelar()"
+              [disabled]="guardando()"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="guardando() || form.invalid"
+            >
+              @if (guardando()) {
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Guardando...
+              } @else if (modoEdicion()) {
+                Guardar cambios
+              } @else {
+                Crear cargo
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</main>

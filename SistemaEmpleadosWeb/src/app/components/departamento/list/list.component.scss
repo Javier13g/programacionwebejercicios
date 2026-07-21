@@ -1,0 +1,10 @@
+:host { display: block; }
+
+.departamento-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.departamento-row:hover {
+  background-color: rgba(13, 110, 253, 0.08) !important;
+}

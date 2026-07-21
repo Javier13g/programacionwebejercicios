@@ -1,0 +1,116 @@
+<app-navbar />
+
+<main class="container py-4">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a [routerLink]="['/departamentos']">Departamentos</a></li>
+      @if (modoEdicion() && departamentoId(); as id) {
+        <li class="breadcrumb-item">
+          <a [routerLink]="['/departamentos', id]">Detalle</a>
+        </li>
+        <li class="breadcrumb-item active">Editar</li>
+      } @else {
+        <li class="breadcrumb-item active">Nuevo</li>
+      }
+    </ol>
+  </nav>
+
+  @if (cargando()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="card shadow-sm">
+      <div class="card-header bg-light">
+        <strong>{{ modoEdicion() ? 'Editar departamento' : 'Nuevo departamento' }}</strong>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="nombre" class="form-label">
+                Nombre <span class="text-danger">*</span>
+                @if (campoCambiado('nombre')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <input
+                id="nombre"
+                type="text"
+                class="form-control"
+                [class.is-invalid]="campoInvalido('nombre')"
+                formControlName="nombre"
+                maxlength="100"
+              />
+              @if (campoInvalido('nombre')) {
+                <div class="invalid-feedback">Nombre obligatorio, 2 a 100 caracteres.</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label for="jefeId" class="form-label">
+                ID del jefe
+                @if (campoCambiado('jefeId')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <input
+                id="jefeId"
+                type="number"
+                class="form-control"
+                [class.is-invalid]="campoInvalido('jefeId')"
+                formControlName="jefeId"
+                min="1"
+                placeholder="Vacío si no tiene jefe"
+              />
+              <div class="form-text">ID del empleado que dirige este departamento.</div>
+            </div>
+
+            <div class="col-12">
+              <label for="descripcion" class="form-label">
+                Descripción
+                @if (campoCambiado('descripcion')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
+              </label>
+              <textarea
+                id="descripcion"
+                class="form-control"
+                [class.is-invalid]="campoInvalido('descripcion')"
+                formControlName="descripcion"
+                rows="3"
+                maxlength="255"
+              ></textarea>
+              @if (campoInvalido('descripcion')) {
+                <div class="invalid-feedback">La descripción no puede superar los 255 caracteres.</div>
+              }
+            </div>
+          </div>
+
+          <hr class="my-4" />
+
+          <div class="d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="cancelar()"
+              [disabled]="guardando()"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="guardando() || form.invalid"
+            >
+              @if (guardando()) {
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Guardando...
+              } @else if (modoEdicion()) {
+                Guardar cambios
+              } @else {
+                Crear departamento
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</main>
