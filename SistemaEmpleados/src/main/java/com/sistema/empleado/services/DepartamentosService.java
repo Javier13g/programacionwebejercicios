@@ -25,8 +25,8 @@ public class DepartamentosService {
     @Autowired
     IEmpleadosRepository empleadosRepository;
 
-    public PageResponse<DepartamentosModel> getDepartamentos(Pageable pageable) {
-        Page<DepartamentosModel> page = departamentosRepository.findAll(pageable);
+    public PageResponse<DepartamentosModel> getDepartamentos(String q, Pageable pageable) {
+        Page<DepartamentosModel> page = departamentosRepository.buscar(q, pageable);
         return PageResponse.from(page);
     }
 

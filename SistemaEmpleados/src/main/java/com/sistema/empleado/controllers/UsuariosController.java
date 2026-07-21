@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +17,9 @@ import com.sistema.empleado.dto.ApiError;
 import com.sistema.empleado.dto.CambiarPasswordDto;
 import com.sistema.empleado.dto.LoginResponseDto;
 import com.sistema.empleado.dto.PageResponse;
+import com.sistema.empleado.dto.UsuarioEstadoDto;
 import com.sistema.empleado.dto.UsuarioRequestDto;
+import com.sistema.empleado.models.RolUsuario;
 import com.sistema.empleado.models.UsuariosModel;
 import com.sistema.empleado.services.UsuariosService;
 
@@ -32,8 +33,12 @@ public class UsuariosController {
     private UsuariosService usuariosService;
 
     @GetMapping
-    public PageResponse<UsuariosModel> getUsuarios(Pageable pageable) {
-        return usuariosService.getUsuarios(pageable);
+    public PageResponse<UsuariosModel> getUsuarios(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) RolUsuario rol,
+            @RequestParam(required = false, defaultValue = "false") boolean incluirDeshabilitados,
+            Pageable pageable) {
+        return usuariosService.getUsuarios(q, rol, incluirDeshabilitados, pageable);
     }
 
     @GetMapping("/{id}")
@@ -60,9 +65,27 @@ public class UsuariosController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
-        return usuariosService.deleteUsuario(id)
+    /**
+     * Cambia el estado (habilitado / deshabilitado) de un usuario.
+     * Body: { "deleted": true } para deshabilitar, { "deleted": false } para rehabilitar.
+     *  - 204 si se aplicó el cambio
+     *  - 404 si el usuario no existe
+     *  - 400 si el body es inválido
+     */
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<?> cambiarEstado(
+            @PathVariable Long id,
+            @Valid @RequestBody UsuarioEstadoDto dto,
+            jakarta.servlet.http.HttpServletRequest request) {
+
+        if (dto.getDeleted() == null) {
+            ApiError error = new ApiError(
+                    400, "Bad Request",
+                    "El campo 'deleted' es obligatorio", request.getRequestURI());
+            return ResponseEntity.badRequest().body(error);
+        }
+
+        return usuariosService.cambiarEstado(id, dto.getDeleted())
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }

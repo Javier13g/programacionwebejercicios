@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.sistema.empleado.dto.CargoRequestDto;
 import com.sistema.empleado.dto.PageResponse;
 import com.sistema.empleado.models.CargosModel;
+import com.sistema.empleado.models.NivelCargo;
 import com.sistema.empleado.repositories.ICargosRepository;
 
 @Service
@@ -20,8 +21,8 @@ public class CargosService {
      @Autowired
     ICargosRepository cargosRepository;
 
-    public PageResponse<CargosModel> getCargos(Pageable pageable) {
-        Page<CargosModel> page = cargosRepository.findAll(pageable);
+    public PageResponse<CargosModel> getCargos(String q, NivelCargo nivel, Pageable pageable) {
+        Page<CargosModel> page = cargosRepository.buscar(q, nivel, pageable);
         return PageResponse.from(page);
     }
 

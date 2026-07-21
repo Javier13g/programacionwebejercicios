@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sistema.empleado.dto.DepartamentoRequestDto;
@@ -27,8 +28,10 @@ public class DepartamentosController {
     private DepartamentosService departamentosService;
 
     @GetMapping
-    public PageResponse<DepartamentosModel> getDepartamentos(Pageable pageable) {
-        return departamentosService.getDepartamentos(pageable);
+    public PageResponse<DepartamentosModel> getDepartamentos(
+            @RequestParam(required = false) String q,
+            Pageable pageable) {
+        return departamentosService.getDepartamentos(q, pageable);
     }
 
     @GetMapping("/{id}")

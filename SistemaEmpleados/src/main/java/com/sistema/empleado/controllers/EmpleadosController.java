@@ -29,18 +29,23 @@ public class EmpleadosController {
     private EmpleadosService empleadosService;
 
     @GetMapping
-    public PageResponse<EmpleadosModel> getEmpleados(Pageable pageable) {
-        return empleadosService.getEmpleados(pageable);
+    public PageResponse<EmpleadosModel> getEmpleados(
+            @RequestParam(required = false) String q,
+            Pageable pageable) {
+        return empleadosService.getEmpleados(q, pageable);
     }
 
     /**
      * Devuelve los empleados activos con su cargo. Pensado para popular
-     * el dropdown "Jefe" del formulario. La regla de filtrado
-     * (mismo departamento + CEO) la aplica el frontend.
+     * el dropdown "Jefe" del formulario. Acepta excludeId para no
+     * proponer al propio empleado como su jefe en modo edición.
+     * La regla adicional de filtrado (mismo departamento + CEO)
+     * la aplica el frontend.
      */
     @GetMapping("/candidatos-jefe")
-    public List<EmpleadosModel> getCandidatosJefe() {
-        return empleadosService.getCandidatosJefe();
+    public List<EmpleadosModel> getCandidatosJefe(
+            @RequestParam(required = false) Long excludeId) {
+        return empleadosService.getCandidatosJefe(excludeId);
     }
 
     @GetMapping("/{id}")

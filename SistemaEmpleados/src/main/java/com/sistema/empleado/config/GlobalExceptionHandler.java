@@ -14,6 +14,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.sistema.empleado.dto.ApiError;
+import com.sistema.empleado.exceptions.ConflictException;
 
 import jakarta.persistence.EntityNotFoundException;
 import tools.jackson.databind.exc.InvalidFormatException;
@@ -89,6 +90,32 @@ public class GlobalExceptionHandler {
         String path = getPath(request);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ApiError(404, "Not Found", ex.getMessage(), path));
+    }
+
+    // Conflicto de negocio (duplicados, reglas de unicidad) -> 409
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiError> handleConflict(ConflictException ex, WebRequest request) {
+        String path = getPath(request);
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ApiError(409, "Conflict", ex.getMessage(), path));
+    }
+
+    // Red de seguridad: cualquier violación de unicidad/integridad de la BD
+    // que se nos haya escapado la pre-validación -> 409 (no 500).
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrity(
+            org.springframework.dao.DataIntegrityViolationException ex, WebRequest request) {
+        String path = getPath(request);
+        String message = "Conflicto de datos: el valor ya existe o viola una restricción";
+        String rootMsg = ex.getMostSpecificCause() != null
+                ? ex.getMostSpecificCause().getMessage()
+                : ex.getMessage();
+        // Si el mensaje de la causa contiene "Duplicate entry", lo mostramos al cliente.
+        if (rootMsg != null && rootMsg.toLowerCase().contains("duplicate entry")) {
+            message = "Ya existe un registro con ese valor único";
+        }
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ApiError(409, "Conflict", message, path));
     }
 
     // Cualquier otro error no controlado

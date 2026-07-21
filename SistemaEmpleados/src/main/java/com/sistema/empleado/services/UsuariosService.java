@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.sistema.empleado.dto.LoginResponseDto;
 import com.sistema.empleado.dto.PageResponse;
 import com.sistema.empleado.dto.UsuarioRequestDto;
+import com.sistema.empleado.models.RolUsuario;
 import com.sistema.empleado.models.UsuariosModel;
 import com.sistema.empleado.repositories.IEmpleadosRepository;
 import com.sistema.empleado.repositories.IUsuariosRepository;
@@ -34,9 +35,11 @@ public class UsuariosService {
     // Encoder BCrypt instanciado directo (es thread-safe).
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public PageResponse<UsuariosModel> getUsuarios(Pageable pageable) {
-        // Solo usuarios NO borrados
-        Page<UsuariosModel> page = usuariosRepository.findAllByDeletedFalse(pageable);
+    public PageResponse<UsuariosModel> getUsuarios(String q, RolUsuario rol, boolean incluirDeshabilitados, Pageable pageable) {
+        // Si incluirDeshabilitados es true, los incluye en la búsqueda
+        Page<UsuariosModel> page = incluirDeshabilitados
+                ? usuariosRepository.buscarConDeshabilitados(q, rol, pageable)
+                : usuariosRepository.buscar(q, rol, pageable);
         return PageResponse.from(page);
     }
 
@@ -86,15 +89,34 @@ public class UsuariosService {
         });
     }
 
-    public boolean deleteUsuario(Long id) {
-        // SOFT DELETE: marcar como borrado en vez de eliminar
-        Optional<UsuariosModel> opt = usuariosRepository.findByIdAndDeletedFalse(id);
+    /**
+     * Cambia el estado de un usuario (habilitado / deshabilitado / soft-delete).
+     *
+     * @param id     id del usuario
+     * @param delete true  -> deshabilita (marca deleted=true y deletedAt=now)
+     *               false -> rehabilita (marca deleted=false y limpia deletedAt)
+     * @return true si se aplicó el cambio, false si el id no existe o el estado
+     *         ya era el solicitado (idempotencia).
+     */
+    public boolean cambiarEstado(Long id, boolean delete) {
+        Optional<UsuariosModel> opt = usuariosRepository.findById(id);
         if (opt.isEmpty()) {
             return false;
         }
         UsuariosModel usuario = opt.get();
-        usuario.setDeleted(true);
-        usuario.setDeletedAt(LocalDateTime.now());
+
+        // Idempotencia: si ya está en el estado pedido, no hacemos nada pero devolvemos true.
+        if (usuario.isDeleted() == delete) {
+            return true;
+        }
+
+        if (delete) {
+            usuario.setDeleted(true);
+            usuario.setDeletedAt(LocalDateTime.now());
+        } else {
+            usuario.setDeleted(false);
+            usuario.setDeletedAt(null);
+        }
         usuariosRepository.save(usuario);
         return true;
     }

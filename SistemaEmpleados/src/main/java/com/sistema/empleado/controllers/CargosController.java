@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sistema.empleado.dto.CargoRequestDto;
 import com.sistema.empleado.dto.PageResponse;
 import com.sistema.empleado.models.CargosModel;
+import com.sistema.empleado.models.NivelCargo;
 import com.sistema.empleado.services.CargosService;
 
 import jakarta.validation.Valid;
@@ -26,8 +28,11 @@ public class CargosController {
     private CargosService cargosService;
 
     @GetMapping
-    public PageResponse<CargosModel> getCargos(Pageable pageable) {
-        return cargosService.getCargos(pageable);
+    public PageResponse<CargosModel> getCargos(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) NivelCargo nivel,
+            Pageable pageable) {
+        return cargosService.getCargos(q, nivel, pageable);
     }
 
     @GetMapping("/{id}")

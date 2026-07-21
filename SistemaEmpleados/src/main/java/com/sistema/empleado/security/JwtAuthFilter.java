@@ -51,6 +51,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return true;
         }
 
+        // Recuperación de contraseña (forgot / reset)
+        // Acepta cualquier método HTTP: POST para enviar/validar, GET para consultar estado.
+        if (path.startsWith("/auth/")) {
+            return true;
+        }
+
         // Swagger / OpenAPI
         return path.startsWith("/swagger-ui")
                 || path.startsWith("/v3/api-docs")
