@@ -1,5 +1,9 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { AuthService } from '../../../services/auth.service';
 import { DepartamentosService } from '../../../services/departamentos.service';
 import { ToastService } from '../../../services/toast.service';
@@ -9,11 +13,11 @@ import { NavbarComponent } from '../../navbar/navbar.component';
 @Component({
   selector: 'app-departamento-list',
   standalone: true,
-  imports: [RouterLink, NavbarComponent],
+  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss'
 })
-export class DepartamentoListComponent implements OnInit {
+export class DepartamentoListComponent implements OnInit, OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly departamentosService = inject(DepartamentosService);
   private readonly toastService = inject(ToastService);
@@ -27,13 +31,44 @@ export class DepartamentoListComponent implements OnInit {
   readonly totalElementos = signal(0);
   readonly tamanioPagina = 10;
 
+  // --- Búsqueda ---
+  readonly busqueda = signal<string>('');
+  private readonly busquedaInput$ = new Subject<string>();
+  private sub?: Subscription;
+  valorInput = '';
+
   ngOnInit(): void {
+    this.sub = this.busquedaInput$.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe((termino) => {
+      this.busqueda.set(termino);
+      this.paginaActual.set(0);
+      this.cargar();
+    });
+
+    this.cargar();
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  onBuscarInput(value: string): void {
+    this.valorInput = value;
+    this.busquedaInput$.next(value);
+  }
+
+  limpiarBusqueda(): void {
+    this.valorInput = '';
+    this.busqueda.set('');
+    this.paginaActual.set(0);
     this.cargar();
   }
 
   cargar(): void {
     this.cargando.set(true);
-    this.departamentosService.listar(this.paginaActual(), this.tamanioPagina).subscribe({
+    this.departamentosService.listar(this.paginaActual(), this.tamanioPagina, this.busqueda()).subscribe({
       next: (resp: PageResponse<Departamento>) => {
         this.departamentos.set(resp.content);
         this.totalPaginas.set(resp.totalPages);

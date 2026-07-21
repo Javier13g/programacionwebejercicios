@@ -1,7 +1,7 @@
 <app-navbar />
 
 <main class="container py-4">
-  <div class="row mb-3">
+  <div class="row mb-3 align-items-center">
     <div class="col">
       <h1 class="h3 mb-0">Listado de Cargos</h1>
       <p class="text-muted mb-0">
@@ -14,6 +14,79 @@
       </a>
     </div>
   </div>
+
+  <!-- Filtros: barra de búsqueda + select de nivel -->
+  <div class="row mb-3 g-2">
+    <div class="col-12 col-md-6 col-lg-5">
+      <div class="input-group">
+        <span class="input-group-text bg-white">
+          <i class="bi bi-search"></i>
+        </span>
+        <input
+          type="search"
+          class="form-control"
+          placeholder="Buscar por nombre..."
+          aria-label="Buscar por nombre"
+          [ngModel]="valorInput"
+          (ngModelChange)="onBuscarInput($event)"
+        />
+        @if (valorInput) {
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="limpiarBusqueda()"
+            title="Limpiar búsqueda"
+            aria-label="Limpiar búsqueda"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        }
+      </div>
+    </div>
+    <div class="col-12 col-md-4 col-lg-3">
+      <div class="input-group">
+        <span class="input-group-text bg-white">
+          <i class="bi bi-bar-chart-steps"></i>
+        </span>
+        <select
+          class="form-select"
+          aria-label="Filtrar por nivel"
+          [ngModel]="nivelSeleccionado() ?? ''"
+          (ngModelChange)="onNivelChange($event)"
+        >
+          <option value="">Todos los niveles</option>
+          @for (n of niveles; track n) {
+            <option [value]="n">{{ n }}</option>
+          }
+        </select>
+        @if (nivelSeleccionado()) {
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="limpiarNivel()"
+            title="Limpiar nivel"
+            aria-label="Limpiar nivel"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  @if (busqueda() || nivelSeleccionado()) {
+    <div class="mb-2">
+      <small class="text-muted">
+        @if (busqueda()) {
+          Filtrando por "<strong>{{ busqueda() }}</strong>" ·
+        }
+        @if (nivelSeleccionado()) {
+          Nivel "<strong>{{ nivelSeleccionado() }}</strong>" ·
+        }
+        {{ totalElementos() }} resultado(s)
+      </small>
+    </div>
+  }
 
   @if (cargando()) {
     <div class="d-flex justify-content-center py-5">
@@ -69,7 +142,11 @@
             } @empty {
               <tr>
                 <td colspan="5" class="text-center text-muted py-4">
-                  No hay cargos cargados.
+                  @if (busqueda() || nivelSeleccionado()) {
+                    No se encontraron cargos que coincidan con los filtros aplicados.
+                  } @else {
+                    No hay cargos cargados.
+                  }
                 </td>
               </tr>
             }

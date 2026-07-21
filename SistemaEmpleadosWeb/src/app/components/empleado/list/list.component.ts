@@ -1,6 +1,9 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { EmpleadoService } from '../../../services/empleado.service';
 import { ToastService } from '../../../services/toast.service';
 import { Empleado, PageResponse } from '../../../models/empleado';
@@ -9,11 +12,11 @@ import { NavbarComponent } from '../../navbar/navbar.component';
 @Component({
   selector: 'app-empleado-list',
   standalone: true,
-  imports: [RouterLink, NavbarComponent],
+  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss'
 })
-export class EmpleadoListComponent implements OnInit {
+export class EmpleadoListComponent implements OnInit, OnDestroy {
   private readonly empleadoService = inject(EmpleadoService);
   private readonly toastService = inject(ToastService);
 
@@ -25,14 +28,45 @@ export class EmpleadoListComponent implements OnInit {
   readonly totalElementos = signal(0);
   readonly tamanioPagina = 20;
 
+  // --- Búsqueda ---
+  readonly busqueda = signal<string>('');
+  private readonly busquedaInput$ = new Subject<string>();
+  private sub?: Subscription;
+  valorInput = '';
+
   ngOnInit(): void {
+    this.sub = this.busquedaInput$.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe((termino) => {
+      this.busqueda.set(termino);
+      this.paginaActual.set(0);
+      this.cargarEmpleados();
+    });
+
+    this.cargarEmpleados();
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  onBuscarInput(value: string): void {
+    this.valorInput = value;
+    this.busquedaInput$.next(value);
+  }
+
+  limpiarBusqueda(): void {
+    this.valorInput = '';
+    this.busqueda.set('');
+    this.paginaActual.set(0);
     this.cargarEmpleados();
   }
 
   cargarEmpleados(): void {
     this.cargando.set(true);
 
-    this.empleadoService.listar(this.paginaActual(), this.tamanioPagina).subscribe({
+    this.empleadoService.listar(this.paginaActual(), this.tamanioPagina, this.busqueda()).subscribe({
       next: (resp: PageResponse<Empleado>) => {
         this.empleados.set(resp.content);
         this.totalPaginas.set(resp.totalPages);

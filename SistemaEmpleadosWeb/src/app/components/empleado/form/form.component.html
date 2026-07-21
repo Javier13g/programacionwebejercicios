@@ -102,17 +102,95 @@
             </div>
 
             <div class="col-md-6">
-              <label for="telefono" class="form-label">
+              <label class="form-label">
                 Teléfono
                 @if (campoCambiado('telefono')) { <span class="badge bg-warning text-dark ms-1">modificado</span> }
               </label>
-              <input
-                id="telefono"
-                type="text"
-                class="form-control"
-                formControlName="telefono"
-                maxlength="30"
-              />
+
+              <!-- Input group: [select país filtrable] [+prefijo] [número] -->
+              <!-- Contenedor con position-relative para anclar el dropdown-menu. -->
+              <div class="input-group pais-dropdown-container position-relative">
+                <!-- Botón que abre/cierra el selector de país. Muestra la bandera y el código. -->
+                <button
+                  class="btn btn-outline-secondary dropdown-toggle"
+                  type="button"
+                  (click)="toggleDropdownPais()"
+                  [class.show]="dropdownPaisAbierto()"
+                  [attr.aria-expanded]="dropdownPaisAbierto()"
+                  [title]="(paisActual(form.get('codigoPais')?.value)?.name) || 'Elegí un país'"
+                >
+                  @if (form.get('codigoPais'); as cp) {
+                    @for (p of paises; track p.code) {
+                      @if (p.dialCode === cp.value) {
+                        <span>{{ p.flag }} +{{ p.dialCode }}</span>
+                      }
+                    }
+                  } @else {
+                    <span>🌐 País</span>
+                  }
+                </button>
+
+                <!-- Dropdown controlado por Angular (signal). Se cierra con click en un país, Escape o click fuera. -->
+                @if (dropdownPaisAbierto()) {
+                  <ul
+                    class="dropdown-menu w-100 p-2 show"
+                    style="max-height: 320px; overflow:auto; position: absolute; top: 100%; left: 0; z-index: 1050; margin-top: 0.25rem;"
+                  >
+                    <li class="px-1 pb-2">
+                      <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        placeholder="Filtrar país (ej: Argentina, +54, rep dom)..."
+                        [value]="filtroPais()"
+                        (input)="filtroPais.set($any($event.target).value)"
+                        (click)="$event.stopPropagation()"
+                        autocomplete="off"
+                      />
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    @for (p of paisesFiltrados(); track p.code) {
+                      <li>
+                        <button
+                          type="button"
+                          class="dropdown-item d-flex justify-content-between align-items-center"
+                          (click)="seleccionarPais(p.dialCode)"
+                        >
+                          <span>{{ p.flag }} {{ p.name }}</span>
+                          <span class="text-muted small">+{{ p.dialCode }}</span>
+                        </button>
+                      </li>
+                    }
+                    @if (!paisesFiltrados().length) {
+                      <li class="px-3 py-2 text-muted small">Ningún país coincide con "{{ filtroPais() }}"</li>
+                    }
+                  </ul>
+                }
+
+                <!-- Prefijo visible (readonly) para reforzar el '+' visualmente. -->
+                <span class="input-group-text">+{{ form.get('codigoPais')?.value }}</span>
+
+                <!-- Número local (lo que el usuario tipea después del prefijo). -->
+                <input
+                  type="tel"
+                  inputmode="tel"
+                  class="form-control"
+                  formControlName="numeroLocal"
+                  placeholder="1145551234"
+                  aria-label="Número local"
+                  maxlength="20"
+                  autocomplete="tel-national"
+                />
+              </div>
+
+              <!-- Campo oculto para que el form siga exponiendo 'telefono' (E.164) -->
+              <input type="hidden" formControlName="telefono" />
+
+              @if (form.get('telefono')?.value) {
+                <div class="form-text small">
+                  Se guardará como
+                  <code>{{ form.get('telefono')?.value }}</code>
+                </div>
+              }
             </div>
 
             <div class="col-md-4">

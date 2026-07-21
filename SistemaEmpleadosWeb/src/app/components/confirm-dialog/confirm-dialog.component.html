@@ -1,0 +1,47 @@
+<div class="modal-header">
+  <h5 class="modal-title d-flex align-items-center text-body">
+    <i
+      class="bi me-2"
+      [class]="'bi-' + icon"
+      [ngClass]="{
+        'text-primary': variant === 'primary',
+        'text-warning': variant === 'warning',
+        'text-danger':  variant === 'danger',
+        'text-success': variant === 'success'
+      }"
+      aria-hidden="true"
+    ></i>
+    <span>{{ title }}</span>
+  </h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="dismiss()"
+  ></button>
+</div>
+
+<div class="modal-body text-body">
+  <p class="mb-0">{{ message }}</p>
+</div>
+
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-outline-secondary"
+    (click)="dismiss()"
+  >
+    {{ cancelText }}
+  </button>
+  <button
+    type="button"
+    class="btn"
+    [class.btn-primary]="variant === 'primary'"
+    [class.btn-warning]="variant === 'warning'"
+    [class.btn-danger]="variant === 'danger'"
+    [class.btn-success]="variant === 'success'"
+    (click)="confirm()"
+  >
+    {{ confirmText }}
+  </button>
+</div>

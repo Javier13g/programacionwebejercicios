@@ -1,20 +1,24 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule, DecimalPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { DecimalPipe } from '@angular/common';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { AuthService } from '../../../services/auth.service';
 import { CargosService } from '../../../services/cargos.service';
 import { ToastService } from '../../../services/toast.service';
 import { Cargo, PageResponse } from '../../../models/empleado';
+import { NIVELES_CARGO, NivelCargo } from '../../../models/forms';
 import { NavbarComponent } from '../../navbar/navbar.component';
 
 @Component({
   selector: 'app-cargo-list',
   standalone: true,
-  imports: [RouterLink, DecimalPipe, NavbarComponent],
+  imports: [CommonModule, FormsModule, RouterLink, DecimalPipe, NavbarComponent],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss'
 })
-export class CargoListComponent implements OnInit {
+export class CargoListComponent implements OnInit, OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly cargosService = inject(CargosService);
   private readonly toastService = inject(ToastService);
@@ -28,13 +32,66 @@ export class CargoListComponent implements OnInit {
   readonly totalElementos = signal(0);
   readonly tamanioPagina = 5;
 
+  // --- Filtros ---
+  readonly busqueda = signal<string>('');
+  readonly nivelSeleccionado = signal<NivelCargo | null>(null);
+
+  private readonly busquedaInput$ = new Subject<string>();
+  private sub?: Subscription;
+  valorInput = '';
+
+  readonly niveles = NIVELES_CARGO;
+
   ngOnInit(): void {
+    this.sub = this.busquedaInput$.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe((termino) => {
+      this.busqueda.set(termino);
+      this.paginaActual.set(0);
+      this.cargar();
+    });
+
+    this.cargar();
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  onBuscarInput(value: string): void {
+    this.valorInput = value;
+    this.busquedaInput$.next(value);
+  }
+
+  onNivelChange(value: string): void {
+    // '' = sin filtro
+    this.nivelSeleccionado.set(value ? (value as NivelCargo) : null);
+    this.paginaActual.set(0);
+    this.cargar();
+  }
+
+  limpiarBusqueda(): void {
+    this.valorInput = '';
+    this.busqueda.set('');
+    this.paginaActual.set(0);
+    this.cargar();
+  }
+
+  limpiarNivel(): void {
+    this.nivelSeleccionado.set(null);
+    this.paginaActual.set(0);
     this.cargar();
   }
 
   cargar(): void {
     this.cargando.set(true);
-    this.cargosService.listar(this.paginaActual(), this.tamanioPagina).subscribe({
+    this.cargosService.listar(
+      this.paginaActual(),
+      this.tamanioPagina,
+      this.busqueda(),
+      this.nivelSeleccionado()
+    ).subscribe({
       next: (resp: PageResponse<Cargo>) => {
         this.cargos.set(resp.content);
         this.totalPaginas.set(resp.totalPages);

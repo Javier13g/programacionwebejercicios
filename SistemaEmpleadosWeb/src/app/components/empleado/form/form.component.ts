@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject, OnInit } from '@angular/core';
+import { Component, signal, computed, inject, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -10,6 +10,7 @@ import { CargosService } from '../../../services/cargos.service';
 import { ToastService } from '../../../services/toast.service';
 import { Cargo, Departamento, Empleado } from '../../../models/empleado';
 import { EmpleadoRequest, ESTADOS_EMPLEADO, EstadoEmpleado } from '../../../models/forms';
+import { PAISES, Pais, aE164, fromE164 } from '../../../models/paises';
 import { NavbarComponent } from '../../navbar/navbar.component';
 
 @Component({
@@ -31,6 +32,21 @@ export class EmpleadoFormComponent implements OnInit {
 
   readonly user = this.auth.user;
   readonly estados = ESTADOS_EMPLEADO;
+  readonly paises = PAISES;
+
+  /** Estado del dropdown de países (controlado por Angular, no por Bootstrap JS). */
+  readonly dropdownPaisAbierto = signal(false);
+
+  readonly filtroPais = signal('');
+  readonly paisesFiltrados = computed<Pais[]>(() => {
+    const q = this.filtroPais().trim().toLowerCase();
+    if (!q) return this.paises;
+    return this.paises.filter((p) => {
+      const base = `${p.name} ${p.code} +${p.dialCode}`.toLowerCase();
+      const extras = (p.searchTerms ?? []).join(' ').toLowerCase();
+      return base.includes(q) || extras.includes(q);
+    });
+  });
 
   readonly modoEdicion = signal(false);
   readonly empleadoId = signal<number | null>(null);
@@ -44,20 +60,83 @@ export class EmpleadoFormComponent implements OnInit {
   form!: FormGroup;
   private originales: Record<string, unknown> = {};
 
+  private telefonoCompleto(): string | undefined {
+    const codigo = this.form?.get('codigoPais')?.value as string | null;
+    const numero = (this.form?.get('numeroLocal')?.value as string | null) ?? '';
+    if (!numero) return undefined;
+    const p = this.paises.find((x) => x.dialCode === codigo) ?? this.paises[0];
+    return aE164(p.dialCode, numero);
+  }
+
+  /**
+   * Helpers para la vista (template).
+   */
+  codigoPreferido(telefono: string | null | undefined): string {
+    return fromE164(telefono).dialCode;
+  }
+
+  /** Devuelve el país cuyo dialCode matchea el código seleccionado, o null. */
+  paisActual(dialCode: string | null | undefined): Pais | null {
+    if (!dialCode) return null;
+    return this.paises.find((p) => p.dialCode === dialCode) ?? null;
+  }
+
+  /**
+   * Llamado por el template cuando el usuario elige un país de la lista
+   * filtrable: cierra el panel y actualiza el form.
+   */
+  seleccionarPais(dialCode: string): void {
+    this.form.get('codigoPais')?.setValue(dialCode);
+    this.filtroPais.set('');
+    this.dropdownPaisAbierto.set(false);
+  }
+
+  /** Alterna el panel del dropdown de países. */
+  toggleDropdownPais(): void {
+    this.dropdownPaisAbierto.update(v => !v);
+  }
+
+  /**
+   * Cierra el dropdown si el click ocurre fuera del contenedor del teléfono.
+   * Se bindea al document, así que cualquier click en la página cierra el panel.
+   */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.dropdownPaisAbierto()) return;
+    const target = event.target as Element | null;
+    // Si el click está dentro del contenedor del dropdown de países, no cerrar.
+    if (target?.closest('.pais-dropdown-container')) return;
+    this.dropdownPaisAbierto.set(false);
+  }
+
+  /** Cierra con Escape. */
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.dropdownPaisAbierto()) {
+      this.dropdownPaisAbierto.set(false);
+    }
+  }
 
   readonly jefesFiltrados = computed<Empleado[]>(() => {
     const todos = this.candidatosJefe();
     const empleadoActual = this.empleado();
+    const empleadoActualId = this.empleadoId();
     const deptoForm = this.form?.get('departamentoId')?.value as number | null;
+
+    // Filtro 1: nunca el mismo empleado (defensa en profundidad;
+    // el backend ya lo excluye vía excludeId, pero por si cambia el flujo).
+    let resultado = todos.filter(e => e.id !== empleadoActualId);
 
     const deptoFiltro = empleadoActual?.departamentoId ?? deptoForm ?? null;
 
     if (deptoFiltro === null) {
-      return todos;
+      return resultado;
     }
-    return todos.filter(
+    // Filtro 2: mismo departamento, o el CEO de la empresa.
+    resultado = resultado.filter(
       e => e.departamentoId === deptoFiltro || e.cargo?.nombre === 'CEO'
     );
+    return resultado;
   });
 
   ngOnInit(): void {
@@ -90,13 +169,27 @@ export class EmpleadoFormComponent implements OnInit {
       nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
       apellido: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
       email: ['', [Validators.required, Validators.email]],
+      // El campo real que se guarda en BD es `telefono` (E.164).
+      // En la UI se divide en dos: codigoPais (+código país) + numeroLocal.
       telefono: [''],
+      codigoPais: ['54'],                // Argentina por defecto
+      numeroLocal: [''],
       fechaIngreso: ['', [Validators.required]],
       estado: ['activo' as EstadoEmpleado, [Validators.required]],
       departamentoId: [null as number | null, [Validators.required, Validators.min(1)]],
       cargoId: [null as number | null, [Validators.required, Validators.min(1)]],
       jefeId: [null as number | null]
     });
+
+    // Mantener sincronizado el campo "telefono" (E.164) cuando cambian
+    // codigoPais o numeroLocal. No se renderiza en la UI.
+    this.form.get('codigoPais')!.valueChanges.subscribe(() => this.syncTelefonoCompleto());
+    this.form.get('numeroLocal')!.valueChanges.subscribe(() => this.syncTelefonoCompleto());
+  }
+
+  private syncTelefonoCompleto(): void {
+    const compl = this.telefonoCompleto();
+    this.form.get('telefono')?.setValue(compl ?? '', { emitEvent: false });
   }
 
   private cargarCombos(): void {
@@ -127,7 +220,8 @@ export class EmpleadoFormComponent implements OnInit {
       empleado: this.empleadoService.obtener(id),
       departamentos: this.departamentosService.listar(),
       cargos: this.cargosService.listar(),
-      candidatosJefe: this.empleadoService.listarCandidatosJefe()
+      // Excluimos al empleado actual de la lista de candidatos a jefe.
+      candidatosJefe: this.empleadoService.listarCandidatosJefe(id)
     }).subscribe({
       next: ({ empleado, departamentos, cargos, candidatosJefe }) => {
         this.empleado.set(empleado);
@@ -149,12 +243,17 @@ export class EmpleadoFormComponent implements OnInit {
   }
 
   private rellenarFormulario(emp: Empleado): void {
+    // Parsear el teléfono guardado en E.164 a país + número local.
+    const { dialCode, numeroLocal } = fromE164(emp.telefono);
+
     const valoresActuales = {
       cedula: emp.cedula,
       nombre: emp.nombre,
       apellido: emp.apellido,
       email: emp.email,
       telefono: emp.telefono ?? '',
+      codigoPais: dialCode,
+      numeroLocal: numeroLocal,
       fechaIngreso: emp.fechaIngreso,
       estado: (emp.estado as EstadoEmpleado) || 'activo',
       departamentoId: emp.departamentoId ?? emp.departamento?.id ?? null,
@@ -189,7 +288,7 @@ export class EmpleadoFormComponent implements OnInit {
       nombre: raw.nombre,
       apellido: raw.apellido,
       email: raw.email,
-      telefono: raw.telefono || undefined,
+      telefono: (raw.telefono as string) || undefined,
       fechaIngreso: raw.fechaIngreso,
       estado: raw.estado,
       departamentoId: Number(raw.departamentoId),
@@ -248,6 +347,8 @@ export class EmpleadoFormComponent implements OnInit {
           this.toastService.error(`Datos inválidos: ${err?.error?.message || 'revisá el formulario'}`);
         } else if (err.status === 404) {
           this.toastService.error('Empleado no encontrado');
+        } else if (err.status === 409) {
+          this.toastService.error(err?.error?.message || 'Conflicto con un valor existente');
         } else {
           this.toastService.error(this.mensajeError(err));
         }

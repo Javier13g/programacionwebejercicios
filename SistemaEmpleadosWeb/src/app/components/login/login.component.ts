@@ -1,13 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -47,10 +48,15 @@ export class LoginComponent {
         if (err.status === 401) {
           this.toastService.error(msg || 'Usuario o contraseña incorrectos');
         } else if (err.status === 0) {
-          this.toastService.error('No se pudo conectar con el backend (¿puerto 8080?)');
+          this.toastService.error(
+            'No se pudo conectar con el backend. ' +
+              'Si usás el forward HTTPS del codespace, abrí el puerto 8080 en la pestaña Ports.'
+          );
         } else {
           this.toastService.error(`Error ${err.status}: ${msg || err.message}`);
         }
+        // Log para diagnosticar en consola
+        console.error('[login] error de conexión', err);
       }
     });
   }

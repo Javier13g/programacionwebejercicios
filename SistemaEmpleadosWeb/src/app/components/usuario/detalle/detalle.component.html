@@ -45,6 +45,35 @@
             <a class="btn btn-primary" [routerLink]="['/usuarios', u.id, 'editar']">
               <i class="bi bi-pencil me-1"></i> Editar
             </a>
+            @if (u.deleted) {
+              <button
+                type="button"
+                class="btn btn-success"
+                (click)="habilitar()"
+                [disabled]="procesando()"
+              >
+                @if (procesando()) {
+                  <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  Procesando...
+                } @else {
+                  <i class="bi bi-arrow-counterclockwise me-1"></i> Habilitar usuario
+                }
+              </button>
+            } @else {
+              <button
+                type="button"
+                class="btn btn-warning"
+                (click)="deshabilitar()"
+                [disabled]="procesando()"
+              >
+                @if (procesando()) {
+                  <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  Procesando...
+                } @else {
+                  <i class="bi bi-slash-circle me-1"></i> Deshabilitar usuario
+                }
+              </button>
+            }
           </div>
         </div>
 

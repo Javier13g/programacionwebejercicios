@@ -1,20 +1,52 @@
 <app-navbar />
 
 <main class="container py-4">
-  <div class="row mb-3">
+  <div class="row mb-3 align-items-center">
     <div class="col">
       <h1 class="h3 mb-0">Listado de Empleados</h1>
       <p class="text-muted mb-0">
         Conectado al backend Spring Boot · {{ totalElementos() }} empleados en total
       </p>
     </div>
-    <div class="col-auto d-flex gap-2">
+    <div class="col-auto">
       <a class="btn btn-primary" [routerLink]="['/empleados/nuevo']">
         <i class="bi bi-plus-lg me-1"></i> Nuevo empleado
       </a>
-      <button type="button" class="btn btn-outline-secondary" (click)="cargarEmpleados()">
-        Recargar
-      </button>
+    </div>
+  </div>
+
+  <!-- Barra de búsqueda -->
+  <div class="row mb-3">
+    <div class="col-12 col-md-6 col-lg-5">
+      <div class="input-group">
+        <span class="input-group-text bg-white">
+          <i class="bi bi-search"></i>
+        </span>
+        <input
+          type="search"
+          class="form-control"
+          placeholder="Buscar por cédula o email..."
+          aria-label="Buscar por cédula o email"
+          [ngModel]="valorInput"
+          (ngModelChange)="onBuscarInput($event)"
+        />
+        @if (valorInput) {
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="limpiarBusqueda()"
+            title="Limpiar búsqueda"
+            aria-label="Limpiar búsqueda"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        }
+      </div>
+      @if (busqueda()) {
+        <small class="text-muted">
+          Filtrando por "<strong>{{ busqueda() }}</strong>" · {{ totalElementos() }} resultado(s)
+        </small>
+      }
     </div>
   </div>
 
@@ -93,7 +125,11 @@
             } @empty {
               <tr>
                 <td colspan="8" class="text-center text-muted py-4">
-                  No hay empleados cargados.
+                  @if (busqueda()) {
+                    No se encontraron empleados que coincidan con "<strong>{{ busqueda() }}</strong>".
+                  } @else {
+                    No hay empleados cargados.
+                  }
                 </td>
               </tr>
             }

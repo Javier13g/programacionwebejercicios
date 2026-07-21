@@ -3,14 +3,19 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Departamento, PageResponse } from '../models/empleado';
 import { DepartamentoRequest } from '../models/forms';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class DepartamentosService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8080/departamentos';
+  private readonly baseUrl = environment.api.departamentos;
 
-  listar(page: number = 0, size: number = 20): Observable<PageResponse<Departamento>> {
-    const params = new HttpParams().set('page', page).set('size', size);
+  listar(page: number = 0, size: number = 20, q?: string): Observable<PageResponse<Departamento>> {
+    let params = new HttpParams().set('page', page).set('size', size);
+    const termino = q?.trim();
+    if (termino) {
+      params = params.set('q', termino);
+    }
     return this.http.get<PageResponse<Departamento>>(this.baseUrl, { params });
   }
 

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { ToastService } from '../../services/toast.service';
+import { ToastService, ToastType } from '../../services/toast.service';
 
 @Component({
   selector: 'app-toast-container',
@@ -13,13 +13,16 @@ import { ToastService } from '../../services/toast.service';
     >
       @for (toast of toastService.toasts(); track toast.id) {
         <div
-          class="toast show mb-2 shadow-lg"
-          [class]="'bg-' + toast.type + ' text-white'"
+          class="toast show mb-2 shadow-lg text-white border-0"
+          [class]="'bg-' + bgClass(toast.type)"
           role="alert"
           aria-live="assertive"
           aria-atomic="true"
         >
-          <div class="toast-header" [class]="'bg-' + toast.type + ' text-white border-0'">
+          <div
+            class="toast-header text-white border-0"
+            [class]="'bg-' + bgClass(toast.type)"
+          >
             <i class="bi me-2" [class]="iconFor(toast.type)"></i>
             <strong class="me-auto">{{ toast.title }}</strong>
             <button
@@ -44,13 +47,23 @@ export class ToastContainerComponent {
     this.toastService.dismiss(id);
   }
 
-  iconFor(type: string): string {
+  iconFor(type: ToastType): string {
     switch (type) {
       case 'success': return 'bi-check-circle-fill';
       case 'error': return 'bi-exclamation-triangle-fill';
       case 'warning': return 'bi-exclamation-circle-fill';
       case 'info':
       default: return 'bi-info-circle-fill';
+    }
+  }
+
+  bgClass(type: ToastType): string {
+    switch (type) {
+      case 'success': return 'success';
+      case 'error': return 'danger';
+      case 'warning': return 'warning';
+      case 'info':
+      default: return 'info';
     }
   }
 }

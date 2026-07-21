@@ -1,0 +1,27 @@
+/* Estilos del modal de confirmación.
+   Usamos ::ng-deep porque ng-bootstrap renderiza el modal
+   en el <body> y los estilos con encapsulación por defecto
+   no llegan hasta ahí. */
+
+::ng-deep .modal-content {
+  color: #212529;
+  background-color: #ffffff;
+}
+
+::ng-deep .modal-header,
+::ng-deep .modal-body,
+::ng-deep .modal-footer {
+  color: #212529;
+  background-color: #ffffff;
+}
+
+::ng-deep .modal-title,
+::ng-deep .modal-body p,
+::ng-deep .modal-body span,
+::ng-deep .modal-body div {
+  color: #212529 !important;
+}
+
+::ng-deep .modal-footer .btn {
+  color: inherit;
+}
