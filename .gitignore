@@ -1,0 +1,80 @@
+# ============================================================
+# .gitignore — programacionwebejercicios
+# Repo mixto: Java/Maven (Spring Boot) + Angular + ejercicios varios
+# ============================================================
+
+# --- Java / Maven ---
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+hs_err_pid*
+
+# --- Node / pnpm ---
+node_modules/
+.pnp/
+.pnp.*
+.pnpm-store/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build cache
+.eslintcache
+.cache/
+.parcel-cache/
+.vite/
+
+# --- Angular ---
+.angular/
+dist/
+tmp/
+coverage/
+*.tsbuildinfo
+out-tsc/
+
+# Angular local env files
+.env
+.env.local
+.env.*.local
+
+# --- IDEs / editores ---
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+*.swp
+*.swo
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Archivos locales / secretos (NUNCA commitear credenciales) ---
+application-local.properties
+application-local.yml
+application-prod.properties
+application-prod.yml
+secrets.properties
+*.env
+secrets/
+
+# --- Otros artefactos de compilación ---
+*.class~
+*.bak
+*.tmp
+*.orig
+*.rej
