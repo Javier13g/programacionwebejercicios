@@ -1,5 +1,7 @@
 package com.sistema.empleado.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,16 @@ public class EmpleadosController {
         return empleadosService.getEmpleados(pageable);
     }
 
+    /**
+     * Devuelve los empleados activos con su cargo. Pensado para popular
+     * el dropdown "Jefe" del formulario. La regla de filtrado
+     * (mismo departamento + CEO) la aplica el frontend.
+     */
+    @GetMapping("/candidatos-jefe")
+    public List<EmpleadosModel> getCandidatosJefe() {
+        return empleadosService.getCandidatosJefe();
+    }
+
     @GetMapping("/{id}")
     public EmpleadosModel getEmpleadoById(@PathVariable Long id) {
         return empleadosService.getEmpleadoById(id);
@@ -57,7 +69,7 @@ public class EmpleadosController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<EmpleadosModel> updateEmpleado(
-            @PathVariable Long id, @Valid @RequestBody EmpleadoRequestDto dto) {
+            @PathVariable Long id, @RequestBody EmpleadoRequestDto dto) {
         return empleadosService.updateEmpleado(id, dto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

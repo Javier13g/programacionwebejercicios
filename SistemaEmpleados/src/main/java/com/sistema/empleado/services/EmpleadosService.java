@@ -1,5 +1,6 @@
 package com.sistema.empleado.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,16 @@ public class EmpleadosService {
 
     public EmpleadosModel getEmpleadoByEmail(String email) {
         return empleadosRepository.findByEmail(email).orElse(null);
+    }
+
+    /**
+     * Devuelve los empleados activos con su cargo, para popular el dropdown
+     * "Jefe" del formulario. La regla de filtrado (mismo departamento + CEO)
+     * la aplica el frontend.
+     */
+    public List<EmpleadosModel> getCandidatosJefe() {
+        return empleadosRepository.findAllByEstadoConCargo(
+            com.sistema.empleado.models.EstadoEmpleado.activo);
     }
 
     public EmpleadosModel saveEmpleado(EmpleadoRequestDto dto) {

@@ -54,7 +54,7 @@ public class UsuariosController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<UsuariosModel> updateUsuario(
-            @PathVariable Long id, @Valid @RequestBody UsuarioRequestDto dto) {
+            @PathVariable Long id, @RequestBody UsuarioRequestDto dto) {
         return usuariosService.updateUsuario(id, dto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

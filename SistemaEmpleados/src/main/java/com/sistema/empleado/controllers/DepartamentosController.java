@@ -45,7 +45,7 @@ public class DepartamentosController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<DepartamentosModel> updateDepartamento(
-            @PathVariable Long id, @Valid @RequestBody DepartamentoRequestDto dto) {
+            @PathVariable Long id, @RequestBody DepartamentoRequestDto dto) {
         return departamentosService.updateDepartamento(id, dto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
