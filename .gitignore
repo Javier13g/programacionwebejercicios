@@ -64,6 +64,11 @@ Thumbs.db
 desktop.ini
 
 # --- Archivos locales / secretos (NUNCA commitear credenciales) ---
+# Ignorar el properties "real" (debe contener solo placeholders/variables de entorno).
+# Solo versionar application.properties.example como plantilla.
+**/src/main/resources/application.properties
+**/src/main/resources/application-*.properties
+!**/src/main/resources/application.properties.example
 application-local.properties
 application-local.yml
 application-prod.properties

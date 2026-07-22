@@ -34,8 +34,8 @@ public class PasswordResetService {
 
 
     /** Ventana para que el usuario ingrese el código de 6 dígitos. SMS expira más rápido. */
-    @Value("${app.password-reset.sms-expiration-minutes:5}")
-    private long smsExpirationMinutes;
+    @Value("${app.password-reset.sms-expiration-seconds:60}")
+    private long smsExpirationSeconds;
 
     /** Máximo de intentos fallidos antes de invalidar el código. */
     @Value("${app.password-reset.sms-max-attempts:5}")
@@ -105,12 +105,12 @@ public class PasswordResetService {
         // Generar código de 6 dígitos (zero-padded para 000000-999999).
         String codigo = String.format("%06d", random.nextInt(1_000_000));
         String hash = passwordEncoder.encode(codigo);
-        LocalDateTime expires = LocalDateTime.now().plusMinutes(smsExpirationMinutes);
+        LocalDateTime expires = LocalDateTime.now().plusSeconds(smsExpirationSeconds);
 
         SmsSendResult smsResult = smsService.enviar(
                 telefonoE164,
                 "Tu código para restablecer la contraseña de Sistema de Empleados es: "
-                        + codigo + " (válido por " + smsExpirationMinutes + " minutos)."
+                        + codigo + " (válido por " + smsExpirationSeconds + " segundos)."
         );
 
         boolean twilioAcepto = smsResult != null && smsResult.aceptado();
@@ -128,7 +128,7 @@ public class PasswordResetService {
         if (twilioAcepto) {
             System.out.println("[PasswordReset-SMS] ✅ Código enviado a " + telefonoE164
                     + " sid=" + smsResult.messageSid()
-                    + " expires en " + smsExpirationMinutes + " min");
+                    + " expires en " + smsExpirationSeconds + " s");
         } else {
             System.out.println("[PasswordReset-SMS] ❌ SMS a " + telefonoE164
                     + " NO aceptado por Twilio: "
