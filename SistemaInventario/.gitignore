@@ -1,6 +1,11 @@
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
+
+# Variables de entorno (no versionar credenciales)
+.env
+.env.*
+!.env.example
 !**/src/main/**/target/
 !**/src/test/**/target/
 

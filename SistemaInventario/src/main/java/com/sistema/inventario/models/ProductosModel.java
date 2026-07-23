@@ -44,6 +44,16 @@ public class ProductosModel {
     @Column(name = "stockMinimo", nullable = false)
     private Integer stockMinimo = 0;
 
+    // URL publica de la imagen del producto (subida a Imgur).
+    // Opcional: el producto puede existir sin imagen.
+    @Column(name = "imageUrl", length = 500)
+    private String imageUrl;
+
+    // Hash que devuelve Imgur al subir una imagen.
+    // Lo usamos para poder borrarla despues con DELETE /image/{deletehash}.
+    @Column(name = "imageDeleteHash", length = 50)
+    private String imageDeleteHash;
+
     // FK a categoría (obligatoria, un producto pertenece a una categoría)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoriaId", nullable = false)
@@ -123,6 +133,22 @@ public class ProductosModel {
 
     public void setStockMinimo(Integer stockMinimo) {
         this.stockMinimo = stockMinimo;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getImageDeleteHash() {
+        return imageDeleteHash;
+    }
+
+    public void setImageDeleteHash(String imageDeleteHash) {
+        this.imageDeleteHash = imageDeleteHash;
     }
 
     public CategoriasModel getCategoria() {
