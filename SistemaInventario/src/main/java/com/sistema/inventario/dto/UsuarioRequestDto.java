@@ -19,7 +19,8 @@ public class UsuarioRequestDto {
     @Size(min = 8, max = 128, message = "La contrasena debe tener entre 8 y 128 caracteres")
     private String password;
 
-    @NotNull(message = "El rol es obligatorio")
+    // rol obligatorio al crear (POST), pero opcional al hacer login
+    // (el backend valida contra la BD y devuelve el rol real del usuario).
     private RolUsuario rol;
 
     public String getUsername() {

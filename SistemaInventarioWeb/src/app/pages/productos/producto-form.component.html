@@ -1,0 +1,230 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" routerLink="/productos">
+      <i class="bi bi-box-seam me-2"></i>Sistema Inventario
+    </a>
+  </div>
+</nav>
+
+<div class="container py-4">
+  <div class="mb-4">
+    <button class="btn btn-link p-0 mb-1" (click)="cancelar()">
+      <i class="bi bi-arrow-left me-1"></i>Volver
+    </button>
+    <h2 class="mb-0">Editar producto</h2>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="alert alert-danger">{{ errorMessage() }}</div>
+  }
+  @if (successMessage()) {
+    <div class="alert alert-success">{{ successMessage() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="row g-4">
+      <!-- Columna izquierda: imagen -->
+      <div class="col-md-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-white">
+            <h6 class="mb-0">
+              <i class="bi bi-image me-1"></i>Imagen del producto
+            </h6>
+          </div>
+          <div class="card-body text-center">
+            <!-- Imagen actual o preview de la nueva -->
+            @if (newImagePreview(); as preview) {
+              <img [src]="preview" class="img-fluid rounded mb-3" alt="Preview" />
+              <p class="small text-muted mb-2">Preview local (aún no subida)</p>
+            } @else if (currentImageUrl(); as url) {
+              <img [src]="url" class="img-fluid rounded mb-3" alt="Imagen actual" />
+            } @else {
+              <div class="bg-light rounded d-flex align-items-center justify-content-center mx-auto mb-3"
+                   style="width: 150px; height: 150px">
+                <i class="bi bi-image text-muted display-3"></i>
+              </div>
+              <p class="text-muted small mb-3">Sin imagen</p>
+            }
+
+            <!-- Selector de archivo -->
+            <input
+              #fileInput
+              type="file"
+              accept="image/png,image/jpeg,image/gif,image/webp"
+              class="d-none"
+              (change)="onFileSelected($event)"
+            />
+
+            @if (newImagePreview()) {
+              <div class="d-grid gap-2">
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  (click)="subirImagen()"
+                  [disabled]="uploadingImage()"
+                >
+                  @if (uploadingImage()) {
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  }
+                  <i class="bi bi-upload me-1"></i>Subir imagen
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary btn-sm"
+                  (click)="cancelarImagen()"
+                  [disabled]="uploadingImage()"
+                >
+                  Cancelar
+                </button>
+              </div>
+            } @else {
+              <div class="d-grid gap-2">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm"
+                  (click)="fileInput.click()"
+                >
+                  <i class="bi bi-upload me-1"></i>
+                  {{ currentImageUrl() ? 'Cambiar imagen' : 'Subir imagen' }}
+                </button>
+                @if (currentImageUrl()) {
+                  <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm"
+                    (click)="eliminarImagen()"
+                    [disabled]="deletingImage()"
+                  >
+                    @if (deletingImage()) {
+                      <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    }
+                    <i class="bi bi-trash me-1"></i>Eliminar imagen
+                  </button>
+                }
+              </div>
+            }
+            <p class="text-muted small mt-2 mb-0">Max 10 MB · jpg, png, gif, webp</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna derecha: formulario -->
+      <div class="col-md-8">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <form [formGroup]="form" (ngSubmit)="guardar()">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label">SKU <span class="text-danger">*</span></label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [class.is-invalid]="sku?.invalid && sku?.touched"
+                    formControlName="sku"
+                    maxlength="50"
+                  />
+                  @if (sku?.invalid && sku?.touched) {
+                    <div class="invalid-feedback">El SKU es obligatorio (máx. 50 caracteres).</div>
+                  }
+                </div>
+
+                <div class="col-md-8">
+                  <label class="form-label">Nombre <span class="text-danger">*</span></label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [class.is-invalid]="nombre?.invalid && nombre?.touched"
+                    formControlName="nombre"
+                    maxlength="150"
+                  />
+                  @if (nombre?.invalid && nombre?.touched) {
+                    <div class="invalid-feedback">El nombre es obligatorio (entre 2 y 150 caracteres).</div>
+                  }
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label">Descripción</label>
+                  <textarea
+                    class="form-control"
+                    formControlName="descripcion"
+                    rows="2"
+                    maxlength="500"
+                  ></textarea>
+                </div>
+
+                <div class="col-md-3">
+                  <label class="form-label">Precio compra <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      [class.is-invalid]="precioCompra?.invalid && precioCompra?.touched"
+                      formControlName="precioCompra"
+                      min="0.01"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <label class="form-label">Precio venta <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      [class.is-invalid]="precioVenta?.invalid && precioVenta?.touched"
+                      formControlName="precioVenta"
+                      min="0.01"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <label class="form-label">Stock actual</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    formControlName="stockActual"
+                    min="0"
+                  />
+                </div>
+
+                <div class="col-md-3">
+                  <label class="form-label">Stock mínimo</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    formControlName="stockMinimo"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              <hr class="my-4" />
+
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-outline-secondary" (click)="cancelar()" [disabled]="saving()">
+                  Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary" [disabled]="saving() || form.invalid">
+                  @if (saving()) {
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  }
+                  <i class="bi bi-check-lg me-1"></i>Guardar cambios
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

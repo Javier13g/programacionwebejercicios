@@ -1,0 +1,27 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    @if (icon) {
+      <i class="bi bi-{{ icon }} me-2"></i>
+    }
+    {{ title }}
+  </h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="cancelar()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  <p class="mb-0">{{ body }}</p>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="cancelar()">
+    {{ cancelText }}
+  </button>
+  <button type="button" class="btn" [ngClass]="confirmClass" (click)="confirmar()">
+    {{ confirmText }}
+  </button>
+</div>
