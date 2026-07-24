@@ -1,12 +1,560 @@
-/* Importacion de Bootstrap 5 con ng-bootstrap */
+/* ============================================================
+   BODEGA — Sistema de diseno
+   Tema oscuro moderno, sidebar a la izquierda, acento violeta.
+   ============================================================ */
+
+/* Bootstrap 5 + bootstrap-icons */
 @use "bootstrap/scss/bootstrap" as *;
 @import "bootstrap-icons/font/bootstrap-icons.css";
 
-/* Estilos globales */
+/* Tipografia: Inter via Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+/* === Design tokens ========================================== */
+:root {
+  /* Superficies */
+  --b-bg:           #0B0D12;  /* fondo app */
+  --b-surface:      #14171F;  /* cards, sidebar */
+  --b-surface-2:    #1A1F2B;  /* cards elevadas, hover */
+  --b-surface-3:    #232938;  /* inputs, chips */
+  --b-border:       #252A36;  /* bordes sutiles */
+  --b-border-strong:#313748;  /* bordes visibles */
+
+  /* Texto */
+  --b-text:         #E8E9EE;  /* texto principal */
+  --b-text-soft:    #B5B9C4;  /* texto secundario */
+  --b-text-muted:   #6F7686;  /* labels, captions */
+  --b-text-faint:   #4B5160;  /* placeholders */
+
+  /* Acento: violeta electrico */
+  --b-accent:       #7C5CFF;
+  --b-accent-2:     #9277FF;
+  --b-accent-soft:  rgba(124, 92, 255, 0.14);
+  --b-accent-ink:   #2A1E66;  /* para texto sobre accent-soft */
+
+  /* Estados */
+  --b-success:      #34D399;
+  --b-danger:       #F87171;
+  --b-warning:      #FBBF24;
+  --b-info:         #60A5FA;
+
+  /* Tipografia */
+  --b-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --b-font-display: 'Plus Jakarta Sans', 'Inter', sans-serif;
+
+  /* Espaciado / radios */
+  --b-radius-sm:    8px;
+  --b-radius:       12px;
+  --b-radius-lg:    18px;
+  --b-radius-pill:  999px;
+
+  /* Sombras (sutiles, modo oscuro) */
+  --b-shadow-sm:    0 1px 0 rgba(255,255,255,0.02), 0 1px 2px rgba(0,0,0,0.4);
+  --b-shadow:       0 4px 24px rgba(0,0,0,0.35);
+  --b-shadow-lg:    0 12px 48px rgba(0,0,0,0.5);
+}
+
+/* === Override de variables de Bootstrap ===================== */
+:root, [data-bs-theme=light], [data-bs-theme=dark] {
+  --bs-body-bg: var(--b-bg);
+  --bs-body-color: var(--b-text);
+  --bs-body-font-family: var(--b-font-sans);
+  --bs-body-font-size: 0.9375rem;
+  --bs-body-line-height: 1.55;
+
+  --bs-primary: var(--b-accent);
+  --bs-primary-rgb: 124, 92, 255;
+  --bs-secondary: var(--b-text-muted);
+  --bs-secondary-rgb: 111, 118, 134;
+  --bs-success: var(--b-success);
+  --bs-success-rgb: 52, 211, 153;
+  --bs-danger: var(--b-danger);
+  --bs-danger-rgb: 248, 113, 113;
+  --bs-warning: var(--b-warning);
+  --bs-info: var(--b-info);
+
+  --bs-border-color: var(--b-border);
+  --bs-border-color-translucent: var(--b-border);
+  --bs-link-color: var(--b-accent-2);
+  --bs-link-hover-color: var(--b-accent);
+
+  --bs-card-bg: var(--b-surface);
+  --bs-card-color: var(--b-text);
+  --bs-card-border-color: var(--b-border);
+  --bs-card-cap-bg: var(--b-surface);
+  --bs-card-cap-color: var(--b-text-soft);
+
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--b-text);
+  --bs-table-border-color: var(--b-border);
+  --bs-table-striped-bg: rgba(255,255,255,0.015);
+  --bs-table-hover-bg: rgba(124, 92, 255, 0.06);
+  --bs-table-hover-color: var(--b-text);
+  --bs-table-striped-color: var(--b-text);
+
+  --bs-form-control-bg: var(--b-surface-3);
+  --bs-form-control-color: var(--b-text);
+  --bs-form-control-disabled-bg: var(--b-surface-2);
+
+  --bs-modal-bg: var(--b-surface);
+  --bs-modal-color: var(--b-text);
+  --bs-modal-border-color: var(--b-border);
+  --bs-modal-header-border-color: var(--b-border);
+  --bs-modal-footer-border-color: var(--b-border);
+
+  --bs-dropdown-bg: var(--b-surface-2);
+  --bs-dropdown-color: var(--b-text);
+  --bs-dropdown-border-color: var(--b-border);
+  --bs-dropdown-link-color: var(--b-text);
+  --bs-dropdown-link-hover-bg: var(--b-surface-3);
+  --bs-dropdown-link-hover-color: var(--b-text);
+
+  --bs-pagination-bg: transparent;
+  --bs-pagination-color: var(--b-text-soft);
+  --bs-pagination-border-color: var(--b-border);
+  --bs-pagination-hover-bg: var(--b-surface-2);
+  --bs-pagination-hover-color: var(--b-text);
+  --bs-pagination-active-bg: var(--b-accent);
+  --bs-pagination-active-border-color: var(--b-accent);
+
+  --bs-nav-link-color: var(--b-text-soft);
+  --bs-nav-link-hover-color: var(--b-text);
+
+  --bs-emphasis-color: var(--b-text);
+  --bs-secondary-color: var(--b-text-muted);
+  --bs-tertiary-color: var(--b-text-muted);
+  --bs-tertiary-bg: var(--b-surface-2);
+
+  --bs-heading-color: var(--b-text);
+}
+
+/* === Base ==================================================== */
 html, body {
   height: 100%;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, sans-serif;
-  background-color: #f5f7fa;
+  font-family: var(--b-font-sans);
+  background-color: var(--b-bg);
+  color: var(--b-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+}
+
+* {
+  /* Scrollbars discretas en dark mode */
+  scrollbar-width: thin;
+  scrollbar-color: var(--b-border-strong) transparent;
+}
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--b-border-strong);
+  border-radius: 999px;
+  border: 2px solid var(--b-bg);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--b-text-faint); }
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: var(--b-font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--b-text);
+}
+
+a { text-decoration: none; }
+a:hover { text-decoration: none; }
+
+::selection {
+  background: var(--b-accent);
+  color: white;
+}
+
+/* === App layout: sidebar + main ============================= */
+.app-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+  background: var(--b-bg);
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* evita overflow en flex children */
+  background:
+    radial-gradient(ellipse at top right, rgba(124, 92, 255, 0.06), transparent 60%),
+    var(--b-bg);
+}
+
+.app-content {
+  flex: 1;
+  padding: 2rem 2.25rem 3rem;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.app-content--fluid {
+  max-width: none;
+  padding: 2rem 2.5rem 3rem;
+}
+
+@media (max-width: 900px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+  .app-content {
+    padding: 1.25rem 1rem 2rem;
+  }
+}
+
+/* === Cards: mas planas, con borde =========================== */
+.card {
+  background-color: var(--b-surface);
+  border: 1px solid var(--b-border);
+  border-radius: var(--b-radius);
+  box-shadow: var(--b-shadow-sm);
+}
+.card-header {
+  background: transparent;
+  border-bottom: 1px solid var(--b-border);
+  padding: 0.875rem 1.25rem;
+  font-weight: 600;
+  color: var(--b-text);
+}
+.card-body { padding: 1.25rem; }
+.card-footer {
+  background: transparent;
+  border-top: 1px solid var(--b-border);
+}
+
+/* === Botones: forma mas distintiva ========================== */
+.btn {
+  border-radius: var(--b-radius-sm);
+  font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: -0.005em;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid transparent;
+  transition: background-color 0.12s, border-color 0.12s, transform 0.06s;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn-primary {
+  background: var(--b-accent);
+  border-color: var(--b-accent);
+  color: white;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background: var(--b-accent-2);
+  border-color: var(--b-accent-2);
+  color: white;
+}
+.btn-primary:disabled {
+  background: var(--b-accent);
+  border-color: var(--b-accent);
+  opacity: 0.55;
+}
+
+.btn-outline-primary {
+  color: var(--b-accent-2);
+  border-color: var(--b-border-strong);
+  background: transparent;
+}
+.btn-outline-primary:hover {
+  background: var(--b-accent-soft);
+  border-color: var(--b-accent);
+  color: var(--b-accent-2);
+}
+
+.btn-outline-secondary {
+  color: var(--b-text-soft);
+  border-color: var(--b-border-strong);
+  background: transparent;
+}
+.btn-outline-secondary:hover {
+  background: var(--b-surface-2);
+  border-color: var(--b-border-strong);
+  color: var(--b-text);
+}
+
+.btn-outline-danger {
+  color: var(--b-danger);
+  border-color: var(--b-border-strong);
+}
+.btn-outline-danger:hover {
+  background: rgba(248, 113, 113, 0.12);
+  border-color: var(--b-danger);
+  color: var(--b-danger);
+}
+
+.btn-link {
+  color: var(--b-text-soft);
+}
+.btn-link:hover { color: var(--b-text); }
+
+/* === Inputs / selects / textareas =========================== */
+.form-control, .form-select, textarea.form-control {
+  background-color: var(--b-surface-3);
+  border: 1px solid var(--b-border-strong);
+  color: var(--b-text);
+  border-radius: var(--b-radius-sm);
+  padding: 0.55rem 0.85rem;
+  font-size: 0.9rem;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+.form-control::placeholder { color: var(--b-text-faint); }
+.form-control:focus, .form-select:focus, textarea.form-control:focus {
+  background-color: var(--b-surface-3);
+  border-color: var(--b-accent);
+  color: var(--b-text);
+  box-shadow: 0 0 0 3px var(--b-accent-soft);
+}
+.form-control:disabled, .form-select:disabled {
+  background-color: var(--b-surface-2);
+  color: var(--b-text-muted);
+}
+.form-control.is-invalid, .form-select.is-invalid {
+  border-color: var(--b-danger);
+  background-image: none; /* sacamos el iconito default que no se ve bien */
+  padding-right: 0.85rem;
+}
+.form-control.is-invalid:focus, .form-select.is-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.18);
+}
+.invalid-feedback { color: var(--b-danger); }
+.form-text { color: var(--b-text-muted); }
+
+.form-label {
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: var(--b-text-soft);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.005em;
+}
+
+.input-group-text {
+  background: var(--b-surface-2);
+  border: 1px solid var(--b-border-strong);
+  color: var(--b-text-muted);
+  font-size: 0.85rem;
+}
+
+/* === Tablas: oscuras y limpias ============================== */
+.table {
+  --bs-table-bg: transparent;
+  color: var(--b-text);
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+.table > :not(caption) > * > * {
+  padding: 0.85rem 1rem;
+  border-color: var(--b-border);
+  background: transparent;
+}
+.table > thead {
+  background: var(--b-surface-2);
+}
+.table > thead > tr > th {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--b-text-muted);
+  border-bottom: 1px solid var(--b-border);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+.table > tbody > tr {
+  transition: background-color 0.1s ease;
+}
+.table-hover > tbody > tr:hover > * {
+  background: var(--b-table-hover-bg);
+  color: var(--b-text);
+}
+
+/* === Badges: mas sutiles ==================================== */
+.badge {
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  padding: 0.3em 0.6em;
+  border-radius: var(--b-radius-pill);
+}
+.bg-success { background-color: rgba(52, 211, 153, 0.18) !important; color: var(--b-success) !important; }
+.bg-danger  { background-color: rgba(248, 113, 113, 0.18) !important; color: var(--b-danger) !important; }
+.bg-warning { background-color: rgba(251, 191, 36, 0.16) !important; color: var(--b-warning) !important; }
+.bg-info    { background-color: rgba(96, 165, 250, 0.18) !important; color: var(--b-info) !important; }
+.bg-secondary { background-color: var(--b-surface-3) !important; color: var(--b-text-soft) !important; }
+
+/* === Alertas ================================================ */
+.alert {
+  border: 1px solid var(--b-border);
+  border-radius: var(--b-radius);
+  background: var(--b-surface);
+  color: var(--b-text);
+  padding: 0.85rem 1rem;
+}
+.alert-danger {
+  background: rgba(248, 113, 113, 0.10);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: #FCA5A5;
+}
+.alert-success {
+  background: rgba(52, 211, 153, 0.10);
+  border-color: rgba(52, 211, 153, 0.3);
+  color: #6EE7B7;
+}
+
+/* === Pagination (ngb-pagination) ============================ */
+.pagination .page-link {
+  background: var(--b-surface);
+  border: 1px solid var(--b-border);
+  color: var(--b-text-soft);
+  border-radius: var(--b-radius-sm) !important;
+  margin: 0 2px;
+}
+.pagination .page-item.active .page-link {
+  background: var(--b-accent);
+  border-color: var(--b-accent);
+  color: white;
+}
+.pagination .page-link:hover {
+  background: var(--b-surface-2);
+  color: var(--b-text);
+}
+.pagination .page-item.disabled .page-link {
+  background: transparent;
+  border-color: var(--b-border);
+  color: var(--b-text-faint);
+}
+
+/* === Modales ================================================ */
+.modal-content {
+  background: var(--b-surface);
+  border: 1px solid var(--b-border);
+  border-radius: var(--b-radius-lg);
+  box-shadow: var(--b-shadow-lg);
+  color: var(--b-text);
+}
+.modal-header {
+  border-bottom: 1px solid var(--b-border);
+  padding: 1.1rem 1.5rem;
+}
+.modal-title {
+  font-family: var(--b-font-display);
+  font-weight: 700;
+  color: var(--b-text);
+}
+.modal-body { padding: 1.5rem; }
+.modal-footer {
+  border-top: 1px solid var(--b-border);
+  padding: 1rem 1.5rem;
+}
+.modal-backdrop.show { opacity: 0.6; }
+
+/* === Typeahead dropdown ===================================== */
+ngb-typeahead-window, .dropdown-menu {
+  background: var(--b-surface-2);
+  border: 1px solid var(--b-border);
+  border-radius: var(--b-radius);
+  box-shadow: var(--b-shadow);
+  padding: 0.35rem;
+}
+.dropdown-item {
+  color: var(--b-text);
+  border-radius: var(--b-radius-sm);
+  padding: 0.5rem 0.75rem;
+}
+.dropdown-item:hover, .dropdown-item:focus {
+  background: var(--b-accent-soft);
+  color: var(--b-text);
+}
+.dropdown-item.active, .dropdown-item:active {
+  background: var(--b-accent);
+  color: white;
+}
+button.dropdown-item, .dropdown-item button {
+  background: transparent;
+  border: none;
+}
+
+/* === Typeahead de ng-bootstrap ============================== */
+ngb-typeahead-window {
+  background: var(--b-surface-2) !important;
+  border: 1px solid var(--b-border) !important;
+  box-shadow: var(--b-shadow) !important;
+}
+ngb-typeahead-window button.dropdown-item {
+  color: var(--b-text) !important;
+}
+ngb-typeahead-window button.dropdown-item:hover,
+ngb-typeahead-window button.dropdown-item.active {
+  background: var(--b-accent-soft) !important;
+  color: var(--b-text) !important;
+}
+ngb-typeahead-window button.dropdown-item.bg-primary {
+  background: var(--b-accent) !important;
+  color: white !important;
+}
+
+/* === Utilities ============================================== */
+.text-soft { color: var(--b-text-soft) !important; }
+.text-muted { color: var(--b-text-muted) !important; }
+.text-faint { color: var(--b-text-faint) !important; }
+.text-accent { color: var(--b-accent-2) !important; }
+.text-success { color: var(--b-success) !important; }
+.text-danger { color: var(--b-danger) !important; }
+
+.bg-surface { background: var(--b-surface) !important; }
+.bg-surface-2 { background: var(--b-surface-2) !important; }
+.bg-app { background: var(--b-bg) !important; }
+
+.divider {
+  height: 1px;
+  background: var(--b-border);
+  margin: 1rem 0;
+}
+
+/* === Page header (titulo + acciones) ======================== */
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+.page-header h1, .page-header h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+.page-header .subtitle {
+  color: var(--b-text-muted);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+/* === Etiquetas tipo "kicker" ================================ */
+.kicker {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--b-text-muted);
+}
+
+/* === Code / SKU ============================================= */
+code {
+  background: var(--b-surface-2);
+  color: var(--b-accent-2);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+/* === Spinner color ========================================== */
+.spinner-border, .spinner-grow {
+  color: var(--b-accent) !important;
 }

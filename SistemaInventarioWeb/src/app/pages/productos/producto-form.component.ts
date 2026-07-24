@@ -1,17 +1,19 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
-import { EMPTY, of, switchMap } from 'rxjs';
 import { ProductosService } from '../../services/productos.service';
-import { Producto } from '../../models/producto.model';
+import { CategoriasService } from '../../services/categorias.service';
+import { ProveedoresService } from '../../services/proveedores.service';
+import { Categoria, Producto, Proveedor } from '../../models/producto.model';
 import { ConfirmModalComponent } from '../../components/confirm-modal/confirm-modal.component';
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-producto-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, NgbModalModule],
+  imports: [CommonModule, ReactiveFormsModule, NgbModalModule, SidebarComponent],
   templateUrl: './producto-form.component.html',
   styleUrls: ['./producto-form.component.scss']
 })
@@ -20,7 +22,11 @@ export class ProductoFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly productosService = inject(ProductosService);
+  private readonly categoriasService = inject(CategoriasService);
+  private readonly proveedoresService = inject(ProveedoresService);
   private readonly modalService = inject(NgbModal);
+
+  readonly isEditMode = signal(false);
 
   readonly form: FormGroup = this.fb.group({
     sku: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(50)]],
@@ -29,7 +35,9 @@ export class ProductoFormComponent implements OnInit {
     precioCompra: [0, [Validators.required, Validators.min(0.01)]],
     precioVenta: [0, [Validators.required, Validators.min(0.01)]],
     stockActual: [0, [Validators.min(0)]],
-    stockMinimo: [0, [Validators.min(0)]]
+    stockMinimo: [0, [Validators.min(0)]],
+    categoriaId: [null as number | null],
+    proveedorId: [null as number | null]
   });
 
   readonly loading = signal(true);
@@ -43,20 +51,83 @@ export class ProductoFormComponent implements OnInit {
   readonly newImagePreview = signal<string | null>(null);
   private selectedFile: File | null = null;
 
-  /** Snapshot del producto cargado del backend. Se usa para diff en PATCH. */
+  readonly categorias = signal<Categoria[]>([]);
+  readonly proveedores = signal<Proveedor[]>([]);
+  readonly loadingSelects = signal(false);
+
   private original: Producto | null = null;
   private productoId: number | null = null;
 
+  readonly titulo = computed(() =>
+    this.isEditMode() ? 'Editar producto' : 'Nuevo producto'
+  );
+
+  readonly submitLabel = computed(() =>
+    this.isEditMode() ? 'Guardar cambios' : 'Crear producto'
+  );
+
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
-    const id = Number(idParam);
-    if (!id || Number.isNaN(id)) {
-      this.errorMessage.set('ID de producto inválido');
-      this.loading.set(false);
-      return;
+
+    if (idParam === 'nuevo' || idParam == null) {
+      this.iniciarCreacion();
+    } else {
+      const id = Number(idParam);
+      if (!id || Number.isNaN(id)) {
+        this.errorMessage.set('ID de producto inválido');
+        this.loading.set(false);
+        return;
+      }
+      this.productoId = id;
+      this.isEditMode.set(true);
+      this.cargar(id);
     }
-    this.productoId = id;
-    this.cargar(id);
+
+    this.cargarSelects();
+  }
+
+  private iniciarCreacion(): void {
+    this.isEditMode.set(false);
+    this.productoId = null;
+    this.original = null;
+    this.currentImageUrl.set(null);
+    this.form.reset({
+      sku: '',
+      nombre: '',
+      descripcion: '',
+      precioCompra: 0,
+      precioVenta: 0,
+      stockActual: 0,
+      stockMinimo: 0,
+      categoriaId: null,
+      proveedorId: null
+    });
+    this.form.get('categoriaId')?.setValidators([Validators.required]);
+    this.form.get('categoriaId')?.updateValueAndValidity();
+    this.form.get('proveedorId')?.setValidators([Validators.required]);
+    this.form.get('proveedorId')?.updateValueAndValidity();
+    this.loading.set(false);
+  }
+
+
+  private cargarSelects(): void {
+    this.loadingSelects.set(true);
+    let pendientes = 2;
+    const terminar = () => {
+      pendientes--;
+      if (pendientes === 0) this.loadingSelects.set(false);
+    };
+
+    this.categoriasService.listarTodas().subscribe({
+      next: (cats) => this.categorias.set(cats ?? []),
+      error: () => this.categorias.set([]),
+      complete: terminar
+    });
+    this.proveedoresService.listarTodos().subscribe({
+      next: (provs) => this.proveedores.set(provs ?? []),
+      error: () => this.proveedores.set([]),
+      complete: terminar
+    });
   }
 
   cargar(id: number): void {
@@ -65,8 +136,6 @@ export class ProductoFormComponent implements OnInit {
 
     this.productosService.obtenerPorId(id).subscribe({
       next: (p) => {
-        // Guardamos el producto COMPLETO como snapshot para comparar contra el
-        // form al hacer PATCH. Asi sabemos qué campos realmente cambio el usuario.
         this.original = { ...p };
         this.form.patchValue({
           sku: p.sku,
@@ -75,7 +144,9 @@ export class ProductoFormComponent implements OnInit {
           precioCompra: p.precioCompra,
           precioVenta: p.precioVenta,
           stockActual: p.stockActual ?? 0,
-          stockMinimo: p.stockMinimo ?? 0
+          stockMinimo: p.stockMinimo ?? 0,
+          categoriaId: p.categoria?.id ?? null,
+          proveedorId: p.proveedor?.id ?? null
         });
         this.currentImageUrl.set(p.imageUrl ?? null);
         this.loading.set(false);
@@ -90,8 +161,96 @@ export class ProductoFormComponent implements OnInit {
   }
 
   guardar(): void {
-    if (this.form.invalid || this.productoId == null) {
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
+      return;
+    }
+
+    if (this.isEditMode()) {
+      this.guardarEdicion();
+    } else {
+      this.guardarCreacion();
+    }
+  }
+
+
+  private guardarCreacion(): void {
+    const raw = this.form.getRawValue();
+    const payload: Producto = {
+      sku: raw.sku,
+      nombre: raw.nombre,
+      descripcion: raw.descripcion ?? '',
+      precioCompra: Number(raw.precioCompra),
+      precioVenta: Number(raw.precioVenta),
+      stockActual: Number(raw.stockActual ?? 0),
+      stockMinimo: Number(raw.stockMinimo ?? 0),
+      categoriaId: Number(raw.categoriaId),
+      proveedorId: Number(raw.proveedorId)
+    };
+
+    this.saving.set(true);
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+
+    this.productosService.crear(payload).subscribe({
+      next: (creado) => {
+        const nuevoId = creado.id;
+        if (nuevoId == null) {
+          this.saving.set(false);
+          this.errorMessage.set('El backend no devolvió el id del producto creado.');
+          return;
+        }
+        if (this.selectedFile) {
+          this.subirImagenDespuesDeCrear(nuevoId);
+          return;
+        }
+        this.saving.set(false);
+        this.successMessage.set('Producto creado correctamente.');
+        setTimeout(() => this.router.navigate(['/productos', nuevoId]), 600);
+      },
+      error: (err) => {
+        this.saving.set(false);
+        const fieldErrors = err?.error?.errors || err?.error?.fieldErrors;
+        if (fieldErrors && typeof fieldErrors === 'object') {
+          const lineas = Object.entries(fieldErrors)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join('; ');
+          this.errorMessage.set(lineas);
+        } else {
+          this.errorMessage.set(
+            err?.error?.message || err?.statusText || 'No se pudo crear el producto'
+          );
+        }
+      }
+    });
+  }
+
+  private subirImagenDespuesDeCrear(nuevoId: number): void {
+    this.uploadingImage.set(true);
+    const file = this.selectedFile!;
+    this.productosService.subirImagen(nuevoId, file).subscribe({
+      next: () => {
+        this.uploadingImage.set(false);
+        this.saving.set(false);
+        this.successMessage.set('Producto creado con imagen.');
+        setTimeout(() => this.router.navigate(['/productos', nuevoId]), 600);
+      },
+      error: (err) => {
+        this.uploadingImage.set(false);
+        this.saving.set(false);
+        this.successMessage.set(
+          'Producto creado. No se pudo subir la imagen: ' +
+            (err?.error?.message || err?.statusText || 'error desconocido')
+        );
+        setTimeout(() => this.router.navigate(['/productos', nuevoId]), 1500);
+      }
+    });
+  }
+
+  private guardarEdicion(): void {
+    if (this.productoId == null) return;
+    if (!this.original) {
+      this.errorMessage.set('No se cargo el producto original. Recarga la pagina.');
       return;
     }
 
@@ -99,20 +258,38 @@ export class ProductoFormComponent implements OnInit {
     this.errorMessage.set(null);
     this.successMessage.set(null);
 
-    // Construimos el payload con solo los campos que CAMBIARON vs el snapshot
-    // original del backend. Si un campo no cambio, NO lo enviamos para que
-    // el backend conserve el valor actual.
-    const raw = this.form.getRawValue();
-    const orig = this.original;
-    const payload: Partial<Producto> = {};
-
-    if (!orig) {
-      this.errorMessage.set('No se cargo el producto original. Recarga la pagina.');
-      this.saving.set(false);
+    if (this.selectedFile) {
+      this.uploadingImage.set(true);
+      const fileToUpload = this.selectedFile;
+      this.productosService.subirImagen(this.productoId, fileToUpload).subscribe({
+        next: (resp) => {
+          this.currentImageUrl.set(resp.imageUrl);
+          this.newImagePreview.set(null);
+          this.selectedFile = null;
+          this.uploadingImage.set(false);
+          this.original = { ...this.original!, imageUrl: resp.imageUrl };
+          this.aplicarPatch();
+        },
+        error: (err) => {
+          this.uploadingImage.set(false);
+          this.saving.set(false);
+          this.errorMessage.set(
+            err?.error?.message || err?.statusText || 'No se pudo subir la imagen'
+          );
+        }
+      });
       return;
     }
 
-    // Comparamos contra el snapshot. Si difiere, lo incluimos en el payload.
+    this.aplicarPatch();
+  }
+
+
+  private aplicarPatch(): void {
+    const orig = this.original!;
+    const raw = this.form.getRawValue();
+    const payload: Partial<Producto> = {};
+
     if ((raw.sku ?? '') !== (orig.sku ?? '')) payload.sku = raw.sku;
     if ((raw.nombre ?? '') !== (orig.nombre ?? '')) payload.nombre = raw.nombre;
     if ((raw.descripcion ?? '') !== (orig.descripcion ?? '')) payload.descripcion = raw.descripcion;
@@ -120,22 +297,20 @@ export class ProductoFormComponent implements OnInit {
     if (Number(raw.precioVenta) !== Number(orig.precioVenta)) payload.precioVenta = Number(raw.precioVenta);
     if (Number(raw.stockActual ?? 0) !== Number(orig.stockActual ?? 0)) payload.stockActual = Number(raw.stockActual ?? 0);
     if (Number(raw.stockMinimo ?? 0) !== Number(orig.stockMinimo ?? 0)) payload.stockMinimo = Number(raw.stockMinimo ?? 0);
+    if (Number(raw.categoriaId ?? 0) !== Number(orig.categoria?.id ?? 0)) {
+      payload.categoriaId = Number(raw.categoriaId);
+    }
+    if (Number(raw.proveedorId ?? 0) !== Number(orig.proveedor?.id ?? 0)) {
+      payload.proveedorId = Number(raw.proveedorId);
+    }
 
-    // Si no cambio nada, avisamos y no llamamos al backend.
     if (Object.keys(payload).length === 0) {
       this.saving.set(false);
-      // Si la imagen actual difiere de la original, es porque el usuario ya
-      // la subio/elimino en una sesion previa (la cual se guarda por separado).
-      // En ese caso la imagen YA esta guardada en backend, no hay nada que hacer.
-      if (this.currentImageUrl() !== (this.original?.imageUrl ?? null)) {
-        this.successMessage.set('Imagen ya guardada. No hay otros cambios pendientes.');
-      } else {
-        this.successMessage.set('No hay cambios para guardar.');
-      }
+      this.successMessage.set('Imagen guardada. No hay otros cambios pendientes.');
       return;
     }
 
-    this.productosService.actualizar(this.productoId, payload as Producto).subscribe({
+    this.productosService.actualizar(this.productoId!, payload as Producto).subscribe({
       next: () => {
         this.saving.set(false);
         this.successMessage.set('Producto actualizado correctamente.');
@@ -143,7 +318,6 @@ export class ProductoFormComponent implements OnInit {
       },
       error: (err) => {
         this.saving.set(false);
-        // Si el backend devuelve un mapa de errores por campo, lo mostramos lindo.
         const fieldErrors = err?.error?.errors || err?.error?.fieldErrors;
         if (fieldErrors && typeof fieldErrors === 'object') {
           const lineas = Object.entries(fieldErrors)
@@ -167,16 +341,11 @@ export class ProductoFormComponent implements OnInit {
     }
   }
 
-  /**
-   * Maneja la seleccion de archivo. Solo guarda el File y muestra un preview local.
-   * La subida a Imgur se hace al apretar "Subir imagen".
-   */
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
 
-    // Validaciones del lado cliente (el backend tambien valida)
     if (!file.type.startsWith('image/')) {
       this.errorMessage.set('El archivo debe ser una imagen (jpg, png, gif, webp).');
       return;
@@ -189,15 +358,11 @@ export class ProductoFormComponent implements OnInit {
     this.selectedFile = file;
     this.errorMessage.set(null);
 
-    // Preview local con FileReader
     const reader = new FileReader();
     reader.onload = () => this.newImagePreview.set(reader.result as string);
     reader.readAsDataURL(file);
   }
 
-  /**
-   * Sube la imagen seleccionada al backend (que la guarda en Imgur).
-   */
   subirImagen(): void {
     if (!this.selectedFile || this.productoId == null) return;
 
@@ -212,8 +377,6 @@ export class ProductoFormComponent implements OnInit {
         this.selectedFile = null;
         this.uploadingImage.set(false);
         this.successMessage.set('Imagen subida correctamente.');
-        // Sincronizamos el snapshot con la imagen recien subida para que
-        // un "Guardar cambios" posterior no la considere como cambio pendiente.
         if (this.original) {
           this.original = { ...this.original, imageUrl: resp.imageUrl };
         }
@@ -227,18 +390,11 @@ export class ProductoFormComponent implements OnInit {
     });
   }
 
-  /**
-   * Cancela la seleccion de imagen (no toca la imagen actual).
-   */
   cancelarImagen(): void {
     this.selectedFile = null;
     this.newImagePreview.set(null);
   }
 
-  /**
-   * Borra la imagen actual del producto (Imgur + BD).
-   * Pide confirmacion con un modal de ng-bootstrap antes de ejecutar.
-   */
   eliminarImagen(): void {
     if (this.productoId == null) return;
 
@@ -265,8 +421,6 @@ export class ProductoFormComponent implements OnInit {
           this.currentImageUrl.set(null);
           this.deletingImage.set(false);
           this.successMessage.set('Imagen eliminada.');
-          // Sincronizamos el snapshot para que un "Guardar cambios" posterior
-          // no considere la imagen eliminada como cambio pendiente.
           if (this.original) {
             this.original = { ...this.original, imageUrl: undefined };
           }
@@ -285,4 +439,6 @@ export class ProductoFormComponent implements OnInit {
   get nombre() { return this.form.get('nombre'); }
   get precioCompra() { return this.form.get('precioCompra'); }
   get precioVenta() { return this.form.get('precioVenta'); }
+  get categoriaId() { return this.form.get('categoriaId'); }
+  get proveedorId() { return this.form.get('proveedorId'); }
 }

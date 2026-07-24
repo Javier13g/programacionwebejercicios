@@ -9,10 +9,6 @@ export class ProductosService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/productos`;
 
-  /**
-   * Construye headers con Authorization si hay token en localStorage.
-   * Esto es un respaldo por si el HttpInterceptor falla en recargas.
-   */
   private authHeaders(): HttpHeaders {
     let headers = new HttpHeaders();
     if (typeof window !== 'undefined') {
@@ -63,10 +59,6 @@ export class ProductosService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.authHeaders() });
   }
 
-  /**
-   * Sube una imagen (multipart/form-data) al producto.
-   * El backend la guarda en Imgur y devuelve URL + deleteHash.
-   */
   subirImagen(id: number, file: File): Observable<ImagenProductoResponse> {
     const formData = new FormData();
     formData.append('file', file);
@@ -77,9 +69,6 @@ export class ProductosService {
     );
   }
 
-  /**
-   * Borra la imagen del producto (tanto de Imgur como de la BD).
-   */
   eliminarImagen(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}/imagen`, { headers: this.authHeaders() });
   }

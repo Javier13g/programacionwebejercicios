@@ -1,0 +1,143 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    <i class="bi bi-arrow-left-right me-2"></i>Registrar movimiento
+  </h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Cerrar"
+    (click)="cancelar()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  @if (errorMessage()) {
+    <div class="alert alert-danger py-2">{{ errorMessage() }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="guardar()">
+    <div class="mb-3">
+      <label class="form-label">Producto <span class="text-danger">*</span></label>
+      <div class="position-relative">
+        <input
+          type="text"
+          class="form-control"
+          [class.is-invalid]="productoId?.invalid && productoId?.touched"
+          formControlName="productoId"
+          [ngModel]="productoSeleccionado"
+          [ngbTypeahead]="typeaheadSearch"
+          [resultFormatter]="typeaheadResultFormatter"
+          [inputFormatter]="typeaheadInputFormatter"
+          [editable]="true"
+          [focusFirst]="true"
+          placeholder="Escribí SKU o nombre del producto..."
+          (selectItem)="onProductoSelect($event)"
+        />
+        <div class="position-absolute end-0 top-0 h-100 d-flex align-items-center pe-2 gap-1">
+          @if (productoBuscando()) {
+            <span class="spinner-border spinner-border-sm text-secondary" role="status">
+              <span class="visually-hidden">Buscando...</span>
+            </span>
+          }
+          @if (productoSeleccionado && !productoBuscando()) {
+            <button
+              type="button"
+              class="btn btn-link btn-sm p-0 text-secondary"
+              (click)="limpiarProducto()"
+              tabindex="-1"
+              title="Quitar producto"
+            >
+              <i class="bi bi-x-circle"></i>
+            </button>
+          }
+        </div>
+      </div>
+      @if (productoBusquedaFallida()) {
+        <small class="text-danger d-block mt-1">
+          <i class="bi bi-exclamation-triangle me-1"></i>
+          No se pudo buscar productos. Reintentá.
+        </small>
+      } @else {
+        <small class="form-text text-muted">
+          Empezá a escribir para buscar (mínimo 2 caracteres).
+        </small>
+      }
+      @if (productoId?.invalid && productoId?.touched) {
+        <div class="invalid-feedback d-block">Tenés que seleccionar un producto.</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Tipo <span class="text-danger">*</span></label>
+      <div class="btn-group w-100" role="group" aria-label="Tipo de movimiento">
+        @for (t of tipos; track t.value) {
+          <input
+            type="radio"
+            class="btn-check"
+            [id]="'tipo-' + t.value"
+            [value]="t.value"
+            formControlName="tipo"
+          />
+          <label
+            class="btn btn-outline-primary"
+            [for]="'tipo-' + t.value"
+          >
+            {{ t.label }}
+          </label>
+        }
+      </div>
+      <small class="form-text text-muted d-block mt-1">{{ tipoHelp() }}</small>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Cantidad <span class="text-danger">*</span></label>
+      <input
+        type="number"
+        class="form-control"
+        [class.is-invalid]="cantidad?.invalid && cantidad?.touched"
+        formControlName="cantidad"
+        min="1"
+        step="1"
+      />
+      @if (cantidad?.invalid && cantidad?.touched) {
+        <div class="invalid-feedback">La cantidad debe ser mayor o igual a 1.</div>
+      } @else {
+        <small class="form-text text-muted">
+          @if (tipo?.value === 'AJUSTE') {
+            Reemplaza el stock actual del producto por este valor.
+          } @else {
+            Cantidad a sumar/restar del stock actual.
+          }
+        </small>
+      }
+    </div>
+
+    <div class="mb-2">
+      <label class="form-label">Observación</label>
+      <textarea
+        class="form-control"
+        rows="2"
+        maxlength="500"
+        formControlName="observacion"
+        placeholder="Opcional: motivo, número de factura, etc."
+      ></textarea>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="cancelar()" [disabled]="saving()">
+    Cancelar
+  </button>
+  <button
+    type="button"
+    class="btn btn-primary"
+    (click)="guardar()"
+    [disabled]="saving() || form.invalid"
+  >
+    @if (saving()) {
+      <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+    }
+    <i class="bi bi-check-lg me-1"></i>Registrar
+  </button>
+</div>

@@ -7,7 +7,9 @@ export interface Producto {
   precioVenta: number;
   stockActual?: number;
   stockMinimo?: number;
+  categoriaId?: number;
   categoria?: Categoria;
+  proveedorId?: number;
   proveedor?: Proveedor;
   imageUrl?: string;
   imageDeleteHash?: string;
@@ -23,6 +25,13 @@ export interface Categoria {
 export interface Proveedor {
   id: number;
   nombre: string;
+}
+
+export interface Usuario {
+  id: number;
+  username?: string;
+  nombre?: string;
+  rol?: string;
 }
 
 export interface PageResponse<T> {

@@ -15,6 +15,12 @@ export const routes: Routes = [
       import('./pages/productos/productos-list.component').then(m => m.ProductosListComponent)
   },
   {
+    path: 'productos/nuevo',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/productos/producto-form.component').then(m => m.ProductoFormComponent)
+  },
+  {
     path: 'productos/:id',
     canActivate: [authGuard],
     loadComponent: () =>
@@ -25,6 +31,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/productos/producto-form.component').then(m => m.ProductoFormComponent)
+  },
+  {
+    path: 'movimientos',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/movimientos/movimientos-list.component').then(m => m.MovimientosListComponent)
   },
   { path: '**', redirectTo: 'productos' }
 ];

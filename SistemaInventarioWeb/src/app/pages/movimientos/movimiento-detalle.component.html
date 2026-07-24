@@ -1,0 +1,124 @@
+@if (movimiento; as m) {
+  <div class="modal-header">
+    <h5 class="modal-title">
+      <i class="bi bi-receipt me-2"></i>Detalle del movimiento
+      @if (m.id != null) {
+        <small class="text-muted ms-1">#{{ m.id }}</small>
+      }
+    </h5>
+    <button type="button" class="btn-close" aria-label="Cerrar" (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <span class="badge fs-6" [class]="tipoBadge(m.tipo)">
+        {{ tipoLabel(m.tipo) }}
+      </span>
+      <span class="text-muted small">
+        <i class="bi bi-calendar3 me-1"></i>
+        {{ m.fecha | date:'dd/MM/yyyy HH:mm:ss' }}
+      </span>
+    </div>
+
+    <div class="card border-0 bg-surface-2 mb-3">
+      <div class="card-body text-center py-3">
+        <div class="kicker mb-1">Cantidad</div>
+        <div class="display-5 fw-bold" [class]="cantidadDisplay().clase">
+          {{ cantidadDisplay().texto }}
+        </div>
+        <div class="text-muted small">unidades</div>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <!-- Producto -->
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header py-2">
+            <small class="kicker">
+              <i class="bi bi-box-seam me-1"></i>Producto
+            </small>
+          </div>
+          <div class="card-body">
+            @if (m.producto) {
+              <div class="d-flex gap-3">
+                @if (m.producto.imageUrl) {
+                  <img
+                    [src]="m.producto.imageUrl"
+                    [alt]="m.producto.nombre"
+                    class="rounded"
+                    style="width: 64px; height: 64px; object-fit: cover;"
+                  />
+                } @else {
+                  <div
+                    class="bg-surface-2 rounded d-flex align-items-center justify-content-center"
+                    style="width: 64px; height: 64px;"
+                  >
+                    <i class="bi bi-image text-muted"></i>
+                  </div>
+                }
+                <div class="flex-grow-1">
+                  <div class="fw-semibold">{{ m.producto.nombre }}</div>
+                  <code class="small">{{ m.producto.sku }}</code>
+                  @if (m.producto.categoria?.nombre) {
+                    <div class="small text-muted">
+                      <i class="bi bi-tag me-1"></i>{{ m.producto.categoria?.nombre }}
+                    </div>
+                  }
+                </div>
+              </div>
+              @if (stockActualProducto() !== null) {
+                <hr class="my-2" />
+                <div class="d-flex justify-content-between small">
+                  <span class="text-muted">Stock actual:</span>
+                  <span class="fw-semibold">{{ stockActualProducto() }}</span>
+                </div>
+              }
+            } @else {
+              <span class="text-muted">— producto no disponible —</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header py-2">
+            <small class="kicker">
+              <i class="bi bi-person me-1"></i>Usuario
+            </small>
+          </div>
+          <div class="card-body">
+            @if (m.usuario) {
+              <div class="fw-semibold">{{ m.usuario.username || m.usuario.nombre || '—' }}</div>
+              @if (m.usuario.rol) {
+                <span class="badge bg-secondary mt-1">{{ m.usuario.rol }}</span>
+              }
+            } @else {
+              <span class="text-muted">— usuario no disponible —</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (m.observacion) {
+      <div class="mt-3">
+        <small class="text-muted text-uppercase fw-semibold d-block mb-1">
+          <i class="bi bi-chat-left-text me-1"></i>Observación
+        </small>
+        <p class="mb-0" style="white-space: pre-wrap;">{{ m.observacion }}</p>
+      </div>
+    }
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">
+      Cerrar
+    </button>
+  </div>
+} @else {
+  <div class="modal-body text-center py-4 text-muted">
+    No hay datos para mostrar.
+  </div>
+}

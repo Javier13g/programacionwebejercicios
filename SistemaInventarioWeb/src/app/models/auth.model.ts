@@ -13,3 +13,9 @@ export interface LoginResponse {
   rol?: string;
   expiresInMs?: number;
 }
+
+export interface UsuarioActual {
+  id: number;
+  username: string;
+  rol?: string;
+}

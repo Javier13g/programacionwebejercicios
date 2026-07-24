@@ -1,23 +1,21 @@
-import { Component, inject, signal, OnInit, computed } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { ProductosService } from '../../services/productos.service';
-import { AuthService } from '../../services/auth.service';
 import { Producto } from '../../models/producto.model';
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-productos-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, NgbPaginationModule, DecimalPipe],
+  imports: [CommonModule, FormsModule, RouterLink, NgbPaginationModule, DecimalPipe, SidebarComponent],
   templateUrl: './productos-list.component.html',
   styleUrls: ['./productos-list.component.scss']
 })
 export class ProductosListComponent implements OnInit {
   private readonly productosService = inject(ProductosService);
-  private readonly auth = inject(AuthService);
-  private readonly router = inject(Router);
 
   readonly productos = signal<Producto[]>([]);
   readonly loading = signal(false);
@@ -28,8 +26,6 @@ export class ProductosListComponent implements OnInit {
   readonly pageSize = signal(5);
   readonly totalElements = signal(0);
   readonly totalPages = signal(0);
-
-  readonly isAuthenticated = computed(() => this.auth.isAuthenticated());
 
   ngOnInit(): void {
     this.cargar();
@@ -72,11 +68,6 @@ export class ProductosListComponent implements OnInit {
   onPageChange(page: number): void {
     this.currentPage.set(page);
     this.cargar();
-  }
-
-  logout(): void {
-    this.auth.logout();
-    this.router.navigate(['/login']);
   }
 
   trackById(_: number, item: Producto): number {

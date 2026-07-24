@@ -1,161 +1,137 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-  <div class="container-fluid">
-    <a class="navbar-brand fw-bold" routerLink="/productos">
-      <i class="bi bi-box-seam me-2"></i>Sistema Inventario
-    </a>
-    <div class="d-flex align-items-center gap-3">
-      @if (isAuthenticated()) {
-        <span class="text-white-50 small">Sesión iniciada</span>
-        <button class="btn btn-outline-light btn-sm" (click)="logout()">
-          <i class="bi bi-box-arrow-right me-1"></i>Cerrar sesión
-        </button>
-      }
-    </div>
-  </div>
-</nav>
+<div class="app-layout">
+  <app-sidebar />
+  <main class="app-main">
+    <div class="app-content">
+      <div class="page-header">
+        <div>
+          <div class="kicker">Stock</div>
+          <h2>Productos</h2>
+          <p class="subtitle">Listado de productos del inventario</p>
+        </div>
+        <a class="btn btn-primary" routerLink="/productos/nuevo">
+          <i class="bi bi-plus-lg me-1"></i>Nuevo producto
+        </a>
+      </div>
 
-<div class="container-fluid py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="mb-1">Productos</h2>
-      <p class="text-muted mb-0">Listado de productos del inventario</p>
-    </div>
-  </div>
-
-  <div class="card shadow-sm">
-    <div class="card-header bg-white">
-      <div class="row g-2 align-items-center">
-        <div class="col-md-6">
-          <div class="input-group">
-            <span class="input-group-text">
-              <i class="bi bi-search"></i>
-            </span>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Buscar por SKU o nombre..."
-              [ngModel]="searchTerm()"
-              (ngModelChange)="searchTerm.set($event)"
-              (keyup.enter)="buscar()"
-            />
-            <button class="btn btn-primary" (click)="buscar()">Buscar</button>
+      <div class="card shadow-none">
+        <div class="card-header">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-6">
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Buscar por SKU o nombre..."
+                  [ngModel]="searchTerm()"
+                  (ngModelChange)="searchTerm.set($event)"
+                  (keyup.enter)="buscar()"
+                />
+              </div>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end">
+              <button class="btn btn-outline-primary btn-sm" (click)="buscar()">
+                <i class="bi bi-funnel me-1"></i>Buscar
+              </button>
+            </div>
           </div>
+        </div>
+
+        <div class="card-body p-0">
+          @if (errorMessage()) {
+            <div class="alert alert-danger m-3">{{ errorMessage() }}</div>
+          }
+          @if (loading()) {
+            <div class="text-center py-5">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </div>
+          } @else if (productos().length === 0) {
+            <div class="text-center py-5 text-muted">
+              <i class="bi bi-inbox display-4 d-block mb-2"></i>
+              No hay productos para mostrar.
+            </div>
+          } @else {
+            <div class="table-responsive">
+              <table class="table table-hover mb-0 align-middle">
+                <thead>
+                  <tr>
+                    <th>SKU</th>
+                    <th>Nombre</th>
+                    <th>Categoria</th>
+                    <th class="text-end">Precio venta</th>
+                    <th class="text-end">Stock</th>
+                    <th>Estado</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (p of productos(); track trackById($index, p)) {
+                    <tr>
+                      <td>
+                        <code>{{ p.sku }}</code>
+                      </td>
+                      <td>
+                        <div class="fw-semibold">{{ p.nombre }}</div>
+                        @if (p.descripcion) {
+                          <small class="text-muted">{{ p.descripcion }}</small>
+                        }
+                      </td>
+                      <td class="text-soft">{{ p.categoria?.nombre || '—' }}</td>
+                      <td class="text-end fw-semibold">
+                        $ {{ p.precioVenta | number:'1.2-2' }}
+                      </td>
+                      <td class="text-end">
+                        <span
+                          class="badge"
+                          [class.bg-success]="!stockBajo(p)"
+                          [class.bg-danger]="stockBajo(p)"
+                        >
+                          {{ p.stockActual ?? 0 }}
+                        </span>
+                        @if (p.stockMinimo) {
+                          <small class="text-muted ms-1">/ min {{ p.stockMinimo }}</small>
+                        }
+                      </td>
+                      <td>
+                        @if (p.deleted) {
+                          <span class="badge bg-secondary">Deshabilitado</span>
+                        } @else {
+                          <span class="badge bg-success">Activo</span>
+                        }
+                      </td>
+                      <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary"
+                           [routerLink]="['/productos', p.id]">
+                          Ver
+                        </a>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top">
+              <small class="text-muted">
+                {{ totalElements() }} producto(s) en total
+              </small>
+              <ngb-pagination
+                [collectionSize]="totalElements()"
+                [pageSize]="pageSize()"
+                [page]="currentPage()"
+                [maxSize]="5"
+                [rotate]="true"
+                [boundaryLinks]="true"
+                [size]="'sm'"
+                (pageChange)="onPageChange($event)"
+              />
+            </div>
+          }
         </div>
       </div>
     </div>
-
-    <div class="card-body p-0">
-      @if (errorMessage()) {
-        <div class="alert alert-danger m-3 mb-0" role="alert">
-          {{ errorMessage() }}
-        </div>
-      }
-
-      @if (loading()) {
-        <div class="text-center py-5">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Cargando...</span>
-          </div>
-        </div>
-      } @else if (productos().length === 0) {
-        <div class="text-center py-5 text-muted">
-          <i class="bi bi-inbox display-4 d-block mb-2"></i>
-          No hay productos para mostrar.
-        </div>
-      } @else {
-        <div class="table-responsive">
-          <table class="table table-hover mb-0 align-middle">
-            <thead class="table-light">
-              <tr>
-                <th style="width: 80px">Imagen</th>
-                <th>SKU</th>
-                <th>Nombre</th>
-                <th class="text-end">Precio Compra</th>
-                <th class="text-end">Precio Venta</th>
-                <th class="text-center">Stock</th>
-                <th>Categoría</th>
-                <th class="text-end" style="width: 140px">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (p of productos(); track trackById($index, p)) {
-                <tr [class.table-warning]="stockBajo(p)">
-                  <td>
-                    @if (p.imageUrl) {
-                      <img
-                        [src]="p.imageUrl"
-                        [alt]="p.nombre"
-                        class="rounded"
-                        style="width: 50px; height: 50px; object-fit: cover"
-                      />
-                    } @else {
-                      <div
-                        class="bg-light rounded d-flex align-items-center justify-content-center"
-                        style="width: 50px; height: 50px"
-                      >
-                        <i class="bi bi-image text-muted"></i>
-                      </div>
-                    }
-                  </td>
-                  <td><code>{{ p.sku }}</code></td>
-                  <td class="fw-semibold">{{ p.nombre }}</td>
-                  <td class="text-end">$ {{ p.precioCompra | number:'1.2-2' }}</td>
-                  <td class="text-end">$ {{ p.precioVenta | number:'1.2-2' }}</td>
-                  <td class="text-center">
-                    <span
-                      class="badge"
-                      [class.bg-danger]="stockBajo(p)"
-                      [class.bg-success]="!stockBajo(p)"
-                    >
-                      {{ p.stockActual ?? 0 }}
-                    </span>
-                    @if (stockBajo(p)) {
-                      <i class="bi bi-exclamation-triangle-fill text-warning ms-1"
-                         title="Stock bajo"></i>
-                    }
-                  </td>
-                  <td>{{ p.categoria?.nombre || '—' }}</td>
-                  <td class="text-end">
-                    <div class="btn-group btn-group-sm" role="group">
-                      <a
-                        class="btn btn-outline-primary"
-                        [routerLink]="['/productos', p.id]"
-                        title="Ver detalle"
-                      >
-                        <i class="bi bi-eye"></i>
-                      </a>
-                      <a
-                        class="btn btn-outline-secondary"
-                        [routerLink]="['/productos', p.id, 'editar']"
-                        title="Editar"
-                      >
-                        <i class="bi bi-pencil"></i>
-                      </a>
-                    </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      }
-    </div>
-
-    @if (totalPages() > 1) {
-      <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-        <small class="text-muted">
-          Mostrando {{ productos().length }} de {{ totalElements() }} productos
-        </small>
-        <ngb-pagination
-          [collectionSize]="totalElements()"
-          [page]="currentPage()"
-          [pageSize]="pageSize()"
-          [maxSize]="5"
-          [rotate]="true"
-          [boundaryLinks]="true"
-          (pageChange)="onPageChange($event)"
-        ></ngb-pagination>
-      </div>
-    }
-  </div>
+  </main>
 </div>

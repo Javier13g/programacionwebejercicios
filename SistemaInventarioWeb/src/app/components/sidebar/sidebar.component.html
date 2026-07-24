@@ -1,0 +1,57 @@
+<aside class="sidebar">
+  <!-- Brand -->
+  <div class="sidebar-brand">
+    <div class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+        <path d="M3 3h18v6H3V3zm0 8h18v10H3V11zm4 2v2h6v-2H7zm0 4v2h4v-2H7z"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <div class="brand-name">Bodega</div>
+      <div class="brand-tag">Inventario</div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="sidebar-nav">
+    <div class="kicker nav-kicker">Navegacion</div>
+    <ul>
+      @for (item of navItems; track item.path) {
+        <li>
+          <a
+            [routerLink]="item.path"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: false }"
+          >
+            <i class="bi" [class]="item.icon"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <!-- User card -->
+  @if (isAuthenticated()) {
+    <div class="sidebar-user">
+      <div class="user-card">
+        <div class="avatar">{{ initials() }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ currentUser()?.username }}</div>
+          @if (currentUser()?.rol) {
+            <div class="user-role">{{ currentUser()?.rol }}</div>
+          }
+        </div>
+        <button
+          type="button"
+          class="btn btn-link btn-icon"
+          (click)="logout()"
+          title="Cerrar sesion"
+          aria-label="Cerrar sesion"
+        >
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  }
+</aside>

@@ -2,20 +2,6 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbActiveModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 
-/**
- * Modal de confirmacion reutilizable.
- *
- * Uso:
- *   const modalRef = modalService.open(ConfirmModalComponent, { centered: true });
- *   modalRef.componentInstance.title = '¿Estas seguro?';
- *   modalRef.componentInstance.body = 'Esta accion no se puede deshacer.';
- *   modalRef.closed.subscribe((ok: boolean) => { ... });
- *
- * Resultado:
- *   - Click en confirmar -> close(true)
- *   - Click en cancelar / backdrop -> close(false)
- *   - Escape -> dismiss (no se ejecuta nada)
- */
 @Component({
   selector: 'app-confirm-modal',
   standalone: true,
@@ -28,9 +14,7 @@ export class ConfirmModalComponent {
   @Input() body = '';
   @Input() confirmText = 'Confirmar';
   @Input() cancelText = 'Cancelar';
-  /** 'btn-danger' | 'btn-primary' | 'btn-warning' */
   @Input() confirmClass: 'btn-danger' | 'btn-primary' | 'btn-warning' = 'btn-primary';
-  /** Icono de bootstrap-icons a mostrar (sin prefijo 'bi-'). Ej: 'trash', 'image', 'check-circle'. */
   @Input() icon: string | null = null;
 
   constructor(public readonly activeModal: NgbActiveModal) {}

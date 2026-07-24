@@ -1,63 +1,70 @@
-<div class="login-wrapper d-flex align-items-center justify-content-center vh-100">
-  <div class="card login-card shadow-lg">
-    <div class="card-body p-5">
-      <div class="text-center mb-4">
-        <h2 class="fw-bold text-primary mb-1">Sistema Inventario</h2>
-        <p class="text-muted mb-0">Iniciá sesión para continuar</p>
+<div class="login-shell">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+          <path d="M3 3h18v6H3V3zm0 8h18v10H3V11zm4 2v2h6v-2H7zm0 4v2h4v-2H7z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">Bodega</div>
+        <div class="brand-tag">Sistema de Inventario</div>
+      </div>
+    </div>
+
+    <h1 class="login-title">Bienvenido de vuelta</h1>
+    <p class="login-subtitle">Inicia sesion para continuar.</p>
+
+    @if (errorMessage()) {
+      <div class="alert alert-danger mb-3">{{ errorMessage() }}</div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="mb-3">
+        <label for="username" class="form-label">Usuario</label>
+        <input
+          id="username"
+          type="text"
+          class="form-control"
+          formControlName="username"
+          placeholder="admin"
+          autocomplete="username"
+          [class.is-invalid]="username?.invalid && username?.touched"
+        />
+        @if (username?.invalid && username?.touched) {
+          <div class="invalid-feedback">El usuario es obligatorio.</div>
+        }
       </div>
 
-      @if (errorMessage()) {
-        <ngb-alert type="danger" [dismissible]="false" class="mb-3">
-          {{ errorMessage() }}
-        </ngb-alert>
-      }
+      <div class="mb-4">
+        <label for="password" class="form-label">Contrasena</label>
+        <input
+          id="password"
+          type="password"
+          class="form-control"
+          formControlName="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          [class.is-invalid]="password?.invalid && password?.touched"
+        />
+        @if (password?.invalid && password?.touched) {
+          <div class="invalid-feedback">La contrasena es obligatoria.</div>
+        }
+      </div>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-        <div class="mb-3">
-          <label for="username" class="form-label fw-semibold">Usuario</label>
-          <input
-            id="username"
-            type="text"
-            class="form-control form-control-lg"
-            formControlName="username"
-            placeholder="admin"
-            autocomplete="username"
-            [class.is-invalid]="username?.invalid && username?.touched"
-          />
-          @if (username?.invalid && username?.touched) {
-            <div class="invalid-feedback">El usuario es obligatorio.</div>
-          }
-        </div>
-
-        <div class="mb-4">
-          <label for="password" class="form-label fw-semibold">Contraseña</label>
-          <input
-            id="password"
-            type="password"
-            class="form-control form-control-lg"
-            formControlName="password"
-            placeholder="••••••••"
-            autocomplete="current-password"
-            [class.is-invalid]="password?.invalid && password?.touched"
-          />
-          @if (password?.invalid && password?.touched) {
-            <div class="invalid-feedback">La contraseña es obligatoria.</div>
-          }
-        </div>
-
-        <button
-          type="submit"
-          class="btn btn-primary btn-lg w-100"
-          [disabled]="loading()"
-        >
-          @if (loading()) {
-            <span class="spinner-border spinner-border-sm me-2"></span>
-            Ingresando...
-          } @else {
-            Ingresar
-          }
-        </button>
-      </form>
-    </div>
+      <button
+        type="submit"
+        class="btn btn-primary w-100"
+        [disabled]="loading()"
+      >
+        @if (loading()) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Ingresando...
+        } @else {
+          Ingresar
+          <i class="bi bi-arrow-right ms-1"></i>
+        }
+      </button>
+    </form>
   </div>
 </div>

@@ -1,13 +1,14 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductosService } from '../../services/productos.service';
 import { Producto } from '../../models/producto.model';
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-producto-detalle',
   standalone: true,
-  imports: [CommonModule, DecimalPipe, DatePipe, RouterLink],
+  imports: [CommonModule, DecimalPipe, DatePipe, SidebarComponent],
   templateUrl: './producto-detalle.component.html',
   styleUrls: ['./producto-detalle.component.scss']
 })

@@ -39,8 +39,6 @@ export class LoginComponent {
       next: (response) => {
         this.loading.set(false);
 
-        // El backend puede devolver 200 con success=false (credenciales invalidas).
-        // En ese caso NO hay que navegar.
         if (response?.success === false) {
           this.errorMessage.set(response?.message || 'Credenciales inválidas');
           return;
