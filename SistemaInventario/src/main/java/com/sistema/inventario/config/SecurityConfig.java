@@ -14,21 +14,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.sistema.inventario.security.JwtAuthFilter;
 import com.sistema.inventario.security.JwtService;
 
-/**
- * Configuración de Spring Security:
- *  - Stateless (sin sesión HTTP, usamos JWT)
- *  - Rutas públicas: login y Swagger
- *  - Todo lo demás requiere JWT (validado por JwtAuthFilter)
- *  - CSRF desactivado porque es una API REST
- *  - CORS abierto para Angular dev server (http://localhost:4200)
- */
+
 @Configuration
 public class SecurityConfig {
 
-    /**
-     * Creamos UNA sola instancia del JwtAuthFilter como bean de Spring,
-     * manualmente. Asi no hay doble registro.
-     */
+
     @Bean
     public JwtAuthFilter jwtAuthFilter(JwtService jwtService) {
         return new JwtAuthFilter(jwtService);
@@ -39,7 +29,6 @@ public class SecurityConfig {
             @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins:http://localhost:4200}")
             String allowedOrigins) {
         CorsConfiguration cfg = new CorsConfiguration();
-        // Lista separada por comas: ej. "http://localhost:4200,https://xxx-4200.app.github.dev"
         cfg.setAllowedOrigins(java.util.Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())

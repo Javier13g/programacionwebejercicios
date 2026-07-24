@@ -65,13 +65,6 @@ public class UsuariosController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    /**
-     * Cambia el estado (habilitado / deshabilitado) de un usuario.
-     * Body: { "deleted": true } para deshabilitar, { "deleted": false } para rehabilitar.
-     *  - 204 si se aplicó el cambio
-     *  - 404 si el usuario no existe
-     *  - 400 si el body es inválido
-     */
     @PatchMapping("/{id}/estado")
     public ResponseEntity<?> cambiarEstado(
             @PathVariable Long id,
@@ -90,12 +83,6 @@ public class UsuariosController {
                 : ResponseEntity.notFound().build();
     }
 
-    /**
-     * Cambia la password del usuario.
-     *  - 200 si se cambió OK
-     *  - 400 si la contraseña actual no coincide
-     *  - 404 si el usuario no existe
-     */
     @PatchMapping("/{id}/password")
     public ResponseEntity<?> cambiarPassword(
             @PathVariable Long id,
@@ -134,7 +121,6 @@ public class UsuariosController {
             return ResponseEntity.ok(resp);
         }
 
-        // Devolvemos un ApiError en vez de solo 401 vacío
         ApiError error = new ApiError(
                 401,
                 "Unauthorized",

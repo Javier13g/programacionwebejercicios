@@ -57,13 +57,6 @@ public class ProveedoresController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    /**
-     * Cambia el estado (habilitado / deshabilitado) de un proveedor.
-     * Body: { "deleted": true } para deshabilitar, { "deleted": false } para rehabilitar.
-     *  - 204 si se aplicó el cambio
-     *  - 404 si el proveedor no existe
-     *  - 400 si el body es inválido
-     */
     @PatchMapping("/{id}/estado")
     public ResponseEntity<?> cambiarEstado(
             @PathVariable Long id,

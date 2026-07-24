@@ -29,6 +29,10 @@ public class CategoriasController {
     @Autowired
     private CategoriasService categoriasService;
 
+    public CategoriasController(CategoriasService categoriasService) {
+        this.categoriasService = categoriasService;
+    }
+
     @GetMapping
     public PageResponse<CategoriasModel> getCategorias(
             @RequestParam(required = false) String q,
@@ -57,13 +61,6 @@ public class CategoriasController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    /**
-     * Cambia el estado (habilitado / deshabilitado) de una categoria.
-     * Body: { "deleted": true } para deshabilitar, { "deleted": false } para rehabilitar.
-     *  - 204 si se aplicó el cambio
-     *  - 404 si la categoria no existe
-     *  - 400 si el body es inválido
-     */
     @PatchMapping("/{id}/estado")
     public ResponseEntity<?> cambiarEstado(
             @PathVariable Long id,

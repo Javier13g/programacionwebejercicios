@@ -23,7 +23,6 @@ import tools.jackson.databind.exc.InvalidFormatException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // JSON malformado o valor de enum invalido
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleJsonError(HttpMessageNotReadableException ex, WebRequest request) {
         String path = getPath(request);
@@ -51,7 +50,6 @@ public class GlobalExceptionHandler {
                 .body(new ApiError(400, "Bad Request", message, path));
     }
 
-    // Validaciones con @Valid
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, WebRequest request) {
         String path = getPath(request);
@@ -65,7 +63,6 @@ public class GlobalExceptionHandler {
                 .body(new ApiError(400, "Bad Request", message, path));
     }
 
-    // Tipo incorrecto en path variable o query param
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
         String path = getPath(request);
@@ -76,7 +73,6 @@ public class GlobalExceptionHandler {
                 .body(new ApiError(400, "Bad Request", message, path));
     }
 
-    // Endpoint no existe
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(NoHandlerFoundException ex, WebRequest request) {
         String path = getPath(request);
@@ -85,7 +81,6 @@ public class GlobalExceptionHandler {
                 .body(new ApiError(404, "Not Found", message, path));
     }
 
-    // Recurso (entidad) no encontrado en la BD
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiError> handleEntityNotFound(EntityNotFoundException ex, WebRequest request) {
         String path = getPath(request);
@@ -93,7 +88,6 @@ public class GlobalExceptionHandler {
                 .body(new ApiError(404, "Not Found", ex.getMessage(), path));
     }
 
-    // Conflicto de negocio (duplicados, reglas de unicidad) -> 409
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ApiError> handleConflict(ConflictException ex, WebRequest request) {
         String path = getPath(request);
@@ -101,7 +95,6 @@ public class GlobalExceptionHandler {
                 .body(new ApiError(409, "Conflict", ex.getMessage(), path));
     }
 
-    // Error al subir/borrar imagen en Imgur -> 502 Bad Gateway
     @ExceptionHandler(ImageUploadException.class)
     public ResponseEntity<ApiError> handleImageUpload(ImageUploadException ex, WebRequest request) {
         String path = getPath(request);
@@ -109,8 +102,6 @@ public class GlobalExceptionHandler {
                 .body(new ApiError(502, "Bad Gateway", ex.getMessage(), path));
     }
 
-    // Red de seguridad: cualquier violación de unicidad/integridad de la BD
-    // que se nos haya escapado la pre-validación -> 409 (no 500).
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleDataIntegrity(
             org.springframework.dao.DataIntegrityViolationException ex, WebRequest request) {
@@ -126,7 +117,6 @@ public class GlobalExceptionHandler {
                 .body(new ApiError(409, "Conflict", message, path));
     }
 
-    // Cualquier otro error no controlado
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(Exception ex, WebRequest request) {
         String path = getPath(request);

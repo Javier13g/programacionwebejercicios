@@ -33,9 +33,7 @@ public class ProveedoresModel {
     private String direccion;
 
     @Column(name = "contacto", length = 150)
-    private String contacto; // nombre de la persona de contacto
-
-    // === Soft Delete ===
+    private String contacto;
     @Column(name = "deleted", nullable = false)
     private boolean deleted = false;
 

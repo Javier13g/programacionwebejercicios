@@ -1,29 +1,23 @@
 package com.sistema.inventario.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
-public class ProductoRequestDto {
+public class ProductoPatchDto {
 
-    @NotBlank(message = "El SKU es obligatorio")
     @Size(min = 1, max = 50, message = "El SKU debe tener entre 1 y 50 caracteres")
     private String sku;
 
-    @NotBlank(message = "El nombre del producto es obligatorio")
     @Size(min = 2, max = 150, message = "El nombre debe tener entre 2 y 150 caracteres")
     private String nombre;
 
     @Size(max = 500, message = "La descripcion no puede superar los 500 caracteres")
     private String descripcion;
 
-    @NotNull(message = "El precio de compra es obligatorio")
     @Positive(message = "El precio de compra debe ser mayor a 0")
     private Double precioCompra;
 
-    @NotNull(message = "El precio de venta es obligatorio")
     @Positive(message = "El precio de venta debe ser mayor a 0")
     private Double precioVenta;
 
@@ -33,11 +27,9 @@ public class ProductoRequestDto {
     @PositiveOrZero(message = "El stock minimo debe ser mayor o igual a 0")
     private Integer stockMinimo;
 
-    @NotNull(message = "El id de la categoria es obligatorio")
     @Positive(message = "El id de la categoria debe ser positivo")
     private Long categoriaId;
 
-    @NotNull(message = "El id del proveedor es obligatorio")
     @Positive(message = "El id del proveedor debe ser positivo")
     private Long proveedorId;
 

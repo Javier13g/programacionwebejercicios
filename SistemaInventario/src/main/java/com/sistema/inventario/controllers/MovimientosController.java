@@ -30,10 +30,6 @@ public class MovimientosController {
     @Autowired
     private MovimientosService movimientosService;
 
-    /**
-     * Búsqueda paginada con filtros combinables:
-     *   q, productoId, usuarioId, tipo, desde, hasta
-     */
     @GetMapping
     public PageResponse<MovimientosModel> getMovimientos(
             @RequestParam(required = false) String q,

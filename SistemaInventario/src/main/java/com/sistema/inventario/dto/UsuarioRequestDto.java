@@ -3,7 +3,6 @@ package com.sistema.inventario.dto;
 import com.sistema.inventario.models.RolUsuario;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -15,12 +14,9 @@ public class UsuarioRequestDto {
              message = "El username solo puede tener letras, numeros, guion bajo, punto y guion medio")
     private String username;
 
-    // Sin @NotBlank para permitir PATCH parcial sin cambiar password
     @Size(min = 8, max = 128, message = "La contrasena debe tener entre 8 y 128 caracteres")
     private String password;
 
-    // rol obligatorio al crear (POST), pero opcional al hacer login
-    // (el backend valida contra la BD y devuelve el rol real del usuario).
     private RolUsuario rol;
 
     public String getUsername() {

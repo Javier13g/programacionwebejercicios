@@ -16,13 +16,6 @@ import com.sistema.inventario.repositories.IUsuariosRepository;
  * Credenciales por defecto:
  *   username: admin
  *   password: admin123
- *
- * Importante: cambiar la password después del primer login
- * (PATCH /usuarios/{id}/password) o rotando la variable ADMIN_DEFAULT_PASSWORD.
- *
- * Las credenciales se controlan por variables de entorno (en .env):
- *   ADMIN_DEFAULT_USERNAME (default: admin)
- *   ADMIN_DEFAULT_PASSWORD (default: admin123)
  */
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -30,25 +23,25 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired
     private IUsuariosRepository usuariosRepository;
 
-    // BCrypt encoder local — la clase es thread-safe y stateless
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    public DataSeeder(IUsuariosRepository usuariosRepository) {
+        this.usuariosRepository = usuariosRepository;
+    }
 
     @Override
     public void run(String... args) {
-        // 1) Parametrización por variables de entorno con defaults razonables
         String username = System.getenv().getOrDefault("ADMIN_DEFAULT_USERNAME", "admin");
         String passwordPlano = System.getenv().getOrDefault("ADMIN_DEFAULT_PASSWORD", "admin123");
 
-        // 2) Si ya existe (incluyendo soft-deleted), no hacemos nada
         if (usuariosRepository.findByUsername(username).isPresent()) {
             System.out.println("[DataSeeder] Usuario '" + username + "' ya existe. No se crea.");
             return;
         }
 
-        // 3) Creamos el admin
         UsuariosModel admin = new UsuariosModel();
         admin.setUsername(username);
-        admin.setPassword(passwordEncoder.encode(passwordPlano)); // BCrypt hash
+        admin.setPassword(passwordEncoder.encode(passwordPlano));
         admin.setRol(RolUsuario.ADMIN);
         admin.setDeleted(false);
         admin.setDeletedAt(null);

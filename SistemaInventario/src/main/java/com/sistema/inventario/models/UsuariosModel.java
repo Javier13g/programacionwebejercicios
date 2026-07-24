@@ -25,7 +25,6 @@ public class UsuariosModel {
     @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;
 
-    /** Hash BCrypt, nunca plaintext. */
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
@@ -33,7 +32,6 @@ public class UsuariosModel {
     @Column(name = "rol", nullable = false, length = 20)
     private RolUsuario rol;
 
-    // === Soft Delete ===
     @Column(name = "deleted", nullable = false)
     private boolean deleted = false;
 

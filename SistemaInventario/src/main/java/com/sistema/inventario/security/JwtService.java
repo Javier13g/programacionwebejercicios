@@ -11,10 +11,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
-/**
- * Servicio para generar y validar tokens JWT con algoritmo HS256.
- * La clave se inyecta desde application.properties (app.jwt.secret).
- */
 @Service
 public class JwtService {
 
@@ -27,20 +23,12 @@ public class JwtService {
             @Value("${app.jwt.expiration-ms}") long expirationMs,
             @Value("${app.jwt.issuer}") String issuer
     ) {
-        // Construye una clave HMAC-SHA256 a partir del string.
-        // La clave debe tener >= 32 bytes (256 bits).
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes());
         this.expirationMs = expirationMs;
         this.issuer = issuer;
     }
 
-    /**
-     * Genera un token JWT firmado para el usuario indicado.
-     * Claims incluidos:
-     *  - sub: id del usuario
-     *  - username: nombre de usuario
-     *  - rol: rol del usuario
-     */
+ 
     public String generateToken(Long userId, String username, String rol) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
@@ -56,12 +44,6 @@ public class JwtService {
                 .compact();
     }
 
-    /**
-     * Parsea y valida el token. Lanza excepciones si:
-     *  - la firma no coincide
-     *  - el token está expirado
-     *  - el token está malformado
-     */
     public Claims parseAndValidate(String token) {
         return Jwts.parser()
                 .verifyWith(signingKey)

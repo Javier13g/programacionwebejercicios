@@ -9,9 +9,9 @@ public class LoginResponseDto {
     private Long id;
     private String username;
     private RolUsuario rol;
-    private String token;        // JWT generado al loguearse
-    private String tokenType;    // "Bearer"
-    private long expiresInMs;    // Tiempo de expiración en milisegundos
+    private String token;
+    private String tokenType;
+    private long expiresInMs;
 
     public LoginResponseDto() {
     }
@@ -28,7 +28,7 @@ public class LoginResponseDto {
     }
 
     public LoginResponseDto(boolean success, String message, Long id, String username,
-                            RolUsuario rol, String token, String tokenType, long expiresInMs) {
+            RolUsuario rol, String token, String tokenType, long expiresInMs) {
         this.success = success;
         this.message = message;
         this.id = id;

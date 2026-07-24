@@ -27,7 +27,6 @@ public class MovimientosService {
     private final IProductosRepository productosRepository;
     private final IUsuariosRepository usuariosRepository;
 
-    // Constructor injection (recomendado por Spring sobre @Autowired en campos)
     public MovimientosService(IMovimientosRepository movimientosRepository,
                               IProductosRepository productosRepository,
                               IUsuariosRepository usuariosRepository) {
@@ -54,30 +53,14 @@ public class MovimientosService {
                         "Movimiento no encontrado con id " + id));
     }
 
-    /**
-     * Registra un movimiento y actualiza el stock del producto en la misma
-     * transacción. Si falla la actualización de stock, se hace rollback del
-     * movimiento también.
-     *
-     * Reglas:
-     * - ENTRADA : stockActual += cantidad
-     * - SALIDA : requiere stockActual >= cantidad (sino 409); stockActual -=
-     * cantidad
-     * - AJUSTE : stockActual = cantidad (reemplazo absoluto)
-     */
     @Transactional
     public MovimientosModel saveMovimiento(MovimientoRequestDto dto) {
-        // 1) Resolver FKs (404 si no existen o están borrados)
         ProductosModel producto = productosRepository.findByIdAndDeletedFalse(dto.getProductoId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Producto no encontrado con id " + dto.getProductoId()));
         UsuariosModel usuario = usuariosRepository.findByIdAndDeletedFalse(dto.getUsuarioId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Usuario no encontrado con id " + dto.getUsuarioId()));
-
-        // getStockActual() no es null: columna NOT NULL con default 0 en BD.
-        // dto.getCantidad() no es null: @NotNull + @Positive en el DTO.
-        // Unbox a primitivos para evitar warnings de unboxing posiblemente nulo.
         int stockAntes = producto.getStockActual();
         int cantidad = dto.getCantidad();
         int nuevoStock;
@@ -101,7 +84,6 @@ public class MovimientosService {
                     "Tipo de movimiento no soportado: " + dto.getTipo());
         }
 
-        // 3) Persistir el movimiento
         MovimientosModel mov = new MovimientosModel();
         mov.setFecha(LocalDateTime.now());
         mov.setTipo(dto.getTipo());
@@ -111,7 +93,6 @@ public class MovimientosService {
         mov.setUsuario(usuario);
         MovimientosModel saved = movimientosRepository.save(mov);
 
-        // 4) Actualizar el stock del producto
         producto.setStockActual(nuevoStock);
         productosRepository.save(producto);
 

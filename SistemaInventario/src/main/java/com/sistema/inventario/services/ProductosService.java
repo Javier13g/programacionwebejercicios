@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.sistema.inventario.dto.PageResponse;
+import com.sistema.inventario.dto.ProductoPatchDto;
 import com.sistema.inventario.dto.ProductoRequestDto;
 import com.sistema.inventario.exceptions.ConflictException;
 import com.sistema.inventario.models.CategoriasModel;
@@ -27,7 +28,6 @@ public class ProductosService {
     private final ICategoriasRepository categoriasRepository;
     private final IProveedoresRepository proveedoresRepository;
 
-    // Constructor injection (recomendado por Spring sobre @Autowired en campos)
     public ProductosService(IProductosRepository productosRepository,
                             ICategoriasRepository categoriasRepository,
                             IProveedoresRepository proveedoresRepository) {
@@ -52,15 +52,9 @@ public class ProductosService {
     }
 
     public ProductosModel saveProducto(ProductoRequestDto dto) {
-        // 1) SKU único entre productos activos
         if (productosRepository.existsBySkuAndDeletedFalse(dto.getSku())) {
             throw new ConflictException("Ya existe un producto activo con el SKU '" + dto.getSku() + "'");
         }
-
-        // 2) Regla de negocio: precioVenta >= precioCompra
-        // getPrecioCompra()/getPrecioVenta() no son null: @NotNull + @Positive en el DTO
-        // y el controller valida con @Valid antes de invocar este metodo.
-        // Unbox a primitivos para evitar warnings de unboxing posiblemente nulo.
         double precioCompra = dto.getPrecioCompra();
         double precioVenta = dto.getPrecioVenta();
         if (precioVenta < precioCompra) {
@@ -69,7 +63,6 @@ public class ProductosService {
                             + ") no puede ser menor al precio de compra (" + precioCompra + ")");
         }
 
-        // 3) Resolver FKs (404 si no existen o están borradas)
         CategoriasModel categoria = categoriasRepository.findByIdAndDeletedFalse(dto.getCategoriaId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Categoria no encontrada con id " + dto.getCategoriaId()));
@@ -83,8 +76,6 @@ public class ProductosService {
         producto.setDescripcion(dto.getDescripcion());
         producto.setPrecioCompra(dto.getPrecioCompra());
         producto.setPrecioVenta(dto.getPrecioVenta());
-        // El modelo tiene default = 0 y la columna es NOT NULL;
-        // Objects.requireNonNullElse evita el null check redundante.
         producto.setStockActual(Objects.requireNonNullElse(dto.getStockActual(), 0));
         producto.setStockMinimo(Objects.requireNonNullElse(dto.getStockMinimo(), 0));
         producto.setCategoria(categoria);
@@ -93,16 +84,14 @@ public class ProductosService {
         return productosRepository.save(producto);
     }
 
-    public Optional<ProductosModel> updateProducto(Long id, ProductoRequestDto dto) {
+    public Optional<ProductosModel> updateProducto(Long id, ProductoPatchDto dto) {
         return productosRepository.findByIdAndDeletedFalse(id).map(existing -> {
-            // SKU: si cambia, verificar unicidad
             if (dto.getSku() != null
                     && !dto.getSku().equalsIgnoreCase(existing.getSku())
                     && productosRepository.existsBySkuAndDeletedFalse(dto.getSku())) {
                 throw new ConflictException("Ya existe un producto activo con el SKU '" + dto.getSku() + "'");
             }
 
-            // Regla de negocio: precioVenta >= precioCompra (sobre los valores finales)
             double nuevoCompra = dto.getPrecioCompra() != null ? dto.getPrecioCompra() : existing.getPrecioCompra();
             double nuevoVenta  = dto.getPrecioVenta()  != null ? dto.getPrecioVenta()  : existing.getPrecioVenta();
             if (nuevoVenta < nuevoCompra) {
@@ -111,7 +100,6 @@ public class ProductosService {
                                 + ") no puede ser menor al precio de compra (" + nuevoCompra + ")");
             }
 
-            // Campos simples
             if (dto.getSku() != null)         existing.setSku(dto.getSku());
             if (dto.getNombre() != null)      existing.setNombre(dto.getNombre());
             if (dto.getDescripcion() != null) existing.setDescripcion(dto.getDescripcion());
@@ -120,7 +108,6 @@ public class ProductosService {
             if (dto.getStockActual() != null)  existing.setStockActual(dto.getStockActual());
             if (dto.getStockMinimo() != null)  existing.setStockMinimo(dto.getStockMinimo());
 
-            // FKs (si vienen en el PATCH, se resuelven; si no, se mantienen)
             if (dto.getCategoriaId() != null) {
                 CategoriasModel categoria = categoriasRepository.findByIdAndDeletedFalse(dto.getCategoriaId())
                         .orElseThrow(() -> new EntityNotFoundException(
@@ -133,7 +120,6 @@ public class ProductosService {
                                 "Proveedor no encontrado con id " + dto.getProveedorId()));
                 existing.setProveedor(proveedor);
             }
-            // Si llega imageUrl en el PATCH, la actualizamos (acepta null para "quitar")
             if (dto.getImageUrl() != null) {
                 existing.setImageUrl(dto.getImageUrl());
             }
@@ -141,15 +127,6 @@ public class ProductosService {
         });
     }
 
-    /**
-     * Cambia el estado de un producto (habilitado / deshabilitado / soft-delete).
-     *
-     * @param id     id del producto
-     * @param delete true  -> deshabilita (marca deleted=true y deletedAt=now)
-     *               false -> rehabilita (marca deleted=false y limpia deletedAt)
-     * @return true si se aplicó el cambio (o ya estaba en el estado pedido, idempotente).
-     *         false si el id no existe.
-     */
     public boolean cambiarEstado(Long id, boolean delete) {
         Optional<ProductosModel> opt = productosRepository.findById(id);
         if (opt.isEmpty()) {
@@ -157,7 +134,6 @@ public class ProductosService {
         }
         ProductosModel producto = opt.get();
 
-        // Si rehabilitamos y ya hay otro activo con el mismo SKU -> no dejamos
         if (!delete && producto.isDeleted()
                 && productosRepository.existsBySkuAndDeletedFalse(producto.getSku())) {
             throw new ConflictException(
@@ -165,7 +141,6 @@ public class ProductosService {
                             + producto.getSku() + "'");
         }
 
-        // Idempotencia
         if (producto.isDeleted() == delete) {
             return true;
         }

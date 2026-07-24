@@ -24,29 +24,20 @@ public interface IUsuariosRepository extends JpaRepository<UsuariosModel, Long> 
 
     Page<UsuariosModel> findAllByDeletedFalse(Pageable pageable);
 
-    /**
-     * Búsqueda paginada por username (parcial, case-insensitive)
-     * y/o rol (exacto). Siempre excluye usuarios borrados.
-     * Cualquier parámetro null/vacío se ignora.
-     */
-    @Query("SELECT u FROM UsuariosModel u " +
-           "WHERE u.deleted = false " +
-           "AND (:q IS NULL OR :q = '' " +
-           "     OR LOWER(u.username) LIKE LOWER(CONCAT('%', :q, '%'))) " +
-           "AND (:rol IS NULL OR u.rol = :rol)")
+    @Query("SELECT u FROM UsuariosModel u "
+            + "WHERE u.deleted = false "
+            + "AND (:q IS NULL OR :q = '' "
+            + "     OR LOWER(u.username) LIKE LOWER(CONCAT('%', :q, '%'))) "
+            + "AND (:rol IS NULL OR u.rol = :rol)")
     Page<UsuariosModel> buscar(@Param("q") String q,
-                               @Param("rol") RolUsuario rol,
-                               Pageable pageable);
+            @Param("rol") RolUsuario rol,
+            Pageable pageable);
 
-    /**
-     * Búsqueda paginada incluyendo usuarios deshabilitados.
-     * Misma lógica de filtros que {@link #buscar}, pero sin la cláusula u.deleted = false.
-     */
-    @Query("SELECT u FROM UsuariosModel u " +
-           "WHERE (:q IS NULL OR :q = '' " +
-           "     OR LOWER(u.username) LIKE LOWER(CONCAT('%', :q, '%'))) " +
-           "AND (:rol IS NULL OR u.rol = :rol)")
+    @Query("SELECT u FROM UsuariosModel u "
+            + "WHERE (:q IS NULL OR :q = '' "
+            + "     OR LOWER(u.username) LIKE LOWER(CONCAT('%', :q, '%'))) "
+            + "AND (:rol IS NULL OR u.rol = :rol)")
     Page<UsuariosModel> buscarConDeshabilitados(@Param("q") String q,
-                                                @Param("rol") RolUsuario rol,
-                                                Pageable pageable);
+            @Param("rol") RolUsuario rol,
+            Pageable pageable);
 }

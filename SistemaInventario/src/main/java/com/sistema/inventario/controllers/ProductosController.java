@@ -22,6 +22,7 @@ import com.sistema.inventario.dto.ApiError;
 import com.sistema.inventario.dto.ImagenProductoResponseDto;
 import com.sistema.inventario.dto.PageResponse;
 import com.sistema.inventario.dto.ProductoEstadoDto;
+import com.sistema.inventario.dto.ProductoPatchDto;
 import com.sistema.inventario.dto.ProductoRequestDto;
 import com.sistema.inventario.exceptions.ImageUploadException;
 import com.sistema.inventario.models.ProductosModel;
@@ -73,7 +74,7 @@ public class ProductosController {
     @PatchMapping("/{id}")
     public ResponseEntity<ProductosModel> updateProducto(
             @PathVariable Long id,
-            @Valid @RequestBody ProductoRequestDto dto) {
+            @Valid @RequestBody ProductoPatchDto dto) {
         return productosService.updateProducto(id, dto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -146,11 +147,6 @@ public class ProductosController {
         }
     }
 
-    /**
-     * Alternativa: subir imagen enviando base64 en JSON.
-     * Body: { "image": "<base64|o data:image/png;base64,XXXX>", "mimeType":
-     * "image/png" }
-     */
     @PostMapping("/{id}/imagen/base64")
     @Transactional
     public ResponseEntity<?> subirImagenBase64(
@@ -198,9 +194,6 @@ public class ProductosController {
         }
     }
 
-    /**
-     * Borra la imagen del producto (tanto de Imgur como de la BD).
-     */
     @DeleteMapping("/{id}/imagen")
     @Transactional
     public ResponseEntity<?> borrarImagen(
@@ -224,7 +217,6 @@ public class ProductosController {
             productosRepository.save(producto);
             return ResponseEntity.noContent().build();
         } catch (ImageUploadException e) {
-            // Si falla el delete en Imgur pero seguimos guardando null local
             producto.setImageUrl(null);
             producto.setImageDeleteHash(null);
             productosRepository.save(producto);

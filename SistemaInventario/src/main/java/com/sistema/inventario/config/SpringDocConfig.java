@@ -19,11 +19,6 @@ import io.swagger.v3.oas.models.servers.Server;
 @Configuration
 public class SpringDocConfig {
 
-    /**
-     * Le dice a Swagger que TODA la API usa Bearer JWT, excepto los endpoints
-     * marcados como publicos (login, swagger). Eso hace aparecer el candado
-     * "Authorize" en la UI.
-     */
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
@@ -77,18 +72,12 @@ public class SpringDocConfig {
         };
     }
 
-    /**
-     * Saca el requisito de seguridad de los endpoints publicos
-     * para que Swagger no muestre el candado en ellos (login, etc).
-     */
     @Bean
     public OperationCustomizer publicEndpointsSecurityCustomizer() {
         return (operation, handlerMethod) -> {
             String path = handlerMethod.getMethod().getDeclaringClass().getName()
                     + "#" + handlerMethod.getMethod().getName();
 
-            // Marcamos como publicos:
-            // - UsuariosController#login (POST /usuarios/login)
             if (path.endsWith("#login") && handlerMethod.getMethod().getParameterCount() > 0) {
                 operation.setSecurity(new ArrayList<>()); // sin seguridad
             }

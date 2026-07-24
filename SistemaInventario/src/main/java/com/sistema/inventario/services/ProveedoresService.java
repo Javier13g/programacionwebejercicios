@@ -22,6 +22,10 @@ public class ProveedoresService {
     @Autowired
     IProveedoresRepository proveedoresRepository;
 
+    public ProveedoresService(IProveedoresRepository proveedoresRepository) {
+        this.proveedoresRepository = proveedoresRepository;
+    }
+
     public PageResponse<ProveedoresModel> getProveedores(String q, Pageable pageable) {
         Page<ProveedoresModel> page = proveedoresRepository.buscar(q, pageable);
         return PageResponse.from(page);
@@ -62,15 +66,6 @@ public class ProveedoresService {
         });
     }
 
-    /**
-     * Cambia el estado de un proveedor (habilitado / deshabilitado / soft-delete).
-     *
-     * @param id     id del proveedor
-     * @param delete true  -> deshabilita (marca deleted=true y deletedAt=now)
-     *               false -> rehabilita (marca deleted=false y limpia deletedAt)
-     * @return true si se aplicó el cambio (o ya estaba en el estado pedido, idempotente).
-     *         false si el id no existe.
-     */
     public boolean cambiarEstado(Long id, boolean delete) {
         Optional<ProveedoresModel> opt = proveedoresRepository.findById(id);
         if (opt.isEmpty()) {
@@ -78,7 +73,6 @@ public class ProveedoresService {
         }
         ProveedoresModel proveedor = opt.get();
 
-        // Si rehabilitamos y ya hay otro activo con el mismo nombre -> no dejamos
         if (!delete && proveedor.isDeleted()
                 && proveedoresRepository.existsByNombreAndDeletedFalse(proveedor.getNombre())) {
             throw new ConflictException(
@@ -86,7 +80,6 @@ public class ProveedoresService {
                             + proveedor.getNombre() + "'");
         }
 
-        // Idempotencia: si ya está en el estado pedido, no hacemos nada pero devolvemos true.
         if (proveedor.isDeleted() == delete) {
             return true;
         }

@@ -1,23 +1,18 @@
 package com.sistema.inventario.dto;
 
-/**
- * Respuesta al subir una imagen a Imgur.
- * La URL publica es la que el cliente (Angular) mostrara.
- * El deleteHash lo guardamos internamente para poder borrar la imagen despues.
- */
 public class ImagenProductoResponseDto {
 
-    private String imageUrl;        // URL publica (https://i.imgur.com/XXXX.jpg)
-    private String imageDeleteHash; // hash para borrar en Imgur
+    private String imageUrl;
+    private String imageDeleteHash;
     private Integer width;
     private Integer height;
-    private Long size;              // bytes
+    private Long size;
 
     public ImagenProductoResponseDto() {
     }
 
     public ImagenProductoResponseDto(String imageUrl, String imageDeleteHash,
-                                     Integer width, Integer height, Long size) {
+            Integer width, Integer height, Long size) {
         this.imageUrl = imageUrl;
         this.imageDeleteHash = imageDeleteHash;
         this.width = width;

@@ -56,16 +56,7 @@ public class CategoriasService {
         });
     }
 
-    /**
-     * Cambia el estado de una categoria (habilitado / deshabilitado / soft-delete).
-     *
-     * @param id     id de la categoria
-     * @param delete true  -> deshabilita (marca deleted=true y deletedAt=now)
-     *               false -> rehabilita (marca deleted=false y limpia deletedAt)
-     * @return true si se aplicó el cambio (o ya estaba en el estado pedido, idempotente).
-     *         false si el id no existe o la categoria está activa y se pidió rehabilitar
-     *         y ya existe otra activa con el mismo nombre.
-     */
+
     public boolean cambiarEstado(Long id, boolean delete) {
         Optional<CategoriasModel> opt = categoriasRepository.findById(id);
         if (opt.isEmpty()) {
@@ -73,7 +64,6 @@ public class CategoriasService {
         }
         CategoriasModel categoria = opt.get();
 
-        // Si rehabilitamos y ya hay otra activa con el mismo nombre -> no dejamos
         if (!delete && categoria.isDeleted()
                 && categoriasRepository.existsByNombreAndDeletedFalse(categoria.getNombre())) {
             throw new ConflictException(
@@ -81,7 +71,6 @@ public class CategoriasService {
                             + categoria.getNombre() + "'");
         }
 
-        // Idempotencia: si ya está en el estado pedido, no hacemos nada pero devolvemos true.
         if (categoria.isDeleted() == delete) {
             return true;
         }

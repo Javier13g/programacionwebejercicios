@@ -17,17 +17,6 @@ import org.springframework.web.client.RestTemplate;
 import com.sistema.inventario.dto.ImagenProductoResponseDto;
 import com.sistema.inventario.exceptions.ImageUploadException;
 
-/**
- * Servicio para subir/borrar imagenes en Imgur.
- *
- * Flujo:
- *  1) Cliente (Angular) sube el archivo a este endpoint.
- *  2) Spring lo manda a Imgur con la API key (Authorization: Client-ID ...).
- *  3) Imgur devuelve URL publica + deleteHash.
- *  4) Guardamos ambos en ProductosModel (URL visible, hash interno).
- *
- * La API key se inyecta desde app.imgur.client-id en application.properties.
- */
 @Service
 public class ImgurService {
 
@@ -42,14 +31,6 @@ public class ImgurService {
         this.clientId = clientId;
     }
 
-    /**
-     * Sube una imagen (recibida como base64) a Imgur y devuelve la respuesta.
-     *
-     * @param base64Image  contenido del archivo en base64 (sin prefijo data:image/...;base64,)
-     * @param mimeType     ej: "image/png", "image/jpeg"
-     * @return URL publica + deleteHash + metadata
-     * @throws ImageUploadException si falla la comunicacion o Imgur rechaza la imagen
-     */
     public ImagenProductoResponseDto uploadImage(String base64Image, String mimeType) {
         if (clientId == null || clientId.isBlank()) {
             throw new ImageUploadException(
@@ -59,7 +40,6 @@ public class ImgurService {
             throw new ImageUploadException("La imagen esta vacia");
         }
 
-        // Validacion de tamano estimado: base64 -> bytes ≈ length * 0.75
         long tamanoEstimado = (long) (base64Image.length() * 0.75);
         if (tamanoEstimado > MAX_SIZE_BYTES) {
             throw new ImageUploadException(
@@ -70,7 +50,6 @@ public class ImgurService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Client-ID " + clientId);
 
-        // Imgur espera: { "image": "<base64>", "type": "base64" }
         Map<String, String> payload = Map.of(
                 "image", base64Image,
                 "type", "base64"
@@ -112,11 +91,6 @@ public class ImgurService {
         }
     }
 
-    /**
-     * Borra una imagen en Imgur usando su deleteHash.
-     *
-     * @param deleteHash el hash que guardamos en ProductosModel.imageDeleteHash
-     */
     public void deleteImage(String deleteHash) {
         if (deleteHash == null || deleteHash.isBlank()) {
             throw new ImageUploadException("deleteHash vacio");
@@ -139,18 +113,12 @@ public class ImgurService {
                     Map.class
             );
         } catch (HttpClientErrorException.NotFound e) {
-            // Si la imagen ya no existe en Imgur, lo tomamos como exito
-            // (idempotencia).
         } catch (RestClientException e) {
             throw new ImageUploadException(
                     "Error al borrar la imagen en Imgur: " + e.getMessage(), e);
         }
     }
 
-    /**
-     * Helper para decodificar base64 desde el cliente (que puede mandarlo
-     * con o sin el prefijo data:image/png;base64,).
-     */
     public static String decodeBase64Image(String raw) {
         if (raw == null) return null;
         String limpio = raw.trim();
@@ -158,7 +126,6 @@ public class ImgurService {
         if (idx >= 0) {
             limpio = limpio.substring(idx + "base64,".length());
         }
-        // Validamos que sea base64 valido
         try {
             Base64.getDecoder().decode(limpio);
         } catch (IllegalArgumentException e) {
@@ -167,7 +134,6 @@ public class ImgurService {
         return limpio;
     }
 
-    // ---- helpers --------------------------------------------------------
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> extractData(Map<String, Object> body) {

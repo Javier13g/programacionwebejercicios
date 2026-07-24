@@ -2,11 +2,6 @@ package com.sistema.inventario.dto;
 
 import jakarta.validation.constraints.NotNull;
 
-/**
- * DTO para cambiar el estado (habilitado / deshabilitado) de una categoria.
- *  - deleted = true  -> deshabilita (soft delete)
- *  - deleted = false -> rehabilita
- */
 public class CategoriaEstadoDto {
 
     @NotNull
